@@ -1,24 +1,13 @@
+using HabitLoggerMvc.Data;
+using HabitLoggerMvc.Models;
+
 namespace HabitLoggerMvc.Repositories;
 
-public abstract class HabitRepository<Habit> : IRepository<Habit> where Habit : class, new()
+public class HabitRepository(HabitLoggerContext context) : Repository<Habit>(context), IHabitRepository
 {
-    public Task<Habit> AddAsync(Habit model)
+    public async Task<Habit> GetHabitByIdAsync(int id)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<Habit>> GetAll()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Habit> UpdateAsync(Habit model)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Habit> DeleteAsync(int id)
-    {
-        throw new NotImplementedException();
+        var habits = await GetAll();
+        return habits.FirstOrDefault(h => h.Id == id);
     }
 }
