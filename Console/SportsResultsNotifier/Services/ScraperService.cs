@@ -1,29 +1,47 @@
 using HtmlAgilityPack;
+using SportsResultsNotifier.Models;
 
 namespace SportsResultsNotifier.Services;
 
 public class ScraperService
 {
-    public void ScrapeSite()
+    public List<GameMatch> ScrapeSite()
     {
-        var url = "https://www.basketball-reference.com/"; // Use the specific URL for the data you're interested in
+        var url = "https://www.basketball-reference.com/boxscores/";
         var web = new HtmlWeb();
         var doc = web.Load(url);
+        var matches = new List<GameMatch>();
 
-        // Navigate to the specific data you want to scrape
-        // For example, if you're interested in a particular table:
-        var table = doc.DocumentNode.SelectSingleNode("//table[@id='example_table_id']");
-
-        // Extract the data you need
-        // This will depend on the structure of the HTML
-        var data = "";
-        foreach (var row in table.SelectNodes("tbody/tr"))
+        foreach (var summary in doc.DocumentNode.SelectNodes("//div[contains(@class, 'game_summary')]"))
         {
-            foreach (var cell in row.SelectNodes("td"))
-            {
-                data += cell.InnerText + " "; // Adjust based on the data format you need
-            }
-            data += "\n"; // New line for each row
+            var match = new GameMatch();
+            
+            var teams = summary.SelectSingleNode(".//table[2]/tbody");
+            match.TeamA = GetTeamFromNode(teams.SelectSingleNode(".//tr[1]"));
+            match.TeamB = GetTeamFromNode(teams.SelectSingleNode(".//tr[2]"));
+            
+            match.TeamA.IsWinner = match.TeamA.TotalScore > match.TeamB.TotalScore;
+            match.TeamB.IsWinner = match.TeamB.TotalScore > match.TeamA.TotalScore;
+            
+            matches.Add(match);
         }
+
+        return matches;
+    }
+
+    private Team GetTeamFromNode(HtmlNode teamNode)
+    {
+        var team = new Team
+        {
+            Name = teamNode.SelectSingleNode(".//a").InnerText
+        };
+
+        var rounds = teamNode.SelectNodes("./td[@class='center']");
+        foreach (var roundScore in rounds)
+        {
+            team.Score.Add(int.Parse(roundScore.InnerText));
+        }
+        
+        return team;
     }
 }

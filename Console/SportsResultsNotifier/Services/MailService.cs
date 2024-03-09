@@ -1,12 +1,11 @@
 using System.Net;
 using System.Net.Mail;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SportsResultsNotifier.Utils;
 
 namespace SportsResultsNotifier.Services;
 
-public class MailService(IConfiguration configuration, IOptions<MailServerSettings> options)
+public class MailService(IOptions<MailServerSettings> options)
 {
     private readonly MailServerSettings options = options.Value;
     
