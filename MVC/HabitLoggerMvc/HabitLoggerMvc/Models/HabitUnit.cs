@@ -1,6 +1,6 @@
 namespace HabitLoggerMvc.Models;
 
-public class HabitUnits
+public class HabitUnit
 {
     public int Id { get; set; }
     public string Name { get; set; }

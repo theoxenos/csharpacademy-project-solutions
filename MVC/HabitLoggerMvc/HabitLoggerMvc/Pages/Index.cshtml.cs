@@ -1,18 +1,17 @@
+using HabitLoggerMvc.Models;
+using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HabitLoggerMvc.Pages;
 
-public class IndexModel : PageModel
+public class IndexModel(IRepository<Habit> repository) : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
-
-    public IndexModel(ILogger<IndexModel> logger)
+    public List<Habit> Habits { get; set; }
+    
+    public async Task OnGet()
     {
-        _logger = logger;
-    }
-
-    public void OnGet()
-    {
+        var result = await repository.GetAll();
+        Habits = result.ToList();
     }
 }

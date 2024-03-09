@@ -6,5 +6,32 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<table class="table table-sm">
+    <thead>
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.Habits[0].Name)</th>
+        <th>Manage</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var habit in Model.Habits)
+    {
+        <tr>
+            <td>@Html.DisplayFor(model => habit.Name)</td>
+            <td>
+                <a class="btn btn-primary">
+                    <i class="bi bi-info-circle"></i>
+                </a>
+                <a class="btn btn-warning">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <a class="btn btn-danger">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
