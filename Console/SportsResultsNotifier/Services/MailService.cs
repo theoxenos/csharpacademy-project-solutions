@@ -16,6 +16,7 @@ public class MailService(IOptions<MailServerSettings> options)
 
         var mail = new MailMessage(options.From, options.To)
         {
+            IsBodyHtml = true,
             Body = body,
             Subject = options.Subject
         };
