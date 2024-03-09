@@ -1,5 +1,4 @@
 using System.Text;
-using Microsoft.Extensions.Primitives;
 using SportsResultsNotifier.Models;
 using SportsResultsNotifier.Services;
 
@@ -26,13 +25,15 @@ public class MainController(MailService mailService, ScraperService scraperServi
             var header = "Team\t1\t2\t3\t4";
             header += match.TeamA.Score.Count > 4 ? "\t5\tTotal" : "\tTotal";
             body.Append(header + Environment.NewLine);
-            
-            var teamAScore =$"{teamAName}\t{string.Join("\t", match.TeamA.Score)}\t{match.TeamA.TotalScore}{Environment.NewLine}";
-            var teamBScore = $"{teamBName}\t{string.Join("\t", match.TeamB.Score)}\t{match.TeamB.TotalScore}{Environment.NewLine}";
+
+            var teamAScore =
+                $"{teamAName}\t{string.Join("\t", match.TeamA.Score)}\t{match.TeamA.TotalScore}{Environment.NewLine}";
+            var teamBScore =
+                $"{teamBName}\t{string.Join("\t", match.TeamB.Score)}\t{match.TeamB.TotalScore}{Environment.NewLine}";
             body.Append(teamAScore);
             body.Append(teamBScore);
         }
-        
+
         return body.ToString();
     }
 }
