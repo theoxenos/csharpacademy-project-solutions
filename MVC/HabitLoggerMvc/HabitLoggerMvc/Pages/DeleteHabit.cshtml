@@ -1,0 +1,15 @@
+@page
+@model HabitLoggerMvc.Pages.DeleteHabit
+
+<h2>Deleting habit: @Model.HabitModel.Name</h2>
+<div class="alert alert-warning">
+    Are you sure you want to delete this habit?
+    This will also delete all the logs.
+</div>
+<div>
+    <form method="post">
+        @Html.HiddenFor(model => model.HabitModel.Id)
+        <button class="btn btn-danger" type="submit">Delete</button>
+        <a class="btn btn-secondary" asp-page="./Index">Cancel</a>
+    </form>
+</div>
