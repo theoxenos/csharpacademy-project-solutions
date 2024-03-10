@@ -15,6 +15,9 @@
             <th>
                 Unit
             </th>
+            <th>
+                Manage
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -30,8 +33,19 @@
                 <td>
                     @Html.DisplayFor(model => model.HabitUnit.Name)
                 </td>
+            <td>
+                <a class="btn btn-warning" asp-page="./UpdateHabitLog" asp-route-id="@log.Id">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <a class="btn btn-danger" asp-page="./DeleteHabitLog" asp-route-id="@log.Id">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </td>
             </tr>
         }
         </tbody>
     </table>
+    <div class="d-flex justify-content-end">
+        <a class="btn btn-success" asp-page="./AddHabitLog" asp-route-id="@Model.HabitModel.Id">Add new log</a>
+    </div>
 </div>
