@@ -21,10 +21,10 @@
         <tr>
             <td>@Html.DisplayFor(model => habit.Name)</td>
             <td>
-                <a class="btn btn-primary" asp-page="./UpdateHabit" asp-route-id="@habit.Id">
+                <a class="btn btn-primary" asp-page="./DetailHabit" asp-route-id="@habit.Id">
                     <i class="bi bi-info-circle"></i>
                 </a>
-                <a class="btn btn-warning">
+                <a class="btn btn-warning" asp-page="./UpdateHabit" asp-route-id="@habit.Id">
                     <i class="bi bi-pencil"></i>
                 </a>
                 <a class="btn btn-danger">
@@ -34,4 +34,7 @@
         </tr>
     }
     </tbody>
+    <div class="d-flex justify-content-end">
+        <a class="btn btn-success" asp-page="./NewHabit">New habit</a>
+    </div>
 </table>

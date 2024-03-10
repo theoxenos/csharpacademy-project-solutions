@@ -1,4 +1,5 @@
 using HabitLoggerMvc.Data;
+using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +10,8 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddTransient<HabitLoggerContext>();
 
-builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddTransient<IHabitRepository, HabitRepository>();
+builder.Services.AddTransient<IRepository<Habit>, HabitRepository>();
+builder.Services.AddTransient<IRepository<HabitUnit>, HabitUnitRepository>();
 
 var app = builder.Build();
 
@@ -27,7 +28,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+// app.UseAuthorization();
 
 app.MapRazorPages();
 
