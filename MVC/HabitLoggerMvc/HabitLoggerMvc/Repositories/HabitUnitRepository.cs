@@ -30,4 +30,9 @@ public class HabitUnitRepository(HabitLoggerContext context) : IRepository<Habit
     {
         throw new NotImplementedException();
     }
+
+    public async Task<HabitUnit> GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HabitLoggerMvc.Pages;
 
-public class UpdateHabit(IHabitRepository habitRepository, IRepository<HabitUnit> habitUnitRepository) : PageModel
+public class UpdateHabit(IRepository<Habit> habitRepository, IRepository<HabitUnit> habitUnitRepository) : PageModel
 {
     [BindProperty]
     public Habit HabitModel { get; set; }
@@ -13,7 +13,7 @@ public class UpdateHabit(IHabitRepository habitRepository, IRepository<HabitUnit
     
     public async Task<IActionResult> OnGet(int id)
     {
-        HabitModel = await habitRepository.GetHabitByIdAsync(id);
+        HabitModel = await habitRepository.GetByIdAsync(id);
         var units = await habitUnitRepository.GetAll();
         HabitUnits = units.ToList();
 
