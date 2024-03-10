@@ -4,6 +4,7 @@
 <div class="row">
     <div class="col-md-4">
         <form method="post">
+            @Html.HiddenFor(habit => habit.HabitModel.Id)
             <div class="mb-3">
                 <label asp-for="HabitModel.Name" class="form-label"></label>
                 <input type="text" asp-for="HabitModel.Name" class="form-control"/>

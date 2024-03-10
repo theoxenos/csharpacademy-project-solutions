@@ -21,12 +21,12 @@ public class HabitUnitRepository(HabitLoggerContext context) : IRepository<Habit
         return await connection.QueryAsync<HabitUnit>("SELECT * FROM HabitUnits");
     }
 
-    public async Task<HabitUnit> UpdateAsync(HabitUnit model, int id)
+    public async Task<HabitUnit> UpdateAsync(HabitUnit model)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<HabitUnit> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         throw new NotImplementedException();
     }

@@ -11,7 +11,7 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IRepository<HabitUn
     public Habit HabitModel { get; set; }
     public List<HabitUnit> HabitUnits { get; set; }
     
-    public async Task<IActionResult> OnGet(int id)
+    public async Task<IActionResult> OnGetAsync(int id)
     {
         HabitModel = await habitRepository.GetByIdAsync(id);
         var units = await habitUnitRepository.GetAll();
@@ -20,14 +20,14 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IRepository<HabitUn
         return Page();
     }
 
-    public async Task<IActionResult> OnPost(int id)
+    public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
         {
             return Page();
         }
         
-        var updated = await habitRepository.UpdateAsync(HabitModel, id);
+        var updated = await habitRepository.UpdateAsync(HabitModel);
         return RedirectToPage("./Index");
     }
 }

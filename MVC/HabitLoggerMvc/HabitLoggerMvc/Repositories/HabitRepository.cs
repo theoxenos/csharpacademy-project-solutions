@@ -6,25 +6,14 @@ namespace HabitLoggerMvc.Repositories;
 
 public class HabitRepository(HabitLoggerContext context) : IRepository<Habit>
 {
-    public async Task<Habit> GetHabitByIdAsync(int id)
-    {
-        var habits = await GetAll();
-        return habits.FirstOrDefault(h => h.Id == id);
-    }
-
     public async Task<Habit> AddAsync(Habit habit)
     {
         using var connection = await context.GetConnection();
-
-        // var sql = "INSERT INTO Habits (Name, HabitUnitId)";
-        // var t = "SELECT * FROM Habits WHERE Name = @Name";
-
         var sql = """
                     INSERT INTO Habits (Name, HabitUnitId) VALUES (@Name, @HabitUnitId);
                   SELECT * FROM Habits WHERE Id = SCOPE_IDENTITY();
                   """;
-        return await connection.QueryFirstAsync<Habit>(sql, habit);
-
+        return await connection.QuerySingleAsync<Habit>(sql, habit);
     }
 
     public async Task<IEnumerable<Habit>> GetAll()
@@ -33,21 +22,27 @@ public class HabitRepository(HabitLoggerContext context) : IRepository<Habit>
         return connection.Query<Habit>($"SELECT * FROM Habits");
     }
 
-    public async Task<Habit> UpdateAsync(Habit habit, int id)
+    public async Task<Habit> UpdateAsync(Habit habit)
     {
         using var connection = await context.GetConnection();
-        await connection.ExecuteAsync($"UPDATE Habits SET Name = @Name, HabitUnitId = @HabitUnitId WHERE Id = @Id", habit);
-        
-        return await connection.QueryFirstAsync<Habit>($"SELECT * FROM Habits WHERE Id = {id}");
+        await connection.ExecuteAsync(
+            "UPDATE Habits SET Name = @Name, HabitUnitId = @HabitUnitId WHERE Id = @Id",
+            habit);
+        //new { habit.Name, habit.HabitUnitId, id});
+
+        return await connection.QuerySingleAsync<Habit>("SELECT * FROM Habits WHERE Id = @Id", habit);
     }
 
-    public Task<Habit> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        using var connection = await context.GetConnection();
+        var result = await connection.ExecuteAsync("DELETE FROM Habits WHERE Id = @Id", new { Id = id });
+        if (result != 1) throw new Exception($"Something went wrong deleting habit with Id: {id}.");
     }
 
     public async Task<Habit> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        using var connection = await context.GetConnection();
+        return await connection.QuerySingleAsync<Habit>("SELECT * FROM Habits WHERE Id=@Id", new { Id = id });
     }
 }
