@@ -1,3 +1,37 @@
 @page
 @model HabitLoggerMvc.Pages.DetailHabit
 
+<h2>Viewing logs for the habit: @Model.HabitModel.Name</h2>
+<div class="row">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                Date
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                Unit
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var log in Model.HabitLogs)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(model => log.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => log.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.HabitUnit.Name)
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
