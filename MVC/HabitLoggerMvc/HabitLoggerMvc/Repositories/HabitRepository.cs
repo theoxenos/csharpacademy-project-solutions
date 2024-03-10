@@ -28,7 +28,6 @@ public class HabitRepository(HabitLoggerContext context) : IRepository<Habit>
         await connection.ExecuteAsync(
             "UPDATE Habits SET Name = @Name, HabitUnitId = @HabitUnitId WHERE Id = @Id",
             habit);
-        //new { habit.Name, habit.HabitUnitId, id});
 
         return await connection.QuerySingleAsync<Habit>("SELECT * FROM Habits WHERE Id = @Id", habit);
     }

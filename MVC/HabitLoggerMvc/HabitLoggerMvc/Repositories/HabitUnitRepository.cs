@@ -6,12 +6,15 @@ namespace HabitLoggerMvc.Repositories;
 
 public class HabitUnitRepository(HabitLoggerContext context) : IRepository<HabitUnit>
 {
-    public async Task<HabitUnit> AddAsync(HabitUnit model)
+    public async Task<HabitUnit> AddAsync(HabitUnit habitUnit)
     {
         using var connection = await context.GetConnection();
         connection.BeginTransaction();
-        await connection.ExecuteAsync("INSERT INTO HabitUnits (Name) VALUES (@Name)", model);
-        throw new NotImplementedException();
+        var sql = """
+                  INSERT INTO HabitUnits (Name) VALUES (@Name)
+                  SELECT * FROM HabitUnits WHERE Id = SCOPE_IDENTITY();
+                  """;
+        return await connection.QuerySingleAsync<HabitUnit>(sql, habitUnit);
     }
 
     public async Task<IEnumerable<HabitUnit>> GetAll()
@@ -21,18 +24,27 @@ public class HabitUnitRepository(HabitLoggerContext context) : IRepository<Habit
         return await connection.QueryAsync<HabitUnit>("SELECT * FROM HabitUnits");
     }
 
-    public async Task<HabitUnit> UpdateAsync(HabitUnit model)
+    public async Task<HabitUnit> UpdateAsync(HabitUnit habitUnit)
     {
-        throw new NotImplementedException();
+       using var connection = await context.GetConnection();
+       var sql = """
+                 UPDATE HabitUnits SET Name = @Name WHERE Id = @Id;
+                 SELECT * FROM HabitUnits WHERE Id = @Id;
+                 """;
+
+        return await connection.QuerySingleAsync<HabitUnit>(sql, habitUnit);
     }
 
     public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        using var connection = await context.GetConnection();
+        var result = await connection.ExecuteAsync("DELETE FROM HabitUnits WHERE Id = @Id", new { Id = id });
+        if (result != 1) throw new Exception($"Something went wrong deleting habit unit with Id: {id}.");
     }
 
     public async Task<HabitUnit> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        using var connection = await context.GetConnection();
+        return await connection.QuerySingleAsync<HabitUnit>("SELECT * FROM HabitUnits WHERE Id=@Id", new { Id = id });
     }
 }
