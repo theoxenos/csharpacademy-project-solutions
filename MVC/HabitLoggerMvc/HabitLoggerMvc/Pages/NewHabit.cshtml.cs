@@ -2,6 +2,7 @@ using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.SqlClient;
 
 namespace HabitLoggerMvc.Pages;
 
@@ -24,8 +25,15 @@ public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habi
             return Page();
         }
 
-        await habitRepository.AddAsync(HabitModel);
-        
+        try
+        {
+            await habitRepository.AddAsync(HabitModel);
+        }
+        catch (SqlException e) when (e is { Number: 2627 } or { Number: 2601 })
+        {
+            ModelState.AddModelError("HabitModel.Name", "Name already exists.");
+        }
+
         return RedirectToPage("./Index");
     }
 }
