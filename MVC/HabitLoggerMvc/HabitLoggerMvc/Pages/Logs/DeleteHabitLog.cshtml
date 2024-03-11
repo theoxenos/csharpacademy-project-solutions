@@ -1,0 +1,13 @@
+@page
+@model HabitLoggerMvc.Pages.Logs.DeleteHabitLog
+
+<div class="alert alert-warning">
+    Are you sure you want to delete the log @Model.HabitLog.Date.ToShortDateString()?
+</div>
+<div class="row">
+    <form method="post">
+        @Html.HiddenFor(model => model.HabitLog.Id)
+        <button class="btn btn-danger" type="submit">Delete</button>
+        <a class="btn btn-secondary" asp-page="../DetailHabit" asp-route-id="@Model.HabitId">Cancel</a>
+    </form>
+</div>

@@ -1,0 +1,26 @@
+@page
+@model HabitLoggerMvc.Pages.Logs.AddHabitLog
+
+<h2>Add new log</h2>
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            @Html.HiddenFor(model => model.HabitLog.Id)
+            @Html.HiddenFor(model => model.HabitLog.HabitId)
+            <div class="mb-3">
+                <label asp-for="HabitLog.Date" class="form-label"></label>
+                <input type="date" asp-for="HabitLog.Date" class="form-control"/>
+                <span asp-validation-for="HabitLog.Date" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="HabitLog.Quantity" class="form-label"></label>
+                <input type="number" asp-for="HabitLog.Quantity" class="form-control"/>
+                <span asp-validation-for="HabitLog.Quantity" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-success">Add</button>
+                <a asp-page="../DetailHabit" asp-route-id="@Model.HabitLog.HabitId" class="btn btn-danger">Cancel</a>
+            </div> 
+        </form>
+    </div>
+</div>

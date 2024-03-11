@@ -34,10 +34,10 @@
                     @Html.DisplayFor(model => model.HabitUnit.Name)
                 </td>
             <td>
-                <a class="btn btn-warning" asp-page="./UpdateHabitLog" asp-route-id="@log.Id">
+                <a class="btn btn-warning" asp-page="./Logs/UpdateHabitLog" asp-route-id="@log.Id">
                     <i class="bi bi-pencil"></i>
                 </a>
-                <a class="btn btn-danger" asp-page="./DeleteHabitLog" asp-route-id="@log.Id">
+                <a class="btn btn-danger" asp-page="./Logs/DeleteHabitLog" asp-route-id="@log.Id">
                     <i class="bi bi-trash"></i>
                 </a>
             </td>
@@ -46,6 +46,6 @@
         </tbody>
     </table>
     <div class="d-flex justify-content-end">
-        <a class="btn btn-success" asp-page="./AddHabitLog" asp-route-id="@Model.HabitModel.Id">Add new log</a>
+        <a class="btn btn-success" asp-page="./Logs/AddHabitLog" asp-route-id="@Model.HabitModel.Id">Add new log</a>
     </div>
 </div>
