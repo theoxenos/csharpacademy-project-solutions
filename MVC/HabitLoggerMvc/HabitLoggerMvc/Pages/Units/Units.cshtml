@@ -1,0 +1,33 @@
+@page
+@model HabitLoggerMvc.Pages.Units.Units
+
+<div class="text-center">
+    <h2 class="display-4">Habit Units</h2>
+</div>
+<table class="table table-sm">
+    <thead>
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.HabitUnits[0].Name)</th>
+        <th>Manage</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var unit in Model.HabitUnits)
+    {
+        <tr>
+            <td>@Html.DisplayFor(model => unit.Name)</td>
+            <td>
+                <a class="btn btn-warning" asp-page="./UpdateUnit" asp-route-id="@unit.Id">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <a class="btn btn-danger" asp-page="./DeleteUnit" asp-route-id="@unit.Id">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<div class="d-flex justify-content-end">
+    <a class="btn btn-success" asp-page="./NewUnit">New habit</a>
+</div>
