@@ -28,7 +28,8 @@ public class HabitLoggerContext(IConfiguration configuration)
                   if not exists (select * from sys.tables where name = 'HabitUnits')
                       create table HabitUnits (
                           Id int identity constraint PK_HabitUnits primary key,
-                          Name nvarchar(255) not null
+                          Name nvarchar(255) not null,
+                          constraint UQ_HabitUnitName unique (Name)
                       );
                   
                   -- Habits table
@@ -37,6 +38,7 @@ public class HabitLoggerContext(IConfiguration configuration)
                           Id int identity constraint PK_Habits primary key,
                           Name nvarchar(255) not null,
                           HabitUnitId int not null,
+                          constraint UQ_HabitName unique (Name),
                           foreign key (HabitUnitId) references HabitUnits(Id)
                               on delete NO ACTION
                       );
@@ -48,6 +50,7 @@ public class HabitLoggerContext(IConfiguration configuration)
                           HabitId int,
                           Date date,
                           Quantity int,
+                          constraint UQ_LogDate unique (Date),
                           foreign key (HabitId) references Habits(Id)
                               on delete cascade
                       );
@@ -101,9 +104,9 @@ public class HabitLoggerContext(IConfiguration configuration)
 
                   -- Set flag in version table
                   INSERT INTO DataVersion (Description, AppliedOn) VALUES
-                  ('Initial seed', @Today);
+                  ('Initial seed', @Now);
                   """;
 
-        await connection.ExecuteAsync(sql, new { DateTime.Today });
+        await connection.ExecuteAsync(sql, new { DateTime.Now });
     }
 }
