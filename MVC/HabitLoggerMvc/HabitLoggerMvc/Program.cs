@@ -33,4 +33,6 @@ app.UseRouting();
 
 app.MapRazorPages();
 
+await app.Services.GetRequiredService<HabitLoggerContext>().Init();
+
 app.Run();
