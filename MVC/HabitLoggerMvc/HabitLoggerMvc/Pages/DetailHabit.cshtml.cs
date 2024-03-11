@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HabitLoggerMvc.Pages;
 
-public class DetailHabit(IRepository<Habit> habitRepository, IRepository<HabitUnit> habitUnitRepository, IHabitLogRepository habitLog) : PageModel
+public class DetailHabit(IRepository<Habit> habitRepository, IHabitUnitRepository habitUnitRepository, IHabitLogRepository habitLog) : PageModel
 {
     [BindProperty]
     public Habit HabitModel { get; set; }

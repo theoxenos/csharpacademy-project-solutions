@@ -4,12 +4,11 @@ using HabitLoggerMvc.Models;
 
 namespace HabitLoggerMvc.Repositories;
 
-public class HabitUnitRepository(HabitLoggerContext context) : IRepository<HabitUnit>
+public class HabitUnitRepository(HabitLoggerContext context) : IHabitUnitRepository
 {
     public async Task<HabitUnit> AddAsync(HabitUnit habitUnit)
     {
         using var connection = await context.GetConnection();
-        connection.BeginTransaction();
         var sql = """
                   INSERT INTO HabitUnits (Name) VALUES (@Name)
                   SELECT * FROM HabitUnits WHERE Id = SCOPE_IDENTITY();
@@ -46,5 +45,12 @@ public class HabitUnitRepository(HabitLoggerContext context) : IRepository<Habit
     {
         using var connection = await context.GetConnection();
         return await connection.QuerySingleAsync<HabitUnit>("SELECT * FROM HabitUnits WHERE Id=@Id", new { Id = id });
+    }
+
+    public async Task<bool> HabitUnitHasHabits(int id)
+    {
+        using var connection = await context.GetConnection();
+        return await connection.ExecuteScalarAsync<int>("SELECT COUNT(Id) FROM Habits WHERE HabitUnitId = @Id",
+            new { Id = id }) >= 1;
     }
 }

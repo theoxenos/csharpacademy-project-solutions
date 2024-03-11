@@ -1,22 +1,19 @@
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 
 namespace HabitLoggerMvc.Pages.Units;
 
-public class UpdateUnit(IHabitUnitRepository repository) : PageModel
+public class AddUnit(IHabitUnitRepository repository) : PageModel
 {
     [BindProperty]
-    public HabitUnit HabitUnit { get; set; }
+    public HabitUnit NewHabitUnit { get; set; }
     
-    public async Task<IActionResult> OnGetAsync(int? id)
+    public IActionResult OnGet()
     {
-        if(id is null or 0) return RedirectToPage("./Units");
-
-        HabitUnit = await repository.GetByIdAsync(id.Value);
-
         return Page();
     }
 
@@ -29,11 +26,11 @@ public class UpdateUnit(IHabitUnitRepository repository) : PageModel
 
         try
         {
-            await repository.UpdateAsync(HabitUnit);
+            await repository.AddAsync(NewHabitUnit);
         }
         catch (SqlException e) when (e is { Number: 2627 } or { Number: 2601 })
         {
-            ModelState.AddModelError("HabitUnit.Name", "Name already exists.");
+            ModelState.AddModelError("NewHabitUnit.Name", "Name already exists.");
 
             return Page();
         }

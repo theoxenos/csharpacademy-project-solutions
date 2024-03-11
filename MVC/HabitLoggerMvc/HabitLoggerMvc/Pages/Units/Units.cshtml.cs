@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HabitLoggerMvc.Pages.Units;
 
-public class Units(IRepository<HabitUnit> repository) : PageModel
+public class Units(IHabitUnitRepository repository) : PageModel
 {
     public List<HabitUnit> HabitUnits { get; set; } = default!;
     

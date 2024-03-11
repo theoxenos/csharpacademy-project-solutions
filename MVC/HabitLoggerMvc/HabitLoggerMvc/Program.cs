@@ -11,7 +11,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddTransient<HabitLoggerContext>();
 
 builder.Services.AddTransient<IRepository<Habit>, HabitRepository>();
-builder.Services.AddTransient<IRepository<HabitUnit>, HabitUnitRepository>();
+builder.Services.AddTransient<IHabitUnitRepository, HabitUnitRepository>();
 builder.Services.AddTransient<IHabitLogRepository, HabitLogRepository>();
 
 var app = builder.Build();
