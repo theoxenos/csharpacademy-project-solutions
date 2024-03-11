@@ -50,7 +50,7 @@ public class HabitLoggerContext(IConfiguration configuration)
                           HabitId int,
                           Date date,
                           Quantity int,
-                          constraint UQ_LogDate unique (Date),
+                          constraint UQ_HabitIdLogDate unique (HabitId, Date),
                           foreign key (HabitId) references Habits(Id)
                               on delete cascade
                       );

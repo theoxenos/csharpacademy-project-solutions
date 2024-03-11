@@ -35,6 +35,7 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepositor
         catch (SqlException e) when(e is {Number: 2627} or {Number: 2601})
         {
             ModelState.AddModelError("HabitModel.Name", "Name already exists.");
+            return Page();
         }
 
         return RedirectToPage("./Index");
