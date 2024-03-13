@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 using MvcMovie.Models;
@@ -8,9 +9,26 @@ namespace MvcMovie.Controllers
     public class MoviesController(MvcMovieContext context) : Controller
     {
         // GET: Movies
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string movieGenre, string searchString)
         {
-            return View(await context.Movie.ToListAsync());
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (context.Movie == null)
+            {
+                return Problem("Entity set 'MvcMovieContext.Movie'  is null.");
+            }
+
+            var movies =
+                context.Movie
+                    .Where(m => string.IsNullOrEmpty(searchString) || m.Title!.Contains(searchString))
+                    .Where(m => string.IsNullOrEmpty(movieGenre) || m.Genre!.Contains(movieGenre));
+
+            var genreViewModel = new MovieGenreViewModel()
+            {
+                Genres = new SelectList(context.Movie.Select(m => m.Genre).Distinct()),
+                Movies = await movies.ToListAsync()
+            };
+            
+            return View(genreViewModel);
         }
 
         // GET: Movies/Details/5
@@ -42,7 +60,7 @@ namespace MvcMovie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price")] Movie movie)
+        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price,Rating")] Movie movie)
         {
             if (!ModelState.IsValid) return View(movie);
             
