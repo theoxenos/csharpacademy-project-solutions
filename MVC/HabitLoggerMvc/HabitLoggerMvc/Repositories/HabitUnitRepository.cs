@@ -50,7 +50,8 @@ public class HabitUnitRepository(HabitLoggerContext context) : IHabitUnitReposit
     public async Task<bool> HabitUnitHasHabits(int id)
     {
         using var connection = await context.GetConnection();
-        return await connection.ExecuteScalarAsync<int>("SELECT COUNT(Id) FROM Habits WHERE HabitUnitId = @Id",
-            new { Id = id }) >= 1;
+        var habitCount = await connection.ExecuteScalarAsync<int>("SELECT COUNT(Id) FROM Habits WHERE HabitUnitId = @Id",
+            new { Id = id });
+        return habitCount >= 1;
     }
 }

@@ -10,6 +10,7 @@
     <div class="row">
         <form method="post">
             @Html.HiddenFor(model => model.HabitUnit.Id)
+            @Html.HiddenFor(model => model.HabitUnit.Name)
             <button class="btn btn-danger" type="submit">Delete</button>
             <a class="btn btn-secondary" asp-page="./Units">Cancel</a>
         </form>
