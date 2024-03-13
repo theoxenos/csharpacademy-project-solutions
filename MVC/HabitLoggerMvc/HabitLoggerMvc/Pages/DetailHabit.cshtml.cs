@@ -19,7 +19,7 @@ public class DetailHabit(
     public async Task<IActionResult> OnGetAsync(int id)
     {
         HabitModel = await habitRepository.GetByIdAsync(id);
-        HabitLogs = (await habitLog.GetByHabitId(id)).ToList();
+        HabitLogs = (await habitLog.GetByHabitId(id)).OrderByDescending(l => l.Date).ToList();
         HabitUnit = await habitUnitRepository.GetByIdAsync(HabitModel.HabitUnitId);
 
         return Page();

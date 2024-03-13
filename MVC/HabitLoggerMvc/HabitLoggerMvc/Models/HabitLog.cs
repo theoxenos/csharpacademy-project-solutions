@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using HabitLoggerMvc.Validators;
 
 namespace HabitLoggerMvc.Models;
 
@@ -9,5 +10,5 @@ public class HabitLog
 
     [DataType(DataType.Date)] public DateTime Date { get; set; } = DateTime.Today;
 
-    public int Quantity { get; set; }
+    [IsPositive] public int Quantity { get; set; }
 }
