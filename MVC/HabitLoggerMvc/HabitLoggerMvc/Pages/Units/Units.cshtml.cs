@@ -7,12 +7,9 @@ namespace HabitLoggerMvc.Pages.Units;
 public class Units(IHabitUnitRepository repository) : PageModel
 {
     public List<HabitUnit> HabitUnits { get; set; } = default!;
-    
+
     public async Task OnGetAsync()
     {
-        if (HabitUnits == null)
-        {
-            HabitUnits = (await repository.GetAll()).ToList();
-        }
+        if (HabitUnits == null) HabitUnits = (await repository.GetAll()).ToList();
     }
 }

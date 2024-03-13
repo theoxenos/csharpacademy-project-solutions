@@ -9,7 +9,7 @@ namespace HabitLoggerMvc.Pages.Logs;
 public class AddHabitLog(IHabitLogRepository repository) : PageModel
 {
     [BindProperty] public HabitLog HabitLog { get; set; } = new();
-    
+
     public IActionResult OnGet(int id)
     {
         HabitLog.HabitId = id;
@@ -18,10 +18,7 @@ public class AddHabitLog(IHabitLogRepository repository) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid)
-        {
-            return Page();
-        }
+        if (!ModelState.IsValid) return Page();
 
         try
         {

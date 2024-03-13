@@ -19,7 +19,7 @@ public class HabitRepository(HabitLoggerContext context) : IRepository<Habit>
     public async Task<IEnumerable<Habit>> GetAll()
     {
         using var connection = await context.GetConnection();
-        return connection.Query<Habit>($"SELECT * FROM Habits");
+        return connection.Query<Habit>("SELECT * FROM Habits");
     }
 
     public async Task<Habit> UpdateAsync(Habit habit)

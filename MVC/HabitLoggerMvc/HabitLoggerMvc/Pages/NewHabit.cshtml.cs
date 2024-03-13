@@ -10,7 +10,7 @@ public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habi
 {
     [BindProperty] public Habit HabitModel { get; set; } = new();
     public List<HabitUnit> HabitUnits { get; set; }
-    
+
     public async Task OnGet()
     {
         HabitUnits = (await habitUnitRepository.GetAll()).ToList();

@@ -7,17 +7,13 @@ namespace HabitLoggerMvc.Pages.Units;
 
 public class DeleteUnit(IHabitUnitRepository repository) : PageModel
 {
-    [BindProperty]
-    public HabitUnit HabitUnit { get; set; }
+    [BindProperty] public HabitUnit HabitUnit { get; set; }
 
     public bool CanDelete { get; set; }
-    
+
     public async Task<IActionResult> OnGetAsync(int? id)
     {
-        if (!id.HasValue)
-        {
-            return RedirectToPage("./Units");
-        }
+        if (!id.HasValue) return RedirectToPage("./Units");
 
         CanDelete = !await repository.HabitUnitHasHabits(id.Value);
         HabitUnit = await repository.GetByIdAsync(id.Value);
@@ -27,10 +23,7 @@ public class DeleteUnit(IHabitUnitRepository repository) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid)
-        {
-            return Page();
-        }
+        if (!ModelState.IsValid) return Page();
 
         await repository.DeleteAsync(HabitUnit.Id);
 

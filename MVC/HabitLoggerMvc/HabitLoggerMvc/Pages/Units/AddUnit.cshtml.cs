@@ -1,7 +1,6 @@
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 
@@ -9,9 +8,8 @@ namespace HabitLoggerMvc.Pages.Units;
 
 public class AddUnit(IHabitUnitRepository repository) : PageModel
 {
-    [BindProperty]
-    public HabitUnit NewHabitUnit { get; set; }
-    
+    [BindProperty] public HabitUnit NewHabitUnit { get; set; }
+
     public IActionResult OnGet()
     {
         return Page();
@@ -19,10 +17,7 @@ public class AddUnit(IHabitUnitRepository repository) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid)
-        {
-            return Page();
-        }
+        if (!ModelState.IsValid) return Page();
 
         try
         {

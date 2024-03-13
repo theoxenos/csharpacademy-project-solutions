@@ -25,11 +25,11 @@ public class HabitUnitRepository(HabitLoggerContext context) : IHabitUnitReposit
 
     public async Task<HabitUnit> UpdateAsync(HabitUnit habitUnit)
     {
-       using var connection = await context.GetConnection();
-       var sql = """
-                 UPDATE HabitUnits SET Name = @Name WHERE Id = @Id;
-                 SELECT * FROM HabitUnits WHERE Id = @Id;
-                 """;
+        using var connection = await context.GetConnection();
+        var sql = """
+                  UPDATE HabitUnits SET Name = @Name WHERE Id = @Id;
+                  SELECT * FROM HabitUnits WHERE Id = @Id;
+                  """;
 
         return await connection.QuerySingleAsync<HabitUnit>(sql, habitUnit);
     }
@@ -50,7 +50,8 @@ public class HabitUnitRepository(HabitLoggerContext context) : IHabitUnitReposit
     public async Task<bool> HabitUnitHasHabits(int id)
     {
         using var connection = await context.GetConnection();
-        var habitCount = await connection.ExecuteScalarAsync<int>("SELECT COUNT(Id) FROM Habits WHERE HabitUnitId = @Id",
+        var habitCount = await connection.ExecuteScalarAsync<int>(
+            "SELECT COUNT(Id) FROM Habits WHERE HabitUnitId = @Id",
             new { Id = id });
         return habitCount >= 1;
     }

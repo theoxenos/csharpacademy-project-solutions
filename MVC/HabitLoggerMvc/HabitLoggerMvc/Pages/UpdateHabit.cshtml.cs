@@ -8,10 +8,10 @@ namespace HabitLoggerMvc.Pages;
 
 public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepository habitUnitRepository) : PageModel
 {
-    [BindProperty]
-    public Habit HabitModel { get; set; }
+    [BindProperty] public Habit HabitModel { get; set; }
+
     public List<HabitUnit> HabitUnits { get; set; }
-    
+
     public async Task<IActionResult> OnGetAsync(int id)
     {
         HabitModel = await habitRepository.GetByIdAsync(id);
@@ -23,16 +23,13 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepositor
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid)
-        {
-            return Page();
-        }
+        if (!ModelState.IsValid) return Page();
 
         try
         {
             await habitRepository.UpdateAsync(HabitModel);
         }
-        catch (SqlException e) when(e is {Number: 2627} or {Number: 2601})
+        catch (SqlException e) when (e is { Number: 2627 } or { Number: 2601 })
         {
             ModelState.AddModelError("HabitModel.Name", "Name already exists.");
             return Page();

@@ -31,7 +31,7 @@ public class HabitLoggerContext(IConfiguration configuration)
                           Name nvarchar(255) not null,
                           constraint UQ_HabitUnitName unique (Name)
                       );
-                  
+
                   -- Habits table
                   if not exists (select * from sys.tables where name = 'Habits')
                       create table Habits (
@@ -42,7 +42,7 @@ public class HabitLoggerContext(IConfiguration configuration)
                           foreign key (HabitUnitId) references HabitUnits(Id)
                               on delete NO ACTION
                       );
-                  
+
                   -- Habit Logs table
                   if not exists (select * from sys.tables where name = 'HabitLogs')
                       create table HabitLogs (

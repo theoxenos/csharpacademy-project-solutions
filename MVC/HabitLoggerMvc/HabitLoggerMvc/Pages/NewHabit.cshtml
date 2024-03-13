@@ -1,5 +1,5 @@
 @page
-@model HabitLoggerMvc.Pages.NewHabit
+@model NewHabit
 <h2 class="mb-4 text-center">Add New Habit</h2>
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-4">
@@ -9,15 +9,15 @@
                 <input type="text" asp-for="HabitModel.Name" class="form-control"/>
                 <span asp-validation-for="HabitModel.Name" class="invalid-feedback d-block"></span>
             </div>
-            
+
             <div class="mb-3">
                 <label asp-for="HabitModel.HabitUnitId" class="form-label">Unit</label>
                 <select asp-for="HabitModel.HabitUnitId" asp-items="@(new SelectList(Model.HabitUnits, "Id", "Name"))" class="form-control">
-                    <option disabled="" value="0">Please select an unit</option>
+                    <option disabled value="0">Please select an unit</option>
                 </select>
                 <span asp-validation-for="HabitModel.HabitUnitId" class="invalid-feedback d-block"></span>
             </div>
-            
+
             <div class="mt-4">
                 <button class="btn btn-primary" type="submit">Add Habit</button>
                 <a class="btn btn-outline-secondary ms-2" asp-page="Index">Cancel</a>

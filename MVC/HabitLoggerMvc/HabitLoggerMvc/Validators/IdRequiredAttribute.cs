@@ -8,8 +8,10 @@ public class IdRequiredAttribute(int minValue) : ValidationAttribute
     {
         if (value is not int intValue)
             return new ValidationResult($"{validationContext.DisplayName} must be an integer.");
-        
-        return intValue > minValue ? ValidationResult.Success : new ValidationResult(GetErrorMessage(validationContext.DisplayName));
+
+        return intValue > minValue
+            ? ValidationResult.Success
+            : new ValidationResult(GetErrorMessage(validationContext.DisplayName));
     }
 
     private string GetErrorMessage(string fieldName)

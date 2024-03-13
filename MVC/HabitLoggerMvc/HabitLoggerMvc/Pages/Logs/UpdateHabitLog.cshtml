@@ -1,5 +1,5 @@
 @page
-@model HabitLoggerMvc.Pages.Logs.UpdateHabitLog
+@model UpdateHabitLog
 
 <h2 class="mb-4 text-center">Update log @Model.HabitLog.Date.ToShortDateString()</h2>
 <div class="row justify-content-center">
@@ -7,19 +7,19 @@
         <form method="post">
             @Html.HiddenFor(model => model.HabitLog.Id)
             @Html.HiddenFor(model => model.HabitLog.HabitId)
-            
+
             <div class="mb-3">
                 <label asp-for="HabitLog.Date" class="form-label"></label>
                 <input type="date" asp-for="HabitLog.Date" class="form-control"/>
                 <span asp-validation-for="HabitLog.Date" class="invalid-feedback d-block"></span>
             </div>
-            
+
             <div class="mb-3">
                 <label asp-for="HabitLog.Quantity" class="form-label"></label>
                 <input type="number" asp-for="HabitLog.Quantity" class="form-control"/>
                 <span asp-validation-for="HabitLog.Quantity" class="invalid-feedback d-block"></span>
             </div>
-            
+
             <div class="mb-3">
                 <button class="btn btn-primary" type="submit">Update</button>
                 <a asp-page="../DetailHabit" asp-route-id="@Model.HabitId" class="btn btn-outline-secondary">Cancel</a>

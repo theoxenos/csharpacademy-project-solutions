@@ -8,12 +8,11 @@ namespace HabitLoggerMvc.Pages.Units;
 
 public class UpdateUnit(IHabitUnitRepository repository) : PageModel
 {
-    [BindProperty]
-    public HabitUnit HabitUnit { get; set; }
-    
+    [BindProperty] public HabitUnit HabitUnit { get; set; }
+
     public async Task<IActionResult> OnGetAsync(int? id)
     {
-        if(id is null or 0) return RedirectToPage("./Units");
+        if (id is null or 0) return RedirectToPage("./Units");
 
         HabitUnit = await repository.GetByIdAsync(id.Value);
 
@@ -22,10 +21,7 @@ public class UpdateUnit(IHabitUnitRepository repository) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid)
-        {
-            return Page();
-        }
+        if (!ModelState.IsValid) return Page();
 
         try
         {
