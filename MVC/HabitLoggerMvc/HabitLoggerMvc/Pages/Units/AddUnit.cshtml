@@ -1,19 +1,20 @@
 @page
 @model HabitLoggerMvc.Pages.Units.AddUnit
 
-<h2>Add a new habit unit</h2>
-
-<div class="row">
-    <div class="col-md-4">
+<h2 class="mb-4 text-center">Add a new habit unit</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
         <form method="post">
+            
             <div class="mb-3">
                 <label asp-for="NewHabitUnit.Name" class="form-label"></label>
                 <input type="text" asp-for="NewHabitUnit.Name" class="form-control"/>
-                <span asp-validation-for="NewHabitUnit.Name" class="text-danger"></span>
+                <span asp-validation-for="NewHabitUnit.Name" class="invalid-feedback d-block"></span>
             </div>
-            <div class="mb-3">
-                <button class="btn btn-success" type="submit" value="Create">Add</button>
-                <a class="btn btn-danger" asp-page="./Units">Cancel</a>
+            
+            <div class="mt-4">
+                <button class="btn btn-primary" type="submit">Add Unit</button>
+                <a class="btn btn-outline-secondary" asp-page="./Units">Cancel</a>
             </div>
         </form>
     </div>

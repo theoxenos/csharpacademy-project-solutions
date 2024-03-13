@@ -4,6 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - HabitLoggerMvc</title>
+    <!-- Make sure to update Bootstrap CSS link to 5.3 if needed -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/HabitLoggerMvc.styles.css" asp-append-version="true"/>
@@ -11,7 +12,7 @@
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm mb-3">
         <div class="container">
             <a class="navbar-brand" asp-area="" asp-page="/Index">HabitLoggerMvc</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -36,12 +37,6 @@
         @RenderBody()
     </main>
 </div>
-
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2024 - HabitLoggerMvc - <a asp-area="" asp-page="/Privacy">Privacy</a>
-    </div>
-</footer>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
