@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcMovie", "MvcMovie\MvcMovie.csproj", "{F02F7026-69CF-4BBA-B4D0-0C6E9894D60C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F02F7026-69CF-4BBA-B4D0-0C6E9894D60C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F02F7026-69CF-4BBA-B4D0-0C6E9894D60C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F02F7026-69CF-4BBA-B4D0-0C6E9894D60C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F02F7026-69CF-4BBA-B4D0-0C6E9894D60C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
