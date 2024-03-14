@@ -1,21 +1,16 @@
 using System.Diagnostics;
+using IssueTracker.Data;
 using Microsoft.AspNetCore.Mvc;
 using IssueTracker.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace IssueTracker.Controllers;
 
-public class HomeController : Controller
+public class HomeController(IssueTrackerContext context) : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
     public IActionResult Index()
     {
-        return View();
+        return View(context.Issues.Include(i => i.Project).Include(i => i.Assignee));
     }
 
     public IActionResult Privacy()
