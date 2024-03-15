@@ -29,7 +29,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<IssueTrackerContext>();
-        context.Database.EnsureDeleted();
+        // context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
     }
     catch (Exception ex)

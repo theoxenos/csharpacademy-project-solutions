@@ -1,0 +1,41 @@
+@model IssueEditViewModel
+
+@{
+    ViewBag.Title = "Editing Issue";
+}
+
+<div class="row justify-content-center">
+    <div class="col-7">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="table-danger"></div>
+            @Html.HiddenFor(m => m.Issue.Id)
+            <div class="mb-3">
+                <label asp-for="Issue.Title" class="form-label"></label>
+                <input asp-for="Issue.Title" class="form-control"/>
+                <span asp-validation-for="Issue.Title" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Issue.Description" class="form-label"></label>
+                <textarea asp-for="Issue.Description" class="form-control"></textarea>
+                <span asp-validation-for="Issue.Description" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Issue.ProjectId"></label>
+                @Html.DropDownListFor(m => m.Issue.ProjectId, Model.Projects,new {Class = "form-select"})
+            </div>
+            <div class="mb-3">
+                <label asp-for="Issue.UserId" class="form-label">Assignee</label>
+                @Html.DropDownListFor(m => m.Issue.UserId, Model.Users, new {Class = "form-select"})
+                <span asp-validation-for="Issue.UserId"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Issue.Status" class="form-label"></label>
+                @Html.DropDownListFor(m => m.Issue.Status, Model.Statuses, new {Class = "form-select"} )
+            </div>
+            <div>
+                <button class="btn btn-primary" type="submit">Confirm</button>
+                <a asp-controller="Issue" asp-action="Index" asp-route-id="@Model.Issue.Id" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

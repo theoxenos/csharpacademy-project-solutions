@@ -6,6 +6,9 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
 </div>
+<div>
+    <a asp-controller="Issue" asp-action="Create" class="btn btn-success">New issue</a>
+</div>
 <div class="table-responsive">
     <table class="table">
         <thead>
@@ -20,7 +23,9 @@
         @foreach (var issue in Model)
         {
             <tr>
-                <td>@issue.Title</td>
+                <td>
+                    <a asp-controller="Issue" asp-route-id="@issue.Id">@issue.Title</a>
+                </td>
                 <td>@issue.Project.Name</td>
                 <td>@issue.Assignee.Name</td>
                 <td>@issue.Status</td>
