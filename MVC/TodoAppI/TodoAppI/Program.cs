@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Writers;
 using TodoAppI.Data;
+using TodoAppI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,29 +26,43 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 
-var summaries = new[]
+using (var scope = app.Services.CreateScope())
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    scope.ServiceProvider.GetRequiredService<TodoContext>().Database.EnsureCreated();
+}
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+var todoRoute = app.MapGroup("/todos");
+todoRoute.MapGet("", async (TodoContext context) => await context.TodoItems.ToArrayAsync() ).WithName("GetTodos").WithOpenApi();
+
+todoRoute.MapPost("", async (TodoContext context, TodoItem todoItem) =>
+{
+    if(string.IsNullOrEmpty(todoItem.Name))
+        return Results.BadRequest();
+
+    context.TodoItems.Add(todoItem);
+    await context.SaveChangesAsync();
+
+    return Results.NoContent();
+}).WithName("CreateTodo").WithOpenApi();
+
+todoRoute.MapPut("{id:int}", async (TodoContext context, int id, TodoItem item) =>
+{
+    var todoItem = await context.TodoItems.FindAsync(id);
+    if(todoItem == null)
+        return Results.NotFound();
+
+    if (!string.IsNullOrEmpty(item.Name))
+        todoItem.Name = item.Name;
+
+    if (item.Completed != null)
+        todoItem.Completed = item.Completed;
+
+    context.TodoItems.Update(todoItem);
+    await context.SaveChangesAsync();
+
+    return Results.NoContent();
+}).WithName("UpdateTodo").WithOpenApi();
+
+
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

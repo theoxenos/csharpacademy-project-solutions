@@ -3,18 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <title>TODO APPi - CSharp Academy</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
     
-    <script src="js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <script src="js/bootstrap.bundle.min.js" defer></script>
     <script src="main.js" defer></script>
 </head>
-<body>
-    <div class="container-lg">
-        <h1 class="display-4 text-center">Welcome to the todo app</h1>
+<body class="d-flex flex-column vh-100">
+<nav class="navbar navbar-expand-lg navbar-light bg-light flex-shrink-0">
+    <a class="navbar-brand" href="#">TodoApp</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <button class="nav-link" id="btnAddTodo">Add Todo</button>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/swagger">Swagger</a>
+        </li>
+    </ul>
     </div>
-    <div class="row justify-content-center">
-        
+</nav>
+<main class="container-lg flex-grow-1">
+    <div class="row">
+        <div class="col-12">
+            <!-- Todo items will go here -->
+            <ul id="todoList" class="list-group mt-3">
+                
+            </ul>
+        </div>
     </div>
+</main>
+<div class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" id="toastSuccess">
+    <div class="d-flex">
+        <div class="toast-body">
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+<div class="modal fade" id="upsertModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="upsertLabel">Upsert todo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="todoId"/>
+                    <div class="mb-3">
+                        <label for="todo-name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="todo-name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="todo-completed" class="col-form-label">Completed:</label>
+                        <input type="checkbox" class="form-check" id="todo-completed"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="upsertModalSubmit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
