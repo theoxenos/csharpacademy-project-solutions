@@ -10,31 +10,31 @@ public class TodoContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TodoItem>().HasData([
-            new()
+            new TodoItem
             {
                 Id = 1,
                 Name = "Learn C# basics",
                 Completed = true
             },
-            new()
+            new TodoItem
             {
                 Id = 2,
                 Name = "Finish C# Academy",
                 Completed = false
             },
-            new ()
+            new TodoItem
             {
                 Id = 3,
                 Name = "Get job",
                 Completed = false
             },
-            new()
+            new TodoItem
             {
                 Id = 4,
                 Name = "????",
                 Completed = true
             },
-            new()
+            new TodoItem
             {
                 Id = 5,
                 Name = "Profit",

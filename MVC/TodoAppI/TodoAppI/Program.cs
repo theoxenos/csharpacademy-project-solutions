@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Writers;
 using TodoAppI.Data;
 using TodoAppI.Models;
 
@@ -22,6 +19,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
@@ -32,11 +30,12 @@ using (var scope = app.Services.CreateScope())
 }
 
 var todoRoute = app.MapGroup("/todos");
-todoRoute.MapGet("", async (TodoContext context) => await context.TodoItems.ToArrayAsync() ).WithName("GetTodos").WithOpenApi();
+todoRoute.MapGet("", async (TodoContext context) => await context.TodoItems.ToArrayAsync()).WithName("GetTodos")
+    .WithOpenApi();
 
 todoRoute.MapPost("", async (TodoContext context, TodoItem todoItem) =>
 {
-    if(string.IsNullOrEmpty(todoItem.Name))
+    if (string.IsNullOrEmpty(todoItem.Name))
         return Results.BadRequest();
 
     context.TodoItems.Add(todoItem);
@@ -48,7 +47,7 @@ todoRoute.MapPost("", async (TodoContext context, TodoItem todoItem) =>
 todoRoute.MapPut("{id:int}", async (TodoContext context, int id, TodoItem item) =>
 {
     var todoItem = await context.TodoItems.FindAsync(id);
-    if(todoItem == null)
+    if (todoItem == null)
         return Results.NotFound();
 
     if (!string.IsNullOrEmpty(item.Name))
@@ -66,7 +65,7 @@ todoRoute.MapPut("{id:int}", async (TodoContext context, int id, TodoItem item) 
 todoRoute.MapDelete("{id:int}", async (TodoContext context, int id) =>
 {
     var todoItem = await context.TodoItems.FindAsync(id);
-    if(todoItem == null)
+    if (todoItem == null)
         return Results.NotFound();
 
     context.TodoItems.Remove(todoItem);
