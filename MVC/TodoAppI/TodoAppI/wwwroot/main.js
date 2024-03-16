@@ -25,7 +25,7 @@ const todoModule = (() => {
       upsertModalSubmit.addEventListener('click', async () => {
           const nameElement = document.querySelector('#todo-name');
           const completedElement = document.querySelector('#todo-completed');
-          const todoItemId = document.querySelector('#todoId').textContent;
+          const todoItemId = document.querySelector('#todoId').value;
 
           const method = todoItemId === '' ? 'post' : 'put';
           const init = {
@@ -33,11 +33,16 @@ const todoModule = (() => {
               headers: {
                   'Content-Type': 'application/json'
               },
-              body: JSON.stringify({id: todoItemId, name: nameElement.value, completed: completedElement.checked})
+              body: JSON.stringify({id: Number(todoItemId), name: nameElement.value, completed: completedElement.checked})
           }
           const response = await fetch(`todos/${todoItemId}`, init);
           
           if(response.status === 204) {
+              upsertModal.hide();
+              
+              await fetchTodos();
+              logTodos();
+              
               const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
               const toastBody = document.querySelector('#toastSuccess .toast-body');
               toastBody.textContent = `${nameElement.value} created`
@@ -52,17 +57,24 @@ const todoModule = (() => {
     };
 
     const logTodos = () => {
-        console.log(todos);
+        this.todoList.innerHTML = '';
+        
         todos.forEach((t) => {
            const todoNode = document.createElement('li');
-           todoNode.classList.add('list-group-item')
+           todoNode.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between');
+
+            const checkboxGroup = document.createElement('span');
            
-           const checkbox = document.createElement('input');
-           checkbox.classList.add('form-check-inline')
-           checkbox.type = 'checkbox';
-           checkbox.checked = t.completed;
+            const labelElement = document.createElement('label');
+            labelElement.classList.add('ms-2');
+            labelElement.textContent = t.name;
+                        
+           const checkboxElement = document.createElement('input');
+           checkboxElement.classList.add('form-check-input')
+           checkboxElement.type = 'checkbox';
+           checkboxElement.checked = t.completed;
            
-           checkbox.addEventListener('click', async (event) => {
+           checkboxElement.addEventListener('click', async (event) => {
                const init = { 
                    method: 'put',
                    headers: {
@@ -72,7 +84,6 @@ const todoModule = (() => {
                };
                const response = await fetch(`/todos/${t.id}`, init);
                
-               // TODO 
                if(response.status === 204) {
                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
                    const toastBody = document.querySelector('#toastSuccess .toast-body');
@@ -81,11 +92,46 @@ const todoModule = (() => {
                }
            });
            
-           todoNode.appendChild(checkbox);
-
-            const textNode = document.createTextNode(t.name);
-            todoNode.appendChild(textNode);
+           checkboxGroup.appendChild(checkboxElement);
+           checkboxGroup.appendChild(labelElement);           
+           todoNode.appendChild(checkboxGroup);
            
+            const buttonGroup = document.createElement('span');
+            const btnUpdate = document.createElement('button');
+            const btnDelete = document.createElement('button');
+
+            btnUpdate.classList.add('btn', 'btn-warning', 'bi', 'bi-pencil');
+            btnDelete.classList.add('btn', 'btn-danger',  'bi', 'bi-trash');
+            
+            btnUpdate.addEventListener('click', () =>{
+                const nameElement = document.querySelector('#todo-name');
+                const completedElement = document.querySelector('#todo-completed');
+                const todoItemIdElement = document.querySelector('#todoId');
+                
+                todoItemIdElement.value = t.id;
+                nameElement.value = t.name;
+                completedElement.checked = t.completed;
+                
+                upsertModal.show();                
+            });
+            
+            btnDelete.addEventListener('click', async () => {
+                const response = await fetch(`/todos/${t.id}`, {method: 'delete'});
+
+                if(response.status === 204) {
+                    await fetchTodos();
+                    logTodos();
+
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+                    const toastBody = document.querySelector('#toastSuccess .toast-body');
+                    toastBody.textContent = `${t.name} deleted`
+                    toastBootstrap.show();
+                }
+            });
+            
+            buttonGroup.append(btnUpdate, btnDelete);
+            todoNode.appendChild(buttonGroup);
+            
            this.todoList.appendChild(todoNode);
         });
     };

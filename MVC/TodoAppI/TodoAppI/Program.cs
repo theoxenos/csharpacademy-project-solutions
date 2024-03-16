@@ -63,6 +63,16 @@ todoRoute.MapPut("{id:int}", async (TodoContext context, int id, TodoItem item) 
     return Results.NoContent();
 }).WithName("UpdateTodo").WithOpenApi();
 
+todoRoute.MapDelete("{id:int}", async (TodoContext context, int id) =>
+{
+    var todoItem = await context.TodoItems.FindAsync(id);
+    if(todoItem == null)
+        return Results.NotFound();
 
+    context.TodoItems.Remove(todoItem);
+    await context.SaveChangesAsync();
+
+    return Results.NoContent();
+});
 
 app.Run();
