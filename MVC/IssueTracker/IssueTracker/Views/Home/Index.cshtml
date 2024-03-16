@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Issue>
+﻿@model IssueSearchViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -6,21 +6,27 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
 </div>
-<div>
-    <a asp-controller="Issue" asp-action="Create" class="btn btn-success">New issue</a>
+<div class="row justify-content-between mb-3">
+    <form asp-action="Index" class="col-9">
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.Status, Model.Statuses, new { @class = "form-select w-25" })
+            <input asp-for="SearchTerm" type="search" class="form-control w-75" />
+        </div>
+    </form>
+    <a asp-controller="Issue" asp-action="Create" class="btn btn-success col-1">New issue</a>
 </div>
 <div class="table-responsive">
     <table class="table">
         <thead>
         <tr>
-            <th>@Html.DisplayNameFor(m => m.Title)</th>
-            <th>@Html.DisplayNameFor(m => m.Project.Name)</th>
-            <th>@Html.DisplayNameFor(m => m.Assignee.Name)</th>
-            <th>@Html.DisplayNameFor(m => m.Status)</th>
+            <th>@Html.DisplayNameFor(m => m.Issues![0].Title)</th>
+            <th>@Html.DisplayNameFor(m =>  m.Issues![0].Project.Name)</th>
+            <th>@Html.DisplayNameFor(m =>  m.Issues![0].Assignee.Name)</th>
+            <th>@Html.DisplayNameFor(m => m.Issues![0].Status)</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var issue in Model)
+        @foreach (var issue in Model.Issues!)
         {
             <tr>
                 <td>
