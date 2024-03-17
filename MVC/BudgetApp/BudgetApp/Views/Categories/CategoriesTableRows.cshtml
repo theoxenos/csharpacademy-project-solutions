@@ -1,0 +1,12 @@
+@model IEnumerable<BudgetApp.Data.Category>
+
+@foreach (var category in Model)
+{
+    <tr>
+        <td>@category.Name</td>
+        <td class="text-end">
+            <btn class="btn btn-warning" data-categoryid="@category.Id">Edit</btn>
+            <btn class="btn btn-danger" data-categoryid="@category.Id">Delete</btn>
+        </td>
+    </tr>
+}

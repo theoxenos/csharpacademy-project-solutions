@@ -23,7 +23,9 @@ if (!app.Environment.IsDevelopment())
 
 using (var scope = app.Services.CreateScope())
 {
-    scope.ServiceProvider.GetRequiredService<BudgetContext>().Database.EnsureCreated();
+    var databaseFacade = scope.ServiceProvider.GetRequiredService<BudgetContext>().Database;
+    // databaseFacade.EnsureDeleted();
+    databaseFacade.EnsureCreated();
 }
 
 app.UseHttpsRedirection();
