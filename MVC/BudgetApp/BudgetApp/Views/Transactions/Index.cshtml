@@ -1,44 +1,24 @@
-@model BudgetApp.Models.Transaction[]
+@model BudgetApp.Models.TransactionIndexViewModel
 
 <h2 class="display-5 text-center">Transactions overview</h2>
 <div class="d-flex justify-content-end">
-    <button class="btn btn-success" id="btnTransactionNew">New Transaction</button>
+    <button class="btn btn-success" data-bs-target="#transactionUpsertModal" data-bs-toggle="modal">New Transaction</button>
 </div>
 <div class="table-responsive">
     <table class="table">
         <thead>
         <tr>
-            <th>@Html.DisplayNameFor(m => m[0].Date)</th>
-            <th>@Html.DisplayNameFor(m => m[0].Comment)</th>
-            <th class="text-end">@Html.DisplayNameFor(m => m[0].Amount)</th>
-            <th>@Html.DisplayNameFor(m => m[0].Category.Name)</th>
+            <th>@Html.DisplayNameFor(m => m.Transactions[0].Date)</th>
+            <th>@Html.DisplayNameFor(m => m.Transactions[0].Comment)</th>
+            <th class="text-end">@Html.DisplayNameFor(m => m.Transactions[0].Amount)</th>
+            <th>@Html.DisplayNameFor(m => m.Transactions[0].Category.Name)</th>
             <th class="text-end">Manage</th>
         </tr>
         </thead>
         <tbody id="transactionsTableRows">
-            @await Html.PartialAsync("TransactionsTableRows", Model)
+            @await Html.PartialAsync("TransactionsTableRows", Model.Transactions)
         </tbody>
     </table>
-</div>
-
-@* Upsert modal  *@
-<div class="modal fade" id="transactionUpsertModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Upsert Transaction</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="transactionUpsertModalBody">
-                <form id="frmTransactionUpsert">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="btnTransactionUpsert">Confirm</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 @* Confirmation Modal *@
@@ -50,6 +30,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                @* TODO *@
                 <input type="hidden" id="deleteTransactionId"/>
                 Are you sure you want to delete this transaction?
             </div>
@@ -61,9 +42,11 @@
     </div>
 </div>
 
+@await Html.PartialAsync("TransactionUpsertModal", Model.TransactionUpsertViewModel)
+
 @section Scripts
 {
-    @await Html.PartialAsync("_ValidationScriptsPartial");
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 
     <script>
         // Dynamic content
@@ -71,30 +54,19 @@
         
         // Table buttons
         const newTransactionButton = document.querySelector('#btnTransactionNew');
-        let editButtons = document.querySelectorAll('.edit-button');
         
         // Transaction modal elements
         const upsertModal = new bootstrap.Modal('#transactionUpsertModal');
         const submitUpsertModalButton = document.querySelector('#btnTransactionUpsert');
-        // const upsertModalBody = document.querySelector('#transactionUpsertModalBody');
         const upsertForm = document.querySelector('#frmTransactionUpsert');
-        
-        // Event handlers
-        newTransactionButton.addEventListener('click', async () => {
-            const response = await fetch('/Transactions/Create');
-            
-            if (!response.ok) {
-                throw new Error(`HTML Error: ${response.status}`);   
-            }
-            
-            upsertForm.innerHTML = await response.text();
-            upsertModal.show();
-        });
+     
+        // Confirm modal elements
+        const confirmationModal = new bootstrap.Modal('#confirmationModal');
+        const transactionDeleteIdElement = document.querySelector('#deleteTransactionId');
+        const confirmDeleteButton = document.querySelector('#btnCategoryDelete');
         
         upsertForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            
-            console.log($(upsertForm).validate());
             
             const formData = new FormData(event.target);
             const transaction = { 
@@ -104,14 +76,14 @@
                 amount: formData.get('Transaction.Amount'),
                 categoryId: formData.get('Transaction.Category.Id')
             }
-
+    
             let method = 'PUT';
             let route = `/transactions/update/${transaction.id}`;
             if (transaction.id === 0) {
                 method = 'POST';
                 route = '/transactions/create';
             }
-
+    
             const init = {
                 method, 
                 headers: {
@@ -120,14 +92,14 @@
                 body: JSON.stringify(transaction)
              }
             const response = await fetch(route, init);
-
+    
             if (response.status === 400) {
-                upsertForm.innerHTML = await response.text();
+                // upsertForm.innerHTML = await response.text();
                 return;
             } else if (!response.ok) {
                 throw new Error(`HTML Error: ${response.status}`);   
             }
-
+    
             transactionsTableRows.innerHTML = await response.text();
             upsertModal.hide();
         });
@@ -146,17 +118,43 @@
         });
         
         transactionsTableRows.addEventListener('click', async (event) => {
-            if (event.target && event.target.matches('.edit-transaction')) {
+            if (!event.target) {
+                return;
+            }
+            
+            if (event.target.matches('.edit-transaction')) {
                 const transactionId = event.target.dataset.transactionid;
                 const response = await fetch('Transactions/Detail/' + transactionId);
                 
                 if (!response.ok) {
                     throw new Error(`HTML Error: ${response.status}`);   
                 }
-
-                upsertForm.innerHTML = await response.text();
+                
+                const transaction = await response.json();
+                
+                upsertForm['Transaction.Id'].value = transaction.id;
+                upsertForm['Transaction.Date'].value = transaction.date;
+                upsertForm['Transaction.Comment'].value = transaction.comment;
+                upsertForm['Transaction.Amount'].value = transaction.amount;
+                upsertForm['Transaction.Category.Id'].value = transaction.categoryId;
+                                
                 upsertModal.show();
+            } else if (event.target.matches('.delete-transaction')) {
+                transactionDeleteIdElement.value = event.target.dataset.transactionid;
+                confirmationModal.show();
             }
-        })
+        });
+        
+        confirmDeleteButton.addEventListener('click', async () => {
+           const transactionId = Number(transactionDeleteIdElement.value);
+            const response = await fetch(`Transactions/Delete/${transactionId}`, { method: 'delete'})
+            
+            if (!response.ok) {
+                 throw new Error(`HTML Error: ${response.status}`);   
+             }
+            
+            confirmationModal.hide();
+            transactionsTableRows.innerHTML = await response.text();
+        });
     </script>
 }

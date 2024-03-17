@@ -10,23 +10,22 @@ public class TransactionsController(BudgetContext context) : Controller
 {
     public async Task<IActionResult> Index()
     {
-        return View(await context.Transactions.OrderBy(t => t.Date).Include(t => t.Category).ToArrayAsync());
-    }
-
-    public async Task<IActionResult> Create()
-    {
-        var vm = await CreateTransactionUpsertViewModel();
-
-        return PartialView("TransactionUpsertModalForm", vm);
+        var vm = new TransactionIndexViewModel
+        {
+            Transactions = await context.Transactions.OrderBy(t => t.Date).Include(t => t.Category).ToArrayAsync(),
+            TransactionUpsertViewModel = await CreateTransactionUpsertViewModel()
+        };
+        return View(vm);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Transaction transaction)
     {
+        ModelState.Remove(nameof(Transaction.Category));
+
         if (!ModelState.IsValid)
         {
-            Response.StatusCode = StatusCodes.Status400BadRequest;
-            return PartialView("TransactionUpsertModalForm", await CreateTransactionUpsertViewModel(transaction));
+            return BadRequest();
         }
         
         context.Transactions.Add(transaction);
@@ -44,7 +43,7 @@ public class TransactionsController(BudgetContext context) : Controller
             return NotFound();
         }
 
-        return PartialView("TransactionUpsertModalForm", await CreateTransactionUpsertViewModel(transaction));
+        return Ok(transaction);
     }
 
     [HttpPut]
@@ -55,10 +54,11 @@ public class TransactionsController(BudgetContext context) : Controller
             return BadRequest();
         }
 
+        ModelState.Remove(nameof(Transaction.Category));
+        
         if (!ModelState.IsValid)
         {
-            Response.StatusCode = StatusCodes.Status400BadRequest;
-            return PartialView("TransactionUpsertModalForm", await CreateTransactionUpsertViewModel(transaction));
+            return BadRequest();
         }
         
         context.Entry(transaction).State = EntityState.Modified;
@@ -77,6 +77,22 @@ public class TransactionsController(BudgetContext context) : Controller
             throw;
         }
 
+        return PartialView("TransactionsTableRows",
+            await context.Transactions.OrderBy(t => t.Date).Include(t => t.Category).ToArrayAsync());
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var transaction = await context.Transactions.FindAsync(id);
+        if (transaction == null)
+        {
+            return BadRequest();
+        }
+
+        context.Transactions.Remove(transaction);
+        await context.SaveChangesAsync();
+        
         return PartialView("TransactionsTableRows",
             await context.Transactions.OrderBy(t => t.Date).Include(t => t.Category).ToArrayAsync());
     }
