@@ -4,6 +4,16 @@
 <div class="d-flex justify-content-end">
     <button class="btn btn-success" id="btnTransactionNew">New Transaction</button>
 </div>
+<div class="mb-3 row">
+    <form id="frmSearch" class="d-flex gap-1">
+        <select asp-for="CategoryFilter" asp-items="@(new SelectList(Model.Categories, nameof(Category.Id), nameof(Category.Name), Model.CategoryFilter))" class="form-select">
+                <option value="0">All</option>
+            </select>
+            <input asp-for="DateFilter" type="date" class="form-control"/>
+            <input asp-for="TransactionFilter" type="search" class="form-control"/>
+            <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+</div>
 <div class="table-responsive">
     <table class="table">
         <thead>
@@ -169,6 +179,27 @@
             upsertForm['Transaction.CategoryId'].value = '0';
             
             upsertModal.show();
+        });
+        
+        document.querySelector('#frmSearch').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            
+            const searchVm = {
+                CategoryFilter: formData.get('CategoryFilter'),
+                DateFilter: formData.get('DateFilter'),
+                TransactionFilter: formData.get('TransactionFilter')  
+            };
+            
+            const queryString = Object.keys(searchVm).map(key => 
+                `${encodeURIComponent(key)}=${encodeURIComponent(searchVm[key])}`
+            ).join('&');
+            
+            const url = `Transactions/Filter/?${queryString}`;
+            const response = await fetch(url);
+            
+            transactionsTableRows.innerHTML = await response.text();
         });
     </script>
 }

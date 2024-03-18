@@ -13,9 +13,24 @@ public class TransactionsController(BudgetContext context) : Controller
         var vm = new TransactionIndexViewModel
         {
             Transactions = await context.Transactions.OrderBy(t => t.Date).Include(t => t.Category).ToArrayAsync(),
-            TransactionUpsertViewModel = await CreateTransactionUpsertViewModel()
+            TransactionUpsertViewModel = await CreateTransactionUpsertViewModel(),
+            Categories = await context.Categories.ToListAsync()
         };
         return View(vm);
+    }
+
+    public async Task<IActionResult> Filter(TransactionIndexViewModel indexViewModel)
+    {
+        indexViewModel.DateFilter ??= new();
+        
+        var filteredTransactions =
+            context.Transactions.Include(t => t.Category).Where(t =>
+                (string.IsNullOrEmpty(indexViewModel.TransactionFilter) || t.Comment.Contains(indexViewModel.TransactionFilter))
+                && t.Date >= indexViewModel.DateFilter 
+                && (indexViewModel.CategoryFilter == 0 || t.CategoryId == indexViewModel.CategoryFilter)
+            );
+        
+        return PartialView("TransactionsTableRows", await filteredTransactions.OrderBy(t => t.Date).ToArrayAsync());
     }
 
     [HttpPost]
