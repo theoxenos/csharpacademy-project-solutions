@@ -20,31 +20,6 @@
         </tbody>
     </table>
 </div>
-@* Edit modal  *@
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Upsert Category</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <input type="hidden" id="editCategoryId"/>
-                    <div class="mb-3">
-                        <label for="category-name" class="col-form-label">Name:</label>
-                        <input type="text" class="form-control" id="category-name">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="btnCategoryUpdate">Confirm</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @* Confirmation Modal *@
 <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -65,64 +40,70 @@
   </div>
 </div>
 
+@await Html.PartialAsync("CategoryUpsertModal", Model.First())
+
 @section Scripts
 {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
     <script>
         // Dynamic content
         const categoriesTableBody = document.querySelector('#categoriesTableBody');
 
         // Table buttons
-        const editButtons = document.querySelectorAll('td.text-end>.btn-warning');
-        const deleteButtons = document.querySelectorAll('td.text-end>.btn-danger');
         const newCategoryButton = document.querySelector('#btnCategoryNew');
 
         // Upsert modal elements
         const editModal = new bootstrap.Modal('#editModal');
-        const categoryIdElement = document.querySelector('#editCategoryId');
-        const categoryNameElement = document.querySelector('#category-name');
-        const categoryUpdateButton = document.querySelector('#btnCategoryUpdate');
+        const categoryUpsertForm = document.querySelector('#categoryUpsertForm');
+        const categoryUpsertButton = document.querySelector('#btnCategoryUpdate');
 
         // Delete modal elements
         const deleteModal = new bootstrap.Modal('#confirmationModal');
         const deleteCategoryIdElement = document.querySelector('#deleteCategoryId');
         const categoryDeleteButton = document.querySelector('#btnCategoryDelete');
 
-        // Event handling
-
-        editButtons.forEach(btn => {
-            btn.addEventListener('click', async (event) => {
-                const response = await fetch('/Categories/Detail/' + event.target.dataset.categoryid)
+        // Event handling       
+        categoriesTableBody.addEventListener('click', async (event) =>{
+            const {target} = event;
+            
+            console.log(target);
+            
+            if(!target) {
+                return;    
+            }
+            
+            if (target.matches('.edit-category')) {
+                const response = await fetch('/Categories/Detail/' + target.dataset.categoryid)
 
                  if (!response.ok) {
                      throw new Error(`HTTP error! status: ${response.status}`);
                  }
 
-                const todoItem = await response.json();
-                                
-                categoryIdElement.value = todoItem.id;
-                categoryNameElement.value = todoItem.name;
+                const category = await response.json();
+
+                categoryUpsertForm['editCategoryId'].value = category.id;
+                categoryUpsertForm['Name'].value = category.name;
                 
-                editModal.show();
-            });    
-        });
-                
-        deleteButtons.forEach(btn => {
-                btn.addEventListener('click', (event) =>{
-                    deleteCategoryIdElement.value = event.target.dataset.categoryid;
-                    
-                    deleteModal.show();
-                });
+                editModal.show();    
+            } else if (target.matches('.delete-category')) {
+                 categoryUpsertForm['editCategoryId'].value = target.dataset.categoryid;
+
+                deleteModal.show();
+            }
         });
         
         newCategoryButton.addEventListener('click', () => {
-            categoryIdElement.value = '';
-            categoryNameElement.value = '';
-            
+            categoryUpsertForm['editCategoryId'].value = '';
+            categoryUpsertForm['Name'].value = '';
+
             editModal.show();
         });
         
-        categoryUpdateButton.addEventListener('click', async () => {
-            const todo = { id: Number(categoryIdElement.value), name: categoryNameElement.value };
+        categoryUpsertForm.addEventListener('submit', async (evt) => {
+            evt.preventDefault();
+
+            const todo = { id: Number(categoryUpsertForm['editCategoryId'].value), name: categoryUpsertForm['Name'].value };
             const route = todo.id === 0
                 ? 'Categories/Create'
                 : `/Categories/Update/${todo.id}`;
@@ -141,7 +122,20 @@
              }
             
             editModal.hide();
-            categoriesTableBody.innerHTML = await response.text();             
+            categoriesTableBody.innerHTML = await response.text();
+        });
+        
+        categoryUpsertButton.addEventListener('click', () => {
+            // Create a new 'submit' event
+            let event = new Event('submit', {
+                bubbles: true, // Event will bubble up through the DOM
+                cancelable: true // Event can be canceled
+            });
+        
+            // Dispatch it on the form
+            if (categoryUpsertForm.dispatchEvent(event)) {
+                editModal.hide(); // Hide the modal only if the event wasn't canceled
+            }
         });
         
         categoryDeleteButton.addEventListener('click', async () => {

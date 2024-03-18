@@ -37,6 +37,11 @@ public class CategoriesController(BudgetContext context) : Controller
             return BadRequest();
         }
         
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+        
         context.Entry(category).State = EntityState.Modified;
         
         try
@@ -60,6 +65,11 @@ public class CategoriesController(BudgetContext context) : Controller
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Category category)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+        
         context.Categories.Add(category);
         await context.SaveChangesAsync();
         
