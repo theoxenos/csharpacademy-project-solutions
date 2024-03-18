@@ -47,7 +47,7 @@
 @section Scripts
 {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-
+    <script src="js/resetForm.js"></script>
     <script>
         // Dynamic content
         const transactionsTableRows = document.querySelector('#transactionsTableRows');
@@ -123,6 +123,8 @@
             }
             
             if (event.target.matches('.edit-transaction')) {
+                resetFormValidation(upsertForm);
+                
                 const transactionId = event.target.dataset.transactionid;
                 const response = await fetch('Transactions/Detail/' + transactionId);
                 
@@ -158,6 +160,8 @@
         });
         
         newTransactionButton.addEventListener('click', () =>{
+            resetFormValidation(upsertForm);
+            
             upsertForm['Transaction.Id'].value = '';
             upsertForm['Transaction.Date'].value = '';
             upsertForm['Transaction.Comment'].value = '';

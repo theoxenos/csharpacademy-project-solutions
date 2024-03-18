@@ -45,7 +45,7 @@
 @section Scripts
 {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-
+    <script src="js/resetForm.js"></script>
     <script>
         // Dynamic content
         const categoriesTableBody = document.querySelector('#categoriesTableBody');
@@ -74,6 +74,8 @@
             }
             
             if (target.matches('.edit-category')) {
+                resetFormValidation(categoryUpsertForm);
+                
                 const response = await fetch('/Categories/Detail/' + target.dataset.categoryid)
 
                  if (!response.ok) {
@@ -94,6 +96,7 @@
         });
         
         newCategoryButton.addEventListener('click', () => {
+            resetFormValidation(categoryUpsertForm);
             categoryUpsertForm['editCategoryId'].value = '';
             categoryUpsertForm['Name'].value = '';
 
@@ -148,6 +151,5 @@
                  deleteModal.hide();
                  categoriesTableBody.innerHTML = await response.text();
         });
-        
     </script>
 }
