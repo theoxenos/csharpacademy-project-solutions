@@ -28,7 +28,10 @@
                     </div>
                     <div class="mb-3">
                         <label asp-for="Transaction.CategoryId" class="form-label">Category</label>
-                        @Html.DropDownListFor(m => m.Transaction.Category.Id, Model.Categories, new { Class = "form-select"})
+                        @* @Html.DropDownListFor(m => m.Transaction.Category.Id, Model.Categories, new { Class = "form-select"}) *@
+                        <select asp-for="Transaction.CategoryId" asp-items="Model.Categories" class="form-control">
+                            <option value="0" disabled>Please select a category</option>
+                        </select>
                         <span asp-validation-for="Transaction.CategoryId" class="text-danger"></span>
                     </div>
                 </form>

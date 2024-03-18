@@ -2,7 +2,7 @@
 
 <h2 class="display-5 text-center">Transactions overview</h2>
 <div class="d-flex justify-content-end">
-    <button class="btn btn-success" data-bs-target="#transactionUpsertModal" data-bs-toggle="modal">New Transaction</button>
+    <button class="btn btn-success" id="btnTransactionNew">New Transaction</button>
 </div>
 <div class="table-responsive">
     <table class="table">
@@ -155,6 +155,16 @@
             
             confirmationModal.hide();
             transactionsTableRows.innerHTML = await response.text();
+        });
+        
+        newTransactionButton.addEventListener('click', () =>{
+            upsertForm['Transaction.Id'].value = '';
+            upsertForm['Transaction.Date'].value = '';
+            upsertForm['Transaction.Comment'].value = '';
+            upsertForm['Transaction.Amount'].value = '';
+            upsertForm['Transaction.CategoryId'].value = '0';
+            
+            upsertModal.show();
         });
     </script>
 }
