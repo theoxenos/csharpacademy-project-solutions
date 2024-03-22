@@ -16,9 +16,31 @@ public class HabitLoggerContext(IConfiguration configuration)
 
     public async Task Init()
     {
-        // TODO Init DB?
+        await CreateDatabase();
         await CreateTables();
         await SeedData();
+    }
+
+    private async Task CreateDatabase()
+    {
+        try
+        {
+            var conStringBuilder = new SqlConnectionStringBuilder(configuration.GetConnectionString("DefaultConnection"));
+            var dbName = conStringBuilder.InitialCatalog;
+
+            conStringBuilder.InitialCatalog = "master";
+            var systemConnectionString = conStringBuilder.ConnectionString;
+
+            using var tempConnection = new SqlConnection(systemConnectionString);
+            await tempConnection.ExecuteAsync($"""
+                                               if not exists(select * from sys.databases where name = N'{dbName}')
+                                                create database [{dbName}]
+                                               """);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error occured during database creation: {e.Message}");
+        }
     }
 
     private async Task CreateTables()
