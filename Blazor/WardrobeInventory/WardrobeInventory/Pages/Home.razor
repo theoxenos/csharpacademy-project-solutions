@@ -1,7 +1,72 @@
 ﻿@page "/"
+@using WardrobeInventory.Models
+@using WardrobeInventory.Services
+
+@inject ImageService ImageService
+@inject WardrobeService WardrobeService
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<button class="btn btn-primary" data-bs-target="#wardrobeUpsertModal" data-bs-toggle="modal">Add</button>
+<button class="btn btn-primary" @onclick="Callback">Add2</button>
+<button class="btn btn-primary" data-bs-target="#wardrobeUpsertModal" data-bs-toggle="modal" @onclick="ModalShow">Add3</button>
 
-Welcome to your new app.
+<div class="container-lg">
+    <div class="g-3 row row-cols-4">
+        @if (items == null || items.Count == 0)
+        {
+            <p>No items found</p>
+        }
+        else
+        {
+            foreach (var wardrobeItem in items)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <img class="card-img-top" src="@ImageService.GetImageUrl(wardrobeItem.ImageData)"/>
+                        <div class="card-body border-top bg-light">
+                            <h5 class="card-title">@wardrobeItem.Name</h5>
+                            <p class="card-text">@wardrobeItem.Brand</p>
+                        </div>
+                        <div class="card-footer text-end">
+                            <button class="btn btn-warning" data-bs-target="#wardrobeUpsertModal" data-bs-toggle="modal" @onclick="() => id = wardrobeItem.Id">Edit</button>
+                            <button class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<WardrobeUpsert Id="id"/>
+
+@code
+{
+    private int? id;
+    private List<WardrobeItem> items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await WardrobeService.GetAllAsync();
+    }
+
+    private async Task Callback()
+    {
+        var item = new WardrobeItem
+        {
+            Name = "test123",
+            Brand = "asf",
+            Category = Category.Dress,
+            ImageData = [12],
+            Size = Size.S
+        };
+
+        await WardrobeService.AddItemAsync(item);
+    }
+
+    private async Task ModalShow()
+    {
+        id = (await WardrobeService.GetAllAsync()).FirstOrDefault()?.Id;
+    }
+}
