@@ -23,13 +23,21 @@ public class WardrobeService(ISqliteWasmDbContextFactory<WardrobeContext> contex
     public async Task<WardrobeItem> GetItemByIdAsync(int id)
     {
         using var context = await contextFactory.CreateDbContextAsync();
-        return await context.WardrobeItems.FirstAsync(i => i.Id == id);
+        return await context.WardrobeItems.FirstOrDefaultAsync(i => i.Id == id);
     }
 
     public async Task UpdateItemAsync(WardrobeItem wardrobeItem)
     {
         await using var context = await contextFactory.CreateDbContextAsync();
         context.WardrobeItems.Update(wardrobeItem);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task DeleteItem(int id)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        var item = await context.WardrobeItems.FindAsync(id);
+        context.WardrobeItems.Remove(item);
         await context.SaveChangesAsync();
     }
 }

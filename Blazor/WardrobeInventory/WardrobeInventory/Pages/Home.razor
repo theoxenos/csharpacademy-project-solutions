@@ -7,11 +7,11 @@
 
 <PageTitle>Home</PageTitle>
 
-<button class="btn btn-primary" data-bs-target="#wardrobeUpsertModal" data-bs-toggle="modal">Add</button>
-<button class="btn btn-primary" @onclick="Callback">Add2</button>
-<button class="btn btn-primary" data-bs-target="#wardrobeUpsertModal" data-bs-toggle="modal" @onclick="ModalShow">Add3</button>
-
+<h1 class="display-4 text-center">Wardrobe Inventory</h1>
 <div class="container-lg">
+    <div class="text-center mb-3">
+        <button class="btn btn-success"  data-bs-target="#wardrobeUpsertModal" data-bs-toggle="modal" @onclick="() => wardrobeItemId = null">New Item</button>
+    </div>
     <div class="g-3 row row-cols-4">
         @if (items == null || items.Count == 0)
         {
@@ -23,14 +23,14 @@
             {
                 <div class="col">
                     <div class="card h-100">
-                        <img class="card-img-top" src="@ImageService.GetImageUrl(wardrobeItem.ImageData)"/>
+                        <img class="card-img-top" src="@ImageService.GetImageUrl(wardrobeItem.ImageData)" alt="Photo of @wardrobeItem.Name"/>
                         <div class="card-body border-top bg-light">
                             <h5 class="card-title">@wardrobeItem.Name</h5>
                             <p class="card-text">@wardrobeItem.Brand</p>
                         </div>
                         <div class="card-footer text-end">
-                            <button class="btn btn-warning" data-bs-target="#wardrobeUpsertModal" data-bs-toggle="modal" @onclick="() => id = wardrobeItem.Id">Edit</button>
-                            <button class="btn btn-danger">Delete</button>
+                            <button class="btn btn-warning" data-bs-target="#wardrobeUpsertModal" data-bs-toggle="modal" @onclick="() => wardrobeItemId = wardrobeItem.Id">Edit</button>
+                            <button class="btn btn-danger" data-bs-target="#wardrobeDeleteModal" data-bs-toggle="modal" @onclick="() => wardrobeItemId = wardrobeItem.Id">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -39,39 +39,22 @@
     </div>
 </div>
 
-<WardrobeUpsert FormSubmitted="FormSubmitted" Id="id" />
+<WardrobeUpsert FormSubmitted="RefreshItemList" WardrobeId="wardrobeItemId" />
+<WardrobeDeleteModal ItemDeleted="RefreshItemList" WardrobeId="wardrobeItemId"/>
 
 @code
 {
-    private int? id;
-    private List<WardrobeItem> items;
+    private int? wardrobeItemId;
+    private List<WardrobeItem>? items;
 
     protected override async Task OnInitializedAsync()
     {
         items = await WardrobeService.GetAllAsync();
     }
 
-    private async Task Callback()
+    private async Task RefreshItemList()
     {
-        var item = new WardrobeItem
-        {
-            Name = "test123",
-            Brand = "asf",
-            Category = Category.Dress,
-            ImageData = [12],
-            Size = Size.S
-        };
-
-        await WardrobeService.AddItemAsync(item);
-    }
-
-    private async Task ModalShow()
-    {
-        id = (await WardrobeService.GetAllAsync()).FirstOrDefault()?.Id;
-    }
-
-    private async Task FormSubmitted()
-    {
+        wardrobeItemId = null;
         items = await WardrobeService.GetAllAsync();
         StateHasChanged();
     }

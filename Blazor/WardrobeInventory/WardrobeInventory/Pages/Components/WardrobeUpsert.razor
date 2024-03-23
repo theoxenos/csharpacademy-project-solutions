@@ -48,7 +48,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Send message</button>
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
         </div>
       </EditForm>
     </div>
@@ -57,7 +57,7 @@
 
 
 @code {
-  [Parameter] public int? Id { get; set; }
+  [Parameter] public int? WardrobeId { get; set; }
   [Parameter] public Func<Task>? FormSubmitted { get; set; }
 
   private IBrowserFile? image;
@@ -65,9 +65,9 @@
 
   protected override async Task OnParametersSetAsync()
   {
-    if (Id.HasValue)
+    if (WardrobeId.HasValue)
     {
-      wardrobeItem = await WardrobeService.GetItemByIdAsync(Id.Value);
+      wardrobeItem = await WardrobeService.GetItemByIdAsync(WardrobeId.Value);
     }
     else
     {
@@ -87,7 +87,7 @@
     if(image != null)
       wardrobeItem.ImageData = await ImageService.ConvertImageToBytes(image);
 
-    if (!Id.HasValue)
+    if (!WardrobeId.HasValue)
     {
       await WardrobeService.AddItemAsync(wardrobeItem);
     }
