@@ -14,7 +14,7 @@ public class WardrobeService(ISqliteWasmDbContextFactory<WardrobeContext> contex
         await context.SaveChangesAsync();
     }
 
-    public async Task<List<WardrobeItem?>> GetAllAsync()
+    public async Task<List<WardrobeItem>> GetAllAsync()
     {
         using var context = await contextFactory.CreateDbContextAsync();
         return await context.WardrobeItems.ToListAsync();
@@ -28,6 +28,8 @@ public class WardrobeService(ISqliteWasmDbContextFactory<WardrobeContext> contex
 
     public async Task UpdateItemAsync(WardrobeItem wardrobeItem)
     {
-        throw new NotImplementedException();
+        await using var context = await contextFactory.CreateDbContextAsync();
+        context.WardrobeItems.Update(wardrobeItem);
+        await context.SaveChangesAsync();
     }
 }

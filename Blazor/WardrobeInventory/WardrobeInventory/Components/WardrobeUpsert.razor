@@ -58,6 +58,7 @@
 
 @code {
   [Parameter] public int? Id { get; set; }
+  [Parameter] public Func<Task>? FormSubmitted { get; set; }
 
   private IBrowserFile? image;
   private WardrobeItem wardrobeItem;
@@ -94,6 +95,8 @@
     {
       await WardrobeService.UpdateItemAsync(wardrobeItem);
     }
+
+    FormSubmitted?.Invoke();
   }
 
 }

@@ -39,7 +39,7 @@
     </div>
 </div>
 
-<WardrobeUpsert Id="id"/>
+<WardrobeUpsert FormSubmitted="FormSubmitted" Id="id" />
 
 @code
 {
@@ -68,5 +68,11 @@
     private async Task ModalShow()
     {
         id = (await WardrobeService.GetAllAsync()).FirstOrDefault()?.Id;
+    }
+
+    private async Task FormSubmitted()
+    {
+        items = await WardrobeService.GetAllAsync();
+        StateHasChanged();
     }
 }
