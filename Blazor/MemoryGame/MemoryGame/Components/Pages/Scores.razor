@@ -1,0 +1,54 @@
+@page "/records"
+@rendermode @(new InteractiveServerRenderMode(false))
+
+@using MemoryGame.Services
+@using MemoryGame.Models
+
+@inject LocalStorageService Service
+
+<div class="mb-3">
+    <h1 class="display-4 text-center">Your record times</h1>
+    <p class="text-center">Here you can see your previous records</p>
+</div>
+
+@if (gameScores.Count == 0)
+{
+    <div class="alert alert-warning">
+        <p>No previous games found. Go play some!</p>
+    </div>
+}
+else
+{
+    <div class="row justify-content-center">
+        <div class="col col-5">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Record</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var score in gameScores)
+                {
+                    <tr>
+                        <td>@score.Date.ToString("G")</td>
+                        <td>@(TimeSpan.FromTicks(score.GameTicks).ToString(@"mm\:ss"))</td>
+                    </tr>   
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code
+{
+    List<Score> gameScores = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        gameScores = await Service.GetItemAsync<List<Score>>("scores") ?? [];
+        gameScores.Sort((score, score1) => score.GameTicks.CompareTo(score1.GameTicks));
+    }
+}
