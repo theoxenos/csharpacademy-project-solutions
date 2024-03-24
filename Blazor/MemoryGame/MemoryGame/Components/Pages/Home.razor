@@ -1,9 +1,8 @@
 ﻿@page "/"
-@rendermode @(new InteractiveServerRenderMode(false))
-
 @using MemoryGame.Models
-@using System.Timers
 @using MemoryGame.Services
+@using System.Timers
+@rendermode @(new InteractiveServerRenderMode(false))
 
 @inject LocalStorageService Service
 
@@ -32,11 +31,11 @@
 
 @code
 {
-    Card[] cards = new Card[12];
-    Random rng = new Random();
-    List<Card> activeCards = new();
-    Timer cardTimer = new (TimeSpan.FromSeconds(2));
-    Timer gameTimer = new(1_000);
+    readonly Card[] cards = new Card[12];
+    readonly Random rng = new();
+    readonly List<Card> activeCards = new();
+    readonly Timer cardTimer = new(TimeSpan.FromSeconds(2));
+    readonly Timer gameTimer = new(1_000);
     TimeSpan gameTime;
     bool gameRunning;
 
@@ -52,14 +51,14 @@
 
     private void InitGame()
     {
-        gameTime = new();
-        
-        for (int i = 1; i <= 12; i++)
+        gameTime = new TimeSpan();
+
+        for (var i = 1; i <= 12; i++)
         {
-            cards[i-1]= new()
+            cards[i - 1] = new Card
             {
                 Id = i,
-                Image = $"planet0{ i % 6}.png"
+                Image = $"planet0{i % 6}.png"
             };
         }
 
@@ -85,9 +84,9 @@
 
     private async Task HandleCardClick(Card card)
     {
-        if(card.IsMatched || card.IsVisible || !gameRunning)
+        if (card.IsMatched || card.IsVisible || !gameRunning)
             return;
-        
+
         if (activeCards.Count == 0)
         {
             activeCards.Add(card);
@@ -120,15 +119,15 @@
             ResetActiveCards();
             activeCards.Add(card);
         }
-        
+
         card.IsVisible = true;
     }
 
     private async Task GameOver()
     {
         StopGame();
-        List<Score> gameScores = await Service.GetItemAsync<List<Score>>("scores") ?? [];
-        gameScores.Add(new Score()
+        var gameScores = await Service.GetItemAsync<List<Score>>("scores") ?? [];
+        gameScores.Add(new Score
         {
             Date = DateTime.Now,
             GameTicks = gameTime.Ticks
@@ -149,11 +148,11 @@
 
     private void StartGame()
     {
-        if(gameRunning)
+        if (gameRunning)
             return;
-        
+
         InitGame();
-        
+
         gameTimer.Start();
         gameRunning = true;
     }

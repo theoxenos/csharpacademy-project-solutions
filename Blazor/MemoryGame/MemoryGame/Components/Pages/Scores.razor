@@ -1,8 +1,7 @@
 @page "/records"
-@rendermode @(new InteractiveServerRenderMode(false))
-
-@using MemoryGame.Services
 @using MemoryGame.Models
+@using MemoryGame.Services
+@rendermode @(new InteractiveServerRenderMode(false))
 
 @inject LocalStorageService Service
 
@@ -34,7 +33,7 @@ else
                     <tr>
                         <td>@score.Date.ToString("G")</td>
                         <td>@(TimeSpan.FromTicks(score.GameTicks).ToString(@"mm\:ss"))</td>
-                    </tr>   
+                    </tr>
                 }
                 </tbody>
             </table>
