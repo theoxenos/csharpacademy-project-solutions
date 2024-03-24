@@ -1,7 +1,100 @@
 ﻿@page "/"
+@using MemoryGame.Models
+@using System.Timers
+
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container-lg">
+    <div class="gap-2 justify-content-center row row-cols-5 mb-3">
+        @foreach (var card in cards)
+        {
+            <div class="col border border-dark rounded-3 p-0">
+                <img class="card-img-top rounded-3" src="@(card.IsVisible ? card.Image : "background.webp")" @onclick="() => HandleCardClick(card)"/>
+            </div>
+        }
+    </div>
+</div>
 
-Welcome to your new app.
+@code
+{
+    Card[] cards = new Card[12];
+    Random rng = new Random();
+    List<Card> activeCards = new();
+    Timer cardTimer = new (TimeSpan.FromSeconds(2));
+
+    protected override void OnInitialized()
+    {
+        for (int i = 1; i <= 12; i++)
+        {
+            cards[i-1]= new()
+            {
+                Id = i,
+                Image = $"planet0{ i % 6}.png"
+            };
+        }
+
+        rng.Shuffle(cards);
+        
+        cardTimer.Elapsed += CardTimerOnElapsed;
+        cardTimer.AutoReset = false;
+    }
+
+    private void ResetActiveCards()
+    {
+        foreach (var card in activeCards)
+        {
+            card.IsVisible = false;
+        }
+
+        activeCards.Clear();
+        StateHasChanged();
+    }
+
+    private void HandleCardClick(Card card)
+    {
+        if(card.IsMatched || card.IsVisible)
+            return;
+        
+        if (activeCards.Count == 0)
+        {
+            activeCards.Add(card);
+        }
+        else if (activeCards.Count == 1)
+        {
+            if (activeCards[0].Image.Equals(card.Image) && activeCards[0].Id != card.Id)
+            {
+                activeCards[0].IsMatched = true;
+                card.IsMatched = true;
+                activeCards.Clear();
+            }
+            else
+            {
+                activeCards.Add(card);
+                cardTimer.Start();
+            }
+        }
+        else if (activeCards.Count == 2)
+        {
+            if (!activeCards.TrueForAll(c => c.Id != card.Id))
+                return;
+
+            cardTimer.Stop();
+            ResetActiveCards();
+            activeCards.Add(card);
+        }
+        
+        card.IsVisible = true;
+    }
+    
+    private void CardTimerOnElapsed(object? sender, ElapsedEventArgs e)
+    {
+        // Use InvokeAsync to switch execution back to the dispatcher thread
+        InvokeAsync(() =>
+        {
+            ResetActiveCards();
+            StateHasChanged();
+        });
+    }
+}
