@@ -3,6 +3,7 @@
 
 @inject ImageService ImageService
 @inject WardrobeService WardrobeService
+@inject IJSRuntime JsRuntime
 
 <div class="modal fade" id="wardrobeUpsertModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -12,14 +13,17 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <EditForm Model="wardrobeItem" OnValidSubmit="HandleFormSubmit">
+        <DataAnnotationsValidator/>
         <div class="modal-body">
           <div class="mb-3">
             <label for="ItemName" class="col-form-label">Name:</label>
             <InputText @bind-Value="wardrobeItem.Name" id="ItemName" class="form-control"/>
+            <ValidationMessage For="() => wardrobeItem.Name"/>
           </div>
           <div class="mb-3">
             <label for="ItemBrand" class="col-form-label">Brand:</label>
             <InputText @bind-Value="wardrobeItem.Brand" id="ItemBrand" class="form-control"/>
+            <ValidationMessage For="() => wardrobeItem.Brand"/>
           </div>
           <div class="mb-3">
             <label for="ItemCategory" class="col-form-label">Category:</label>
@@ -48,7 +52,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
         </div>
       </EditForm>
     </div>
@@ -95,6 +99,8 @@
     {
       await WardrobeService.UpdateItemAsync(wardrobeItem);
     }
+
+    await JsRuntime.InvokeVoidAsync("window.closeBootstrapModal", "wardrobeUpsertModal");
 
     FormSubmitted?.Invoke();
   }
