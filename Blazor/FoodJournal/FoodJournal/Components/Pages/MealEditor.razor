@@ -1,0 +1,52 @@
+@page "/meals/editor"
+@using FoodJournal.Models
+<h3>MealEditor</h3>
+
+<div class="container-lg vh-100 d-flex flex-column">
+    <div class="row">
+        <div class="">
+            <div class="col-5 mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input id="name" class="form-control"/>
+            </div>
+            <div class="col-5 mb-3">
+                <label for="date" class="form-label">Date</label>
+                <input id="date" class="form-control" type="datetime-local"/>
+            </div>
+            <div class="mb-3">
+                <fieldset>
+                    <legend>Select a meal-type:</legend>
+                    <span>
+                        <input type="radio" id="breakfast" name="meal-type"/>
+                        <label for="breakfast"><img alt="Breakfast" src="images/icons/icons8-breakfast-96.png"/></label>
+                    </span>
+                    <span>
+                        <input type="radio" id="lunch" name="meal-type"/>
+                        <label for="lunch"><img alt="Lunch" src="images/icons/icons8-lunch-96.png"/></label>
+                    </span>
+                    <span>
+                        <input type="radio" id="dinner" name="meal-type"/>
+                        <label for="dinner"><img alt="Dinner" src="images/icons/icons8-dinner-96.png"/></label>
+                    </span>
+                    <span>
+                        <input type="radio" id="snack" name="meal-type"/>
+                        <label for="snack"><img alt="Snack" src="images/icons/icons8-deliver-food-96.png"/></label>
+                    </span>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    
+    <div class="gap-5 row flex-grow-1">
+        <div class="col-5 bg-light">
+            
+        </div>
+        <div class="col-5 bg-light">
+            
+        </div>
+    </div>
+</div>
+
+@code {
+    
+}
