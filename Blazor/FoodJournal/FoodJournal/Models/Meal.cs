@@ -9,6 +9,7 @@ public class Meal
     public string Name { get; set; } = default!;
     public MealType MealType { get; set; }
     public List<Food> Foods { get; set; } = default!;
+    public DateTime Date { get; set; }
 }
 
 public enum MealType
