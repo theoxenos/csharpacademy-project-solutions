@@ -1,5 +1,6 @@
 using FoodJournal.Components;
 using FoodJournal.Data;
+using FoodJournal.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,9 @@ builder.Services.AddDbContext<FoodJournalContext>(opt =>
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<FoodService>();
+builder.Services.AddScoped<MealService>();
 
 var app = builder.Build();
 
