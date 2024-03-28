@@ -1,7 +1,53 @@
 ﻿@page "/"
 
+@inject MealService MealService
+
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container-lg">
+    <div class="mt-3 row row-cols-2">
+        <div class="col">
+            <ul class="list-group user-select-none">
+                @foreach (var meal in meals)
+                {
+                    <li class="list-group-item @GetItemClass(meal.Id)" @onclick="() => selectedMeal = meal">
+                        <img src="images/icons/icons8-@meal.MealType.ToString().ToLower()-48.png" alt="@meal.Name"/>
+                        @($"{meal.Date:d} {meal.Name}")
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col">
+            @if (selectedMeal != null)
+            {
+                <div class="row row-cols-5 bg-light">
+                    @foreach (var food in selectedMeal.Foods)
+                    {
+                        <div class="col  text-center">
+                            <img alt="@food.Name" src="images/icons/@food.Icon" class="food-icon"/>
+                            <span class="text-muted">@food.Name</span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
 
-Welcome to your new app.
+@code
+{
+    List<Meal> meals = [];
+    Meal? selectedMeal;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        meals = await MealService.GetAllAsync();
+        //TODO 
+        selectedMeal = meals[0];
+    }
+    
+    private string GetItemClass(int mealId)
+    {
+        return selectedMeal?.Id == mealId ? "active" : "";
+    }
+}

@@ -1,5 +1,6 @@
 using FoodJournal.Data;
 using FoodJournal.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodJournal.Services;
 
@@ -9,5 +10,10 @@ public class MealService(FoodJournalContext context)
     {
         context.Meals.Add(meal);
         await context.SaveChangesAsync();
+    }
+
+    public Task<List<Meal>> GetAllAsync()
+    {
+        return context.Meals.Include(m => m.Foods).ToListAsync();
     }
 }
