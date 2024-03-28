@@ -14,7 +14,7 @@ public class MealService(FoodJournalContext context)
 
     public Task<List<Meal>> GetAllAsync()
     {
-        return context.Meals.Include(m => m.Foods).ToListAsync();
+        return context.Meals.OrderByDescending(m => m.Date).Include(m => m.Foods).ToListAsync();
     }
 
     public Task<List<Meal>> GetMealsBasedOnSearchAsync(MealSearchViewModel searchVm)
@@ -37,7 +37,7 @@ public class MealService(FoodJournalContext context)
             query = query.Where(m => m.Date == searchVm.Date);
         }
 
-        return query.Include(m => m.Foods).ToListAsync();
+        return query.OrderByDescending(m => m.Date).Include(m => m.Foods).ToListAsync();
         //
         // return context.Meals.Include(m => m.Foods)
         //     .Where(m => 
