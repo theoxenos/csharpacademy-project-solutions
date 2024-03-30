@@ -1,0 +1,16 @@
+@page "/report"
+
+@inject ReportService ReportService
+
+<button class="btn btn-success" @onclick="Callback">test</button>
+
+@code {
+
+    private void Callback()
+    {
+        var start = new DateTime(2024, 03, 01);
+        var end = new DateTime(2024, 03, 31);
+        ReportService.CreateReport(start, end);
+    }
+
+}

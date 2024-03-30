@@ -14,6 +14,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<FoodService>();
 builder.Services.AddScoped<MealService>();
+builder.Services.AddScoped<ReportService>();
 
 var app = builder.Build();
 
