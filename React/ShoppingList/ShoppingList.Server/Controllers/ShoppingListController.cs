@@ -1,0 +1,33 @@
+using Microsoft.AspNetCore.Mvc;
+using ShoppingList.Server.Dtos;
+using ShoppingList.Server.Models;
+using ShoppingList.Server.Services;
+
+namespace ShoppingList.Server.Controllers;
+
+[ApiController, Route("api/[controller]")]
+public class ShoppingListController(IShoppingListService service) : ControllerBase
+{
+    [HttpPost]
+    public async Task<ActionResult<ShoppingListModel>> CreateShoppingList([FromBody] CreateShoppingListRequest request)
+    {
+        if (string.IsNullOrEmpty(request.Name.Trim()))
+        {
+            return BadRequest("Name is required");
+        }
+
+        return CreatedAtAction(nameof(CreateShoppingList), await service.CreateShoppingListAsync(request.Name.Trim()));
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult<List<ShoppingListModel>>> GetAllShoppingLists()
+    {
+        return Ok(await service.GetAllShoppingListsAsync());
+    }
+    
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<ShoppingListModel?>> GetShoppingList(int id)
+    {
+        return Ok(await service.GetShoppingListAsync(id));
+    }
+}
