@@ -1,6 +1,6 @@
 namespace ShoppingList.Server.Models;
 
-public class Item
+public class ItemModel
 {
     public int Id { get; set; }
     public int ShoppingListId { get; set; }

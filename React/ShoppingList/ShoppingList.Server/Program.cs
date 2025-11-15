@@ -1,4 +1,5 @@
 using ShoppingList.Server.Database;
+using ShoppingList.Server.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<IDatabaseConnectionFactory, SqliteConnectionFactory>();
 builder.Services.AddSingleton<DatabaseInitialiser>();
+
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<IShoppingListRepository, ShoppingListRepository>();
 
 var app = builder.Build();
 
