@@ -31,4 +31,21 @@ public class ShoppingListRepository(IDatabaseConnectionFactory databaseConnectio
         var row = await connection.QuerySingleOrDefaultAsync<ShoppingListModel>(sql, new { Id = id });
         return row ?? null;
     }
+
+    public async Task<ItemModel?> UpdateAsync(ShoppingListModel entity)
+    {
+        const string sql = """
+                           UPDATE ShoppingLists SET Name = @Name, ModifiedAt = @ModifiedAt WHERE Id = @Id;
+                           SELECT * FROM ShoppingLists WHERE Id = @Id;
+                           """;
+        using var connection = databaseConnectionFactory.CreateConnection();
+        return await connection.QuerySingleOrDefaultAsync(sql, entity);
+    }
+
+    public async Task<int> DeleteAsync(int id)
+    {
+        const string sql = "DELETE FROM ShoppingLists WHERE Id = @Id";
+        using var connection = databaseConnectionFactory.CreateConnection();
+        return await connection.ExecuteAsync(sql, new { Id = id });
+    }
 }

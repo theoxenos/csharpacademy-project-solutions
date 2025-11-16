@@ -48,4 +48,24 @@ public class ItemRepository(IDatabaseConnectionFactory databaseConnectionFactory
         var rows = await connection.QueryAsync<ItemModel>(sql, new { Id = id });
         return rows.ToList();
     }
+
+    public async Task<ItemModel?> UpdateAsync(ItemModel entity)
+    {
+        const string sql =
+            """
+            UPDATE Items 
+            SET ShoppingListId = @ShoppingListId, Name = @Name, Quantity = @Quantity, IsChecked = @IsChecked, ModifiedAt = @ModifiedAt
+            WHERE Id = @Id;
+            SELECT * FROM Items WHERE Id = @Id;
+            """;
+        using var connection = databaseConnectionFactory.CreateConnection();
+        return await connection.QuerySingleOrDefaultAsync<ItemModel>(sql, entity);
+    }
+
+    public async Task<int> DeleteAsync(int id)
+    {
+        const string sql = "DELETE FROM Items WHERE Id = @Id";
+        using var connection = databaseConnectionFactory.CreateConnection();
+        return await connection.ExecuteAsync(sql, new { Id = id });
+    }
 }

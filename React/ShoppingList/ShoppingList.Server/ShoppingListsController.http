@@ -1,0 +1,10 @@
+POST http://localhost:5278/api/ShoppingList
+Content-Type: application/json
+
+{
+  "name" : "Groceries"
+}
+
+###
+
+GET http://localhost:5278/api/ShoppingList

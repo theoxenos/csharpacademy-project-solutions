@@ -16,6 +16,7 @@ builder.Services.AddSingleton<DatabaseInitialiser>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IShoppingListRepository, ShoppingListRepository>();
 
+builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IShoppingListService, ShoppingListService>();
 
 var app = builder.Build();

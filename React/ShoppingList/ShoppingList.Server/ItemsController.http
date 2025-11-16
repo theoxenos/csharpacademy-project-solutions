@@ -1,0 +1,24 @@
+POST http://localhost:5278/api/Items
+Content-Type: application/json
+
+{
+  "name": "Oats",
+  "quantity" : 1,
+  "shoppinglistid": 1
+}
+
+### 
+
+DELETE http://localhost:5278/api/Items/1
+
+###
+
+PUT http://localhost:5278/api/Items/2
+Content-Type: application/json
+
+{
+  "id" : 2,
+  "name": "Milk",
+  "quantity" : 1,
+  "shoppinglistid" : 2
+}
