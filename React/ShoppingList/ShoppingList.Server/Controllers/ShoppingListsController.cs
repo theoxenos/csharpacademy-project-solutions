@@ -6,7 +6,7 @@ using ShoppingList.Server.Services;
 namespace ShoppingList.Server.Controllers;
 
 [ApiController, Route("api/[controller]")]
-public class ShoppingListController(IShoppingListService service) : ControllerBase
+public class ShoppingListsController(IShoppingListService service) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<ShoppingListModel>> CreateShoppingList([FromBody] CreateShoppingListRequest request)
