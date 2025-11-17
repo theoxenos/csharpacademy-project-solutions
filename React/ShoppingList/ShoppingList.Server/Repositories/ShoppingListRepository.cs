@@ -18,18 +18,59 @@ public class ShoppingListRepository(IDatabaseConnectionFactory databaseConnectio
 
     public async Task<List<ShoppingListModel>> GetAllAsync()
     {
-        const string sql = "SELECT * FROM ShoppingLists";
+        const string sql = """
+                           SELECT * FROM ShoppingLists
+                           LEFT JOIN Items ON ShoppingLists.Id = Items.ShoppingListId;
+                           """;
         using var connection = databaseConnectionFactory.CreateConnection();
-        var rows = await connection.QueryAsync<ShoppingListModel>(sql);
+        var shoppingListsDictionary = new Dictionary<int, ShoppingListModel>();
+
+        var rows = await connection.QueryAsync<ShoppingListModel, ItemModel, ShoppingListModel>(
+            sql,
+            (list, listItem) =>
+            {
+                if (!shoppingListsDictionary.TryGetValue(list.Id, out var listEntry))
+                {
+                    listEntry = list;
+                    shoppingListsDictionary.Add(list.Id, listEntry);
+                }
+                
+                listEntry.Items.Add(listItem);
+                return listEntry;
+            },
+            splitOn: "Id");
         return rows.ToList();
     }
 
     public async Task<ShoppingListModel?> GetOneAsync(int id)
     {
-        const string sql = "SELECT * FROM ShoppingLists WHERE Id = @Id";
+        const string sql = """
+                           SELECT * 
+                           FROM ShoppingLists sl
+                           LEFT JOIN Items 
+                           ON sl.Id = Items.ShoppingListId
+                           WHERE sl.Id = @Id;
+                           """;
         using var connection = databaseConnectionFactory.CreateConnection();
-        var row = await connection.QuerySingleOrDefaultAsync<ShoppingListModel>(sql, new { Id = id });
-        return row ?? null;
+        var shoppingListsDictionary = new Dictionary<int, ShoppingListModel>();
+
+        var row = await connection.QueryAsync<ShoppingListModel, ItemModel, ShoppingListModel>(
+            sql,
+            (list, listItem) =>
+            {
+                if (!shoppingListsDictionary.TryGetValue(list.Id, out var listEntry))
+                {
+                    listEntry = list;
+                    shoppingListsDictionary.Add(list.Id, listEntry);
+                }
+
+                listEntry.Items.Add(listItem);
+                return listEntry;
+            },
+            new { Id = id },
+            splitOn: "Id"
+        );
+        return row.SingleOrDefault() ?? null;
     }
 
     public async Task<ItemModel?> UpdateAsync(ShoppingListModel entity)

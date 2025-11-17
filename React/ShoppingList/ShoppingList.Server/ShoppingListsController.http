@@ -1,4 +1,4 @@
-POST http://localhost:5278/api/ShoppingList
+POST http://localhost:5278/api/ShoppingLists
 Content-Type: application/json
 
 {
@@ -7,4 +7,8 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5278/api/ShoppingList
+GET http://localhost:5278/api/ShoppingLists
+
+###
+
+GET http://localhost:5278/api/ShoppingLists/2
