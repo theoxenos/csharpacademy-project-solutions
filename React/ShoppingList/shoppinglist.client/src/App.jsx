@@ -1,6 +1,9 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect} from "react";
-import {initialiseShoppingLists, toggleItemChecked} from "./reducers/shoppingListReducer.js";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
+import {initialiseShoppingLists} from "./reducers/shoppingListReducer.js";
+import ShoppingList from "./components/ShoppingList.jsx";
 
 const App = () => {
     const dispatch = useDispatch();
@@ -13,8 +16,6 @@ const App = () => {
 
     let shoppingLists = useSelector(state => state.shoppingLists);
 
-    const handleClick = (event) => {}
-    
     return (
         // <div className="container py-4">
         //     <h1 className="display-5 fw-semibold">Shopping List</h1>
@@ -28,24 +29,20 @@ const App = () => {
         //     </div>
         // </div>
         <div className="container-xxl py-3">
-            <div>
-                <h1 className="display-6">
-            <span className="text-danger">
-                <i className="bi bi-fire"></i>
-            </span>
-                    Popular Movies
+            <div className="mb-3">
+                <h1 className="display-6 text-center">
+                    <span className="text-success">
+                        <i className="bi bi-cart"></i>
+                    </span>
+                    Your Shopping Lists
                 </h1>
             </div>
-            {/*flex-md-row removed*/}
-            <div className="d-flex flex-column  justify-content-between my-3">
-
-                <div
-                    className="row row-cols-2 row-cols-lg-4 row-cols-xl-5 g-3 justify-content-center justify-content-md-start">
-                    {shoppingLists.map(list => (<div key={list.id} className="col">
-                        
-                    </div>))}
-                </div>
-
+            <div className="row row-cols-2 row-cols-lg-3 g-3">
+                {shoppingLists.map(list => (
+                    <div key={list.id} className="col">
+                        <ShoppingList list={list}/>
+                    </div>
+                ))}
             </div>
         </div>
     )
