@@ -25,7 +25,7 @@ public class ShoppingListRepository(IDatabaseConnectionFactory databaseConnectio
         using var connection = databaseConnectionFactory.CreateConnection();
         var shoppingListsDictionary = new Dictionary<int, ShoppingListModel>();
 
-        var rows = await connection.QueryAsync<ShoppingListModel, ItemModel, ShoppingListModel>(
+        await connection.QueryAsync<ShoppingListModel, ItemModel?, ShoppingListModel>(
             sql,
             (list, listItem) =>
             {
@@ -34,12 +34,17 @@ public class ShoppingListRepository(IDatabaseConnectionFactory databaseConnectio
                     listEntry = list;
                     shoppingListsDictionary.Add(list.Id, listEntry);
                 }
+
+                if (listItem != null)
+                {
+                    listEntry.Items.Add(listItem);
+                }
                 
-                listEntry.Items.Add(listItem);
                 return listEntry;
             },
             splitOn: "Id");
-        return rows.ToList();
+        
+        return shoppingListsDictionary.Values.ToList();
     }
 
     public async Task<ShoppingListModel?> GetOneAsync(int id)
@@ -54,7 +59,7 @@ public class ShoppingListRepository(IDatabaseConnectionFactory databaseConnectio
         using var connection = databaseConnectionFactory.CreateConnection();
         var shoppingListsDictionary = new Dictionary<int, ShoppingListModel>();
 
-        var row = await connection.QueryAsync<ShoppingListModel, ItemModel, ShoppingListModel>(
+        await connection.QueryAsync<ShoppingListModel, ItemModel?, ShoppingListModel>(
             sql,
             (list, listItem) =>
             {
@@ -64,13 +69,18 @@ public class ShoppingListRepository(IDatabaseConnectionFactory databaseConnectio
                     shoppingListsDictionary.Add(list.Id, listEntry);
                 }
 
-                listEntry.Items.Add(listItem);
+                if (listItem != null)
+                {
+                    listEntry.Items.Add(listItem);
+                }
+                
                 return listEntry;
             },
             new { Id = id },
             splitOn: "Id"
         );
-        return row.SingleOrDefault() ?? null;
+        
+        return shoppingListsDictionary.Values.SingleOrDefault();
     }
 
     public async Task<ItemModel?> UpdateAsync(ShoppingListModel entity)
