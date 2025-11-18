@@ -1,5 +1,5 @@
 import {useDispatch} from "react-redux";
-import {toggleItemChecked} from "../reducers/shoppingListReducer.js";
+import {updateShoppingListItem} from "../reducers/shoppingListReducer.js";
 
 const ShoppingListItem = ({listItem, onCheckedChange}) => {
     const handleCheckedChange = () => {
@@ -24,10 +24,8 @@ const shoppingList = ({list}) => {
     const dispatch = useDispatch();
 
     const handleCheckedChange = (itemId) => {
-        dispatch(toggleItemChecked({
-            shoppingListId: list.id,
-            itemId: itemId
-        }));
+        const item = list.items.find(item => item.id === itemId);
+        dispatch(updateShoppingListItem(list.id, {...item, isChecked: !item.isChecked}));
     };
 
     return <>

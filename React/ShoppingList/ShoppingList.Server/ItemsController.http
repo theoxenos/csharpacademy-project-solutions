@@ -18,7 +18,8 @@ Content-Type: application/json
 
 {
   "id" : 2,
-  "name": "Milk",
+  "name": "Yoghurt",
   "quantity" : 1,
-  "shoppinglistid" : 2
+  "shoppinglistid" : 2,
+  "ischecked" : true
 }
