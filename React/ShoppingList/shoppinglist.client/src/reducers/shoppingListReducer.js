@@ -10,6 +10,13 @@ const shoppingListSlice = createSlice({
         setShoppingLists: (state, action) => {
             return action.payload;
         },
+        updateShoppingList: (state, action) => {
+          const {shoppingListId, updatedShoppingList} = action.payload;
+          const shoppingListIndex = state.findIndex(list => list.id === shoppingListId);
+          if (shoppingListIndex !== -1) {
+              state[shoppingListIndex] = updatedShoppingList;
+          }
+        },
         updateItem: (state, action) => {
             const {shoppingListId, updatedItem} = action.payload;
             const shoppingListItem = state.find(list => list.id === shoppingListId);
@@ -37,6 +44,6 @@ export const updateShoppingListItem = (shoppingListId, item) => {
     }
 };
 
-export const {toggleItemChecked} = shoppingListSlice.actions;
+export const {updateShoppingList} = shoppingListSlice.actions;
 export default shoppingListSlice.reducer;
 
