@@ -30,4 +30,17 @@ public class ShoppingListsController(IShoppingListService service) : ControllerB
     {
         return Ok(await service.GetShoppingListAsync(id));
     }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<ShoppingListModel?>> UpdateShoppingList(int id,
+        [FromBody] UpdateShoppingListRequest request)
+    {
+        if (id != request.Id)
+        {
+            return BadRequest(new { error = "IDs don't match" });
+        }
+        
+        var updatedList = await service.UpdateShoppingListAsync(id, request.Name.Trim());
+        return updatedList != null ? Ok(updatedList) : NotFound();
+    }
 }

@@ -2,7 +2,7 @@ POST http://localhost:5278/api/ShoppingLists
 Content-Type: application/json
 
 {
-  "name" : "Groceries"
+  "name" : "Steam Winter Sale"
 }
 
 ###
@@ -12,3 +12,13 @@ GET http://localhost:5278/api/ShoppingLists
 ###
 
 GET http://localhost:5278/api/ShoppingLists/2
+
+###
+
+PUT http://localhost:5278/api/ShoppingLists/1
+Content-Type: application/json
+
+{
+  "id" : 1,
+  "name": "Sint Nicholaas"
+}

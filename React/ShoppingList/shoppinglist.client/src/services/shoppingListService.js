@@ -8,4 +8,18 @@ const getAllShoppingLists = async () => {
     return await response.json();
 };
 
-export default {getAllShoppingLists};
+const updateShoppingList = async (id, name) => {
+    const response = await fetch(`/api/shoppinglists/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id, name}),
+    });
+    
+    if(!response.ok) {
+        throw new Error('Failed to update shopping list');
+    }
+    
+    return await response.json();
+};
+
+export default {getAllShoppingLists, updateShoppingList};

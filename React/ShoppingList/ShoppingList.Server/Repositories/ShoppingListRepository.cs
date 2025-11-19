@@ -83,14 +83,14 @@ public class ShoppingListRepository(IDatabaseConnectionFactory databaseConnectio
         return shoppingListsDictionary.Values.SingleOrDefault();
     }
 
-    public async Task<ItemModel?> UpdateAsync(ShoppingListModel entity)
+    public async Task<ShoppingListModel?> UpdateAsync(ShoppingListModel entity)
     {
         const string sql = """
                            UPDATE ShoppingLists SET Name = @Name, ModifiedAt = @ModifiedAt WHERE Id = @Id;
                            SELECT * FROM ShoppingLists WHERE Id = @Id;
                            """;
         using var connection = databaseConnectionFactory.CreateConnection();
-        return await connection.QuerySingleOrDefaultAsync(sql, entity);
+        return await connection.QuerySingleOrDefaultAsync<ShoppingListModel>(sql, entity);
     }
 
     public async Task<int> DeleteAsync(int id)

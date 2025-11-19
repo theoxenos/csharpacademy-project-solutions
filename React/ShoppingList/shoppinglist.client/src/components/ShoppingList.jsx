@@ -18,6 +18,7 @@ const ShoppingListItem = ({listItem, onCheckedChange}) => {
                        onChange={handleCheckedChange}
                 />
                 {listItem.name}
+                <span className="ms-1 text-muted">({listItem.quantity})</span>
             </label>
         </ListGroup.Item>
     );

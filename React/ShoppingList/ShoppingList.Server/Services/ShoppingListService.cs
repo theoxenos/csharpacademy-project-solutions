@@ -22,4 +22,10 @@ public class ShoppingListService(IShoppingListRepository repository) : IShopping
     {
         return await repository.GetOneAsync(id);
     }
+
+    public async Task<ShoppingListModel?> UpdateShoppingListAsync(int id, string name)
+    {
+        var now = DateTime.UtcNow;
+        return await repository.UpdateAsync(new ShoppingListModel { Id = id, Name = name, ModifiedAt = now});
+    }
 }

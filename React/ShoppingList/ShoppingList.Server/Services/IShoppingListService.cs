@@ -7,4 +7,5 @@ public interface IShoppingListService
     Task<ShoppingListModel> CreateShoppingListAsync(string name);
     Task<List<ShoppingListModel>> GetAllShoppingListsAsync();
     Task<ShoppingListModel?> GetShoppingListAsync(int id);
+    Task<ShoppingListModel?> UpdateShoppingListAsync(int id, string name);
 }
