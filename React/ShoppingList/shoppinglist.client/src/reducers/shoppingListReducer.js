@@ -44,6 +44,16 @@ export const updateShoppingListItem = (shoppingListId, item) => {
     }
 };
 
+export const createItem = (shoppingListId, name) => {
+    return async (dispatch, getState) => {
+        const newItem = await itemService.createItem(shoppingListId, name);
+        const list = getState().shoppingLists.find(list => list.id === shoppingListId);
+        const updatedShoppingList = {...list, items: [...list.items, newItem]};
+        
+        dispatch(updateShoppingList({shoppingListId, updatedShoppingList}));
+    }
+};
+
 export const {updateShoppingList} = shoppingListSlice.actions;
 export default shoppingListSlice.reducer;
 

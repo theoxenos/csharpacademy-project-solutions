@@ -55,7 +55,7 @@ public class ItemsController(IItemService service) : ControllerBase
 
         try
         {
-            return await service.UpdateAsync(item.Id, item.ShoppingListId, item.Name.Trim(), item.Quantity, item.IsChecked);
+            return await service.UpdateAsync(item.Id, item.ShoppingListId, item.Name, item.Quantity, item.IsChecked);
         }
         catch (InvalidOperationException exception)
         {
