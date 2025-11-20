@@ -37,10 +37,18 @@ export const initialiseShoppingLists = () => {
     }
 };
 
+let updateItemTimerId = null;
+
 export const updateShoppingListItem = (shoppingListId, item) => {
     return async (dispatch) => {
-        const updatedItem = await itemService.updateItem(item);
-        dispatch(updateItem({shoppingListId, updatedItem}));
+        dispatch(updateItem({shoppingListId, updatedItem: item}));
+        
+        clearTimeout(updateItemTimerId);
+        
+        updateItemTimerId = setTimeout(async () => {
+            const updatedItem = await itemService.updateItem(item);
+            dispatch(updateItem({shoppingListId, updatedItem}));
+        }, 500);
     }
 };
 
