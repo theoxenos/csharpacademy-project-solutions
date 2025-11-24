@@ -76,6 +76,8 @@ const ShoppingListForm = ({list}) => {
         dispatch(createItem(list.id, ''));
     }
 
+    const shoppingListItemsSorted = [...list?.items || []].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+
     return <>
         {list &&
             <Card>
@@ -89,12 +91,12 @@ const ShoppingListForm = ({list}) => {
                 </Card.Header>
                 <Card.Body>
                     <ListGroup variant="flush">
-                        {list?.items.map((item, index) => <ShoppingListItemInput key={item.id}
-                                                                                 item={item}
-                                                                                 onCheckedChange={handleItemCheckedChange}
-                                                                                 onNameChange={handleItemNameChange}
-                                                                                 onQuantityChange={handleItemQuantityChange}
-                                                                                 inputRef={index === list.items.length - 1 ? lastItemRef : null}/>
+                        {shoppingListItemsSorted.map((item, index) => <ShoppingListItemInput key={item.id}
+                                                                                             item={item}
+                                                                                             onCheckedChange={handleItemCheckedChange}
+                                                                                             onNameChange={handleItemNameChange}
+                                                                                             onQuantityChange={handleItemQuantityChange}
+                                                                                             inputRef={index === list.items.length - 1 ? lastItemRef : null}/>
                         )}
                         <ListGroup.Item>
                             <a href="#" className="btn" onClick={handleNewItemClick}>

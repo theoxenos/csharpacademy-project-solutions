@@ -11,7 +11,8 @@ const ShoppingListItem = ({listItem, onCheckedChange}) => {
 
     return (
         <ListGroup.Item>
-            <label onClick={(e) => e.stopPropagation()}>
+            <label onClick={(e) => e.stopPropagation()}
+                   className={listItem.isChecked ? 'text-decoration-line-through' : ''}>
                 <input className="me-1"
                        type="checkbox"
                        checked={listItem.isChecked}
@@ -24,7 +25,7 @@ const ShoppingListItem = ({listItem, onCheckedChange}) => {
     );
 };
 
-const shoppingList = ({list}) => {
+const ShoppingList = ({list}) => {
     const dispatch = useDispatch();
 
     const handleCardClick = () => {
@@ -35,18 +36,23 @@ const shoppingList = ({list}) => {
         dispatch(updateShoppingListItem(list.id, {...item, isChecked: !item.isChecked}));
     };
 
+    const sortedListItems = [...list?.items || []].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+
     return (
         <Card className="h-100" onClick={handleCardClick}>
             <Card.Header>{list.name}</Card.Header>
             <Card.Body>
                 <ListGroup variant="flush">
-                    {list.items.length > 0 && list.items.map(item => (
-                        <ShoppingListItem key={item.id} listItem={item} onCheckedChange={handleCheckedChange}/>
-                    ))}
+                    {sortedListItems.length > 0
+                        ? sortedListItems.map(item => (
+                            <ShoppingListItem key={item.id} listItem={item} onCheckedChange={handleCheckedChange}/>
+                        ))
+                        : null
+                    }
                 </ListGroup>
-                </Card.Body>
-            </Card>
-        );
+            </Card.Body>
+        </Card>
+    );
 };
 
-export default shoppingList;
+export default ShoppingList;
