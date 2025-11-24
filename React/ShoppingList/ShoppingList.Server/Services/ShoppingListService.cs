@@ -28,4 +28,14 @@ public class ShoppingListService(IShoppingListRepository repository) : IShopping
         var now = DateTime.UtcNow;
         return await repository.UpdateAsync(new ShoppingListModel { Id = id, Name = name, ModifiedAt = now});
     }
+
+    public async Task DeleteShoppingListAsync(int id)
+    {
+        var result = await repository.DeleteAsync(id);
+
+        if (result == 0)
+        {
+            throw new InvalidOperationException($"The shopping list with ID {id} was not found.");
+        }
+    }
 }

@@ -8,4 +8,5 @@ public interface IShoppingListService
     Task<List<ShoppingListModel>> GetAllShoppingListsAsync();
     Task<ShoppingListModel?> GetShoppingListAsync(int id);
     Task<ShoppingListModel?> UpdateShoppingListAsync(int id, string name);
+    Task DeleteShoppingListAsync(int id);
 }

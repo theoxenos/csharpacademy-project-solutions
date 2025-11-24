@@ -1,5 +1,5 @@
 import {useDispatch} from "react-redux";
-import {updateShoppingListItem} from "../reducers/shoppingListReducer.js";
+import {deleteShoppingList, updateShoppingListItem} from "../reducers/shoppingListReducer.js";
 import {selectList} from "../reducers/uiReducer.js";
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -35,12 +35,23 @@ const ShoppingList = ({list}) => {
         const item = list.items.find(item => item.id === itemId);
         dispatch(updateShoppingListItem(list.id, {...item, isChecked: !item.isChecked}));
     };
+    
+    const handleDeleteClick = (e) => {
+        e.stopPropagation();
+        
+        dispatch(deleteShoppingList(list.id));
+    }
 
     const sortedListItems = [...list?.items || []].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
     return (
         <Card className="h-100" onClick={handleCardClick}>
-            <Card.Header>{list.name}</Card.Header>
+            <Card.Header className="d-flex justify-content-between">
+                {list.name}
+                <button className="btn btn-danger btn-sm" onClick={handleDeleteClick}>
+                    <i className="bi bi-trash"></i>
+                </button>
+            </Card.Header>
             <Card.Body>
                 <ListGroup variant="flush">
                     {sortedListItems.length > 0

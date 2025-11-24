@@ -10,6 +10,7 @@ import {initialiseShoppingLists} from "./reducers/shoppingListReducer.js";
 import ShoppingList from "./components/ShoppingList.jsx";
 import ShoppingListModal from "./components/ShoppingListModal.jsx";
 import {selectList} from "./reducers/uiReducer.js";
+import NewShoppingListForm from "./components/NewShoppingListForm.jsx";
 
 const App = () => {
     const dispatch = useDispatch();
@@ -30,7 +31,7 @@ const App = () => {
 
     return (
         <Container className="py-3">
-            <Row className="justify-content-md-center">
+            <Row className="justify-content-md-center mb-3">
                 <Col xs={12} md={8}>
                     <h1 className="display-6 text-center">
                         <span className="text-success">
@@ -39,6 +40,9 @@ const App = () => {
                         Your Shopping Lists
                     </h1>
                 </Col>
+            </Row>
+            <Row className="justify-content-md-center mb-3">
+                <NewShoppingListForm />
             </Row>
             <Row xs={1} md={3} className="g-3">
                 {shoppingLists.map(list => (

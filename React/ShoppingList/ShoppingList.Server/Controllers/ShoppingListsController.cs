@@ -43,4 +43,19 @@ public class ShoppingListsController(IShoppingListService service) : ControllerB
         var updatedList = await service.UpdateShoppingListAsync(id, request.Name.Trim());
         return updatedList != null ? Ok(updatedList) : NotFound();
     }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteShoppingList(int id)
+    {
+        try
+        {
+            await service.DeleteShoppingListAsync(id);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return NotFound(new {error = exception.Message});
+        }
+        
+        return NoContent();
+    }
 }
