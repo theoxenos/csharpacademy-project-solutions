@@ -27,7 +27,7 @@ const App = () => {
 
     const handleModalClose = () => {
         dispatch(selectList(null));
-    }
+    };
 
     return (
         <Container className="py-3">
@@ -53,7 +53,7 @@ const App = () => {
             </Row>
             <ShoppingListModal onClose={handleModalClose} show={showModal}/>
         </Container>
-    )
+    );
 };
 
 export default App;

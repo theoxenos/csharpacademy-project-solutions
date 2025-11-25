@@ -8,15 +8,15 @@ import {useEffect, useRef} from "react";
 const ShoppingListItemInput = ({item, onCheckedChange, onNameChange, onQuantityChange, inputRef}) => {
     const handleCheckedChange = () => {
         onCheckedChange(item.id);
-    }
+    };
     const handleNameChange = (e) => {
         onNameChange(item.id, e.target.value);
-    }
+    };
     const handleQuantityChange = (e) => {
         if (isNaN(e.target.value)) return;
 
         onQuantityChange(item.id, e.target.value);
-    }
+    };
 
     return (
         <ListGroup.Item>
@@ -49,7 +49,7 @@ const ShoppingListForm = ({list}) => {
         if (listNameInputRef.current) {
             listNameInputRef.current.focus();
         }
-    }, [list?.id])
+    }, [list?.id]);
 
 
     const handleItemCheckedChange = (itemId) => {
@@ -63,7 +63,7 @@ const ShoppingListForm = ({list}) => {
     const handleItemQuantityChange = (itemId, newQuantity) => {
         const item = list.items.find(item => item.id === itemId);
         dispatch(updateShoppingListItem(list.id, {...item, quantity: newQuantity}));
-    }
+    };
     const handleNameBlur = async (e) => {
         await shoppingListService.updateShoppingList(list.id, e.target.value);
     };
@@ -74,7 +74,7 @@ const ShoppingListForm = ({list}) => {
         e.preventDefault();
 
         dispatch(createItem(list.id, ''));
-    }
+    };
 
     const shoppingListItemsSorted = [...list?.items || []].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
@@ -108,7 +108,7 @@ const ShoppingListForm = ({list}) => {
                 </Card.Body>
             </Card>
         }
-    </>
+    </>;
 };
 
 export default ShoppingListForm;

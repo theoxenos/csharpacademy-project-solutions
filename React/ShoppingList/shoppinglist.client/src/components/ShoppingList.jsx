@@ -30,7 +30,7 @@ const ShoppingList = ({list}) => {
 
     const handleCardClick = () => {
         dispatch(selectList(list.id));
-    }
+    };
     const handleCheckedChange = (itemId) => {
         const item = list.items.find(item => item.id === itemId);
         dispatch(updateShoppingListItem(list.id, {...item, isChecked: !item.isChecked}));
@@ -40,7 +40,7 @@ const ShoppingList = ({list}) => {
         e.stopPropagation();
         
         dispatch(deleteShoppingList(list.id));
-    }
+    };
 
     const sortedListItems = [...list?.items || []].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 

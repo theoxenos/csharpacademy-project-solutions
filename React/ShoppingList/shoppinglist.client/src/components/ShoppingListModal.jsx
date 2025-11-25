@@ -9,7 +9,7 @@ const ShoppingListModal = ({onClose, show}) => {
         <Modal show={show} onHide={onClose} centered={true}>
             <ShoppingListForm list={selectedList}/>
         </Modal>
-    )
+    );
 };
 
 export default ShoppingListModal;

@@ -41,7 +41,7 @@ export const initialiseShoppingLists = () => {
     return async (dispatch) => {
         const shoppingLists =  await shoppingListService.getAllShoppingLists();
         dispatch(setShoppingLists(shoppingLists));
-    }
+    };
 };
 
 export const createShoppingList = (newShoppingList) => {
@@ -49,7 +49,7 @@ export const createShoppingList = (newShoppingList) => {
         const shoppingList = await shoppingListService.createShoppingList(newShoppingList);
         dispatch(addShoppingList(shoppingList));
         dispatch(selectList(shoppingList.id));
-    }
+    };
 };
 
 let updateItemTimerId = null;
@@ -64,7 +64,7 @@ export const updateShoppingListItem = (shoppingListId, item) => {
             const updatedItem = await itemService.updateItem(item);
             dispatch(updateItem({shoppingListId, updatedItem}));
         }, 500);
-    }
+    };
 };
 
 export const deleteShoppingList = (shoppingListId) => {
@@ -72,7 +72,7 @@ export const deleteShoppingList = (shoppingListId) => {
         await shoppingListService.deleteShoppingList(shoppingListId);
         
         dispatch(removeShoppingList(shoppingListId));
-    }
+    };
 };
 
 export const createItem = (shoppingListId, name) => {
@@ -82,7 +82,7 @@ export const createItem = (shoppingListId, name) => {
         const updatedShoppingList = {...list, items: [...list.items, newItem]};
         
         dispatch(updateShoppingList({shoppingListId, updatedShoppingList}));
-    }
+    };
 };
 
 export const {updateShoppingList} = shoppingListSlice.actions;

@@ -11,7 +11,7 @@ export const NewShoppingListForm = () => {
         dispatch(createShoppingList({name: shoppingListName}));
 
         e.target.reset();
-    }
+    };
 
     return <form className="w-auto" onSubmit={handleSubmit}>
         <div className="d-flex justify-content-center">

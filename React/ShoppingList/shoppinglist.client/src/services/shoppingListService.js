@@ -48,6 +48,6 @@ const deleteShoppingList = async (id) => {
     }
     
     // return await response.json();
-}
+};
 
 export default {createShoppingList, getAllShoppingLists, updateShoppingList, deleteShoppingList};
