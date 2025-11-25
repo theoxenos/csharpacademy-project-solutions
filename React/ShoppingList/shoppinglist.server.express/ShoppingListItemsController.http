@@ -1,0 +1,25 @@
+### First list
+
+PUT localhost:3000/api/items/6925d7b99b86cf92d3aa3d56
+Content-Type: application/json
+
+{
+  "id": "6925d7b99b86cf92d3aa3d56",
+  "shoppingListId": "6925951a0c1b46c7c56d6a0e",
+  "name": "Pepernoot",
+  "isChecked": true,
+  "quantity" : 420
+}
+
+### Second list
+
+PUT localhost:3000/api/items/6925d7b99b86cf92d3aa3d56
+Content-Type: application/json
+
+{
+  "id": "6925d7b99b86cf92d3aa3d56",
+  "shoppingListId": "6925d3860b811b9e48073521",
+  "name": "Pepernoot",
+  "isChecked": true,
+  "quantity" : 420
+}
