@@ -1,0 +1,24 @@
+POST http://localhost:3000/api/ShoppingLists
+Content-Type: application/json
+
+{
+  "name": "Sinterklaas"
+}
+
+###
+
+GET http://localhost:3000/api/shoppinglists
+
+###
+
+DELETE localhost:3000/api/ShoppingLists/692596e64be3729db2cf70be
+
+###
+
+PUT localhost:3000/api/shoppinglists/6925951a0c1b46c7c56d6a0e
+Content-Type: application/json
+
+{
+  "id": "6925951a0c1b46c7c56d6a0e",
+  "name": "Kerst"
+}
