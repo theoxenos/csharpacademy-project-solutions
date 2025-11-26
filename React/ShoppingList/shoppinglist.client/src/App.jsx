@@ -12,6 +12,7 @@ import ShoppingList from "./components/ShoppingList.jsx";
 import ShoppingListModal from "./components/ShoppingListModal.jsx";
 import {selectList} from "./reducers/uiReducer.js";
 import NewShoppingListForm from "./components/NewShoppingListForm.jsx";
+import LoginForm from "./components/LoginForm.jsx";
 
 const App = () => {
     const dispatch = useDispatch();
@@ -19,6 +20,12 @@ const App = () => {
     const shoppingLists = useSelector(state => state.shoppingLists);
     const selectedListId = useSelector(state => state.ui.selectedListId);
     const showModal = selectedListId !== null;
+    
+    const user = useSelector(state => state.user);
+    
+    if(!user) {
+        return <LoginForm />;
+    }
 
     useEffect(() => {
             dispatch(initialiseShoppingLists());
