@@ -2,7 +2,7 @@ POST http://localhost:5278/api/Items
 Content-Type: application/json
 
 {
-  "name": "Oats",
+  "name": "Pepernoten",
   "quantity" : 1,
   "shoppinglistid": 1
 }
