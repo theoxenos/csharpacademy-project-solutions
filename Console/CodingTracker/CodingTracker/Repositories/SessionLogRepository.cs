@@ -2,27 +2,33 @@ namespace CodingTracker.Repositories;
 
 public class SessionLogRepository
 {
-    private readonly Database db = new();
+    private readonly Database db;
+
+    public SessionLogRepository()
+    {
+        db = new();
+    }
+    
+    public SessionLogRepository(Database database)
+    {
+        db = database;
+    }
 
     public IEnumerable<SessionLog> GetLogsBySessionId(int sessionId)
     {
         using var connection = db.GetConnection();
-        var query = connection
-            .Query("SELECT * FROM Logs WHERE SessionId = @SessionId", new { SessionId = sessionId });
-        return query.Select(l => new SessionLog
-        {
-            Id = (int)l.Id,
-            SessionId = (int)l.SessionId,
-            StartTime = TimeOnly.Parse(l.StartTime),
-            EndTime = TimeOnly.Parse(l.EndTime),
-            Duration = TimeSpan.FromTicks(l.Duration)
-        });
+        return connection
+            .Query<SessionLog>("SELECT * FROM Logs WHERE SessionId = @SessionId", new { SessionId = sessionId });
     }
 
     public void DeleteSessionLog(SessionLog log)
     {
         using var connection = db.GetConnection();
-        connection.Execute("DELETE FROM Logs WHERE Id = @Id", log);
+        var rows = connection.Execute("DELETE FROM Logs WHERE Id = @Id", log);
+        if (rows == 0)
+        {
+            throw new InvalidOperationException("Session log with specified ID not found.");
+        }
     }
 
     public void UpdateSessionLog(SessionLog sessionLog)
@@ -33,13 +39,7 @@ public class SessionLogRepository
 
         using var connection = db.GetConnection();
         connection.Execute(
-            "UPDATE Logs SET StartTime = @StartTime, EndTime = @EndTime, Duration = @Duration WHERE Id = @Id", new
-            {
-                sessionLog.Id,
-                StartTime = sessionLog.StartTime.ToString("t"),
-                EndTime = sessionLog.EndTime.ToString("t"),
-                Duration = sessionLog.CalculateDuration
-            });
+            "UPDATE Logs SET StartTime = @StartTime, EndTime = @EndTime, Duration = @Duration WHERE Id = @Id", sessionLog);
     }
 
     public List<SessionLog> GetAllSessionLogs()
@@ -47,18 +47,18 @@ public class SessionLogRepository
         try
         {
             using var connection = db.GetConnection();
-            var logRecords = connection.Query("SELECT * FROM Logs");
+            var logRecords = connection.Query<SessionLog>("SELECT * FROM Logs");
 
-            var logs = logRecords.Select(l => new SessionLog
-            {
-                Id = (int)l.Id,
-                SessionId = (int)l.SessionId,
-                StartTime = TimeOnly.Parse(l.StartTime),
-                EndTime = TimeOnly.Parse(l.EndTime),
-                Duration = TimeSpan.FromTicks(l.Duration)
-            });
+            // var logs = logRecords.Select(l => new SessionLog
+            // {
+            //     Id = (int)l.Id,
+            //     SessionId = (int)l.SessionId,
+            //     StartTime = TimeOnly.Parse(l.StartTime),
+            //     EndTime = TimeOnly.Parse(l.EndTime),
+            //     Duration = TimeSpan.FromTicks(l.Duration)
+            // });
 
-            return logs.ToList();
+            return logRecords.ToList();
         }
         catch (Exception e)
         {
@@ -78,14 +78,7 @@ public class SessionLogRepository
 
             var query =
                 "INSERT INTO Logs (SessionId, StartTime, EndTime, Duration) VALUES (@SessionId, @StartTime, @EndTime, @Duration)";
-            connection.Execute(query,
-                new
-                {
-                    sessionLog.SessionId,
-                    StartTime = sessionLog.StartTime.ToString("t"),
-                    EndTime = sessionLog.EndTime.ToString("t"),
-                    Duration = sessionLog.CalculateDuration
-                });
+            connection.Execute(query, sessionLog);
         }
         catch (Exception e)
         {

@@ -2,7 +2,17 @@ namespace CodingTracker.Repositories;
 
 public class SessionRepository
 {
-    private readonly Database db = new();
+    private readonly Database db;
+
+    public SessionRepository()
+    {
+        db = new Database();
+    }
+    
+    public SessionRepository(Database db)
+    {
+        this.db = db;
+    }
 
     public void CreateSession(DateOnly day)
     {
@@ -71,7 +81,11 @@ public class SessionRepository
     public void DeleteSession(int sessionId)
     {
         using var connection = db.GetConnection();
-        connection.Execute("DELETE FROM Sessions WHERE Id = @Id", new { Id = sessionId });
+        var rows = connection.Execute("DELETE FROM Sessions WHERE Id = @Id", new { Id = sessionId });
+        if (rows == 0)
+        {
+            throw new CodingTrackerException($"A session with the id '{sessionId}' was not found.");
+        }
     }
 
     private string DateToString(DateOnly date)
