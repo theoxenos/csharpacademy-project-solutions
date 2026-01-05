@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.1.28"/>
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.1"/>
-        <PackageReference Include="Spectre.Console" Version="0.48.1-preview.0.20"/>
-        <PackageReference Include="Spectre.Console.Cli" Version="0.48.1-preview.0.20"/>
-        <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0"/>
+        <PackageReference Include="Dapper" Version="2.1.66" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.1" />
+        <PackageReference Include="Spectre.Console" Version="0.54.1-alpha.0.21" />
+        <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.12" />
+        <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.1" />
     </ItemGroup>
 
     <ItemGroup>

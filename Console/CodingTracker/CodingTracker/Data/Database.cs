@@ -115,7 +115,8 @@ public class Database
                 CREATE TABLE IF NOT EXISTS Sessions (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Day TEXT NOT NULL UNIQUE
-                );
+                )
+                STRICT;
 
                 CREATE TABLE IF NOT EXISTS Logs (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -124,7 +125,8 @@ public class Database
                     EndTime TEXT,
                     Duration INTEGER,
                     FOREIGN KEY (SessionId) REFERENCES Sessions(Id) ON DELETE CASCADE
-                );
+                )
+                STRICT;
             """;
         connection.Execute(createTableQuery);
     }
@@ -165,6 +167,8 @@ public class Database
         SqlMapper.AddTypeHandler(new DateOnlyHandler());
         SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
         SqlMapper.AddTypeHandler(new TimeOnlyHandler());
+
+        SqlMapper.RemoveTypeMap(typeof(TimeSpan));
         SqlMapper.AddTypeHandler(new TimeSpanHandler());
     }
 
