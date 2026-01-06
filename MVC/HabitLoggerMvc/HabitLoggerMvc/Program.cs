@@ -8,7 +8,7 @@ builder.Configuration.AddUserSecrets<Program>();
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddTransient<HabitLoggerContext>();
+builder.Services.AddSingleton<HabitLoggerContext>();
 
 builder.Services.AddTransient<IRepository<Habit>, HabitRepository>();
 builder.Services.AddTransient<IHabitUnitRepository, HabitUnitRepository>();
