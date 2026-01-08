@@ -1,6 +1,7 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+import type {UiState} from "../types.ts";
 
-const initialState = {
+const initialState: UiState = {
     loading: false,
     selectedListId: null
 };
@@ -9,7 +10,7 @@ const uiSlice = createSlice({
     name: 'ui',
     initialState,
     reducers: {
-        selectList: (state, action) => {
+        selectList: (state, action: PayloadAction<number | null>) => {
             state.selectedListId = action.payload;
         }
     }

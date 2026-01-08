@@ -5,16 +5,18 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import {useDispatch} from "react-redux";
 import {loginUser} from "../reducers/userReducer.js";
+import * as React from "react";
+import type {AppDispatch} from "../store.ts";
 
 const LoginForm = () => {
-    const dispatch = useDispatch();
+    const dispatch: AppDispatch = useDispatch();
     
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setFormData(prev => ({
             ...prev,
@@ -22,9 +24,9 @@ const LoginForm = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch(loginUser(formData.email, formData.password));
+        void dispatch(loginUser(formData.email, formData.password));
     };
 
     return (

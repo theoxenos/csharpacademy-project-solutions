@@ -19,6 +19,11 @@ export interface ShoppingList {
     modifiedAt: Date;
 }
 
+export interface UiState {
+    loading: boolean;
+    selectedListId: number | null;
+}
+
 export interface User {
     email: string;
     token: string;

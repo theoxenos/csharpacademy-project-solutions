@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap-reboot.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,31 +13,29 @@ import ShoppingListModal from "./components/ShoppingListModal.tsx";
 import {selectList} from "./reducers/uiReducer.ts";
 import NewShoppingListForm from "./components/NewShoppingListForm.tsx";
 import LoginForm from "./components/LoginForm.tsx";
+import type {ShoppingList as IShoppingList, UiState, User} from "./types.ts";
+import type {AppDispatch, RootState} from "./store.ts";
 
 const App = () => {
-    const dispatch = useDispatch();
+    const dispatch: AppDispatch = useDispatch();
 
-    const shoppingLists = useSelector(state => state.shoppingLists);
-    const selectedListId = useSelector(state => state.ui.selectedListId);
+    const shoppingLists: IShoppingList[] = useSelector((state: RootState) => state.shoppingLists);
+    const selectedListId = useSelector<{ ui: UiState }>(state => state.ui.selectedListId);
     const showModal = selectedListId !== null;
 
-    const user = useSelector(state => state.user);
+    const user = useSelector<{ user: User }>(state => state.user);
 
     useEffect(() => {
-            dispatch(initialiseShoppingLists());
-        }
-        , [dispatch]
-    );
-    
-    if(!user) {
-        return <LoginForm />;
-    }
+        void dispatch(initialiseShoppingLists());
+    }, [dispatch]);
 
-
-
-    const handleModalClose = () => {
+    const handleModalClose = useCallback(() => {
         dispatch(selectList(null));
-    };
+    }, [dispatch]);
+
+    if (!user) {
+        return <LoginForm/>;
+    }
 
     return (
         <Container className="py-3">
@@ -45,14 +43,14 @@ const App = () => {
                 <Col xs={12} md={8}>
                     <h1 className="display-6 text-center">
                         <span className="text-success">
-                            <i className="bi bi-cart"></i>
+                            <i className="bi bi-cart"/>
                         </span>
-                        Your Shopping Lists
+                        {"Your Shopping Lists"}
                     </h1>
                 </Col>
             </Row>
             <Row className="justify-content-md-center mb-3">
-                <NewShoppingListForm />
+                <NewShoppingListForm/>
             </Row>
             <Row xs={1} md={3} className="g-3">
                 {shoppingLists.map(list => (

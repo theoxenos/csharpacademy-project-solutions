@@ -1,9 +1,8 @@
  import store from "../store";
- import type {User} from "../types.ts";
 
-const request = async <T>(endpoint: string, options = {} as RequestInit) => {
+ const request = async <T>(endpoint: string, options = {} as RequestInit) => {
     const state = store.getState();
-    const token = (state.user as User).token;
+    const token = state.user.token;
     
     const headers = new Headers(options.headers);
     if (token) {
