@@ -13,7 +13,7 @@ public class ShoppingListsController(IShoppingListService service) : ControllerB
     {
         if (string.IsNullOrEmpty(request.Name.Trim()))
         {
-            return BadRequest("Name is required");
+            return BadRequest(new { error = "Name is required" });
         }
 
         return CreatedAtAction(nameof(CreateShoppingList), await service.CreateShoppingListAsync(request.Name.Trim()));
@@ -28,7 +28,12 @@ public class ShoppingListsController(IShoppingListService service) : ControllerB
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ShoppingListModel?>> GetShoppingList(int id)
     {
-        return Ok(await service.GetShoppingListAsync(id));
+        var shoppingList = await service.GetShoppingListAsync(id);
+        if (shoppingList == null)
+        {
+            return NotFound(new { error = "Shopping list not found" });
+        }
+        return Ok();
     }
 
     [HttpPut("{id:int}")]
