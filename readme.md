@@ -70,6 +70,3 @@ Contributions to this repository are welcome, especially in the form of optimiza
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-For any queries or further discussions, feel free to contact me at your.email@example.com.
