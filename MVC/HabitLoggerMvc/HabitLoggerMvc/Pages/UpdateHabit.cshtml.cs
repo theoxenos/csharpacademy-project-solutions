@@ -14,11 +14,22 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepositor
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        HabitModel = await habitRepository.GetByIdAsync(id);
-        var units = await habitUnitRepository.GetAll();
-        HabitUnits = units.ToList();
+        try
+        {
+            HabitModel = await habitRepository.GetByIdAsync(id);
+            var units = await habitUnitRepository.GetAll();
+            HabitUnits = units.ToList();
 
-        return Page();
+            return Page();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error", new { message = ex.Message });
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()

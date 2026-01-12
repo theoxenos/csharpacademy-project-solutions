@@ -20,7 +20,8 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
 
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
+        var isHtmlRequest = context.Request.Headers.Accept.ToString().Contains("text/html");
+
         var statusCode = HttpStatusCode.InternalServerError;
         var message = "An internal server error occurred.";
 
@@ -29,8 +30,14 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
             statusCode = HttpStatusCode.NotFound;
             message = exception.Message;
         }
-        // Add more specific exceptions as needed
 
+        if (isHtmlRequest)
+        {
+            context.Response.Redirect($"/Error?message={WebUtility.UrlEncode(message)}");
+            return Task.CompletedTask;
+        }
+
+        context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)statusCode;
 
         var result = JsonSerializer.Serialize(new { error = message });

@@ -13,7 +13,16 @@ public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habi
 
     public async Task OnGet()
     {
-        HabitUnits = (await habitUnitRepository.GetAll()).ToList();
+        try
+        {
+            HabitUnits = (await habitUnitRepository.GetAll()).ToList();
+        }
+        catch (Exception ex)
+        {
+            // If we can't get units, the page won't work correctly.
+            // We might want to redirect to error or just handle it.
+            HabitUnits = new List<HabitUnit>();
+        }
     }
 
     public async Task<IActionResult> OnPost()

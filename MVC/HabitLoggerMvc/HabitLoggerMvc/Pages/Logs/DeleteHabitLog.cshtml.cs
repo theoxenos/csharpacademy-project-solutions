@@ -12,17 +12,33 @@ public class DeleteHabitLog(IHabitLogRepository repository) : PageModel
 
     public async Task<IActionResult> OnGetAsync(int? id)
     {
-        if (!id.HasValue) return RedirectToPage("../DetailHabit", new { id = HabitId });
+        if (!id.HasValue) return RedirectToPage("../Index");
 
-        HabitLog = await repository.GetByIdAsync(id.Value);
-
-        return Page();
+        try
+        {
+            HabitLog = await repository.GetByIdAsync(id.Value);
+            return Page();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error", new { message = ex.Message });
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        await repository.DeleteAsync(HabitLog.Id);
-
-        return RedirectToPage("../DetailHabit", new { id = HabitId });
+        try
+        {
+            await repository.DeleteAsync(HabitLog.Id);
+            return RedirectToPage("../DetailHabit", new { id = HabitId });
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error", new { message = ex.Message });
+        }
     }
 }

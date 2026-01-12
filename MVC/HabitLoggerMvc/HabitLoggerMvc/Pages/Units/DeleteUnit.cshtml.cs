@@ -15,18 +15,34 @@ public class DeleteUnit(IHabitUnitRepository repository) : PageModel
     {
         if (!id.HasValue) return RedirectToPage("./Units");
 
-        CanDelete = !await repository.HabitUnitHasHabits(id.Value);
-        HabitUnit = await repository.GetByIdAsync(id.Value);
-
-        return Page();
+        try
+        {
+            CanDelete = !await repository.HabitUnitHasHabits(id.Value);
+            HabitUnit = await repository.GetByIdAsync(id.Value);
+            return Page();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error", new { message = ex.Message });
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid) return Page();
 
-        await repository.DeleteAsync(HabitUnit.Id);
-
-        return RedirectToPage("./Units");
+        try
+        {
+            await repository.DeleteAsync(HabitUnit.Id);
+            return RedirectToPage("./Units");
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error", new { message = ex.Message });
+        }
     }
 }

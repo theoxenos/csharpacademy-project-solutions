@@ -15,9 +15,19 @@ public class UpdateHabitLog(IHabitLogRepository habitLogRepository) : PageModel
     {
         if (!id.HasValue) return RedirectToPage("../Index");
 
-        HabitLog = await habitLogRepository.GetByIdAsync(id.Value);
-
-        return Page();
+        try
+        {
+            HabitLog = await habitLogRepository.GetByIdAsync(id.Value);
+            return Page();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error", new { message = ex.Message });
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()
