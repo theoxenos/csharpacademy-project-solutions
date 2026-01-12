@@ -1,12 +1,13 @@
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages;
 
-public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habit> habitRepository) : ErrorPageModel
+public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habit> habitRepository) : PageModel
 {
     [BindProperty] public Habit HabitModel { get; set; } = new();
     public List<HabitUnit> HabitUnits { get; set; } = [];
@@ -19,7 +20,7 @@ public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habi
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Something went wrong: {ex.Message}";
+            ViewData["ErrorMessage"] = $"Something went wrong: {ex.Message}";
         }
     }
 
@@ -40,7 +41,7 @@ public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habi
         {
             if (exception.InnerException is not SqliteException { SqliteErrorCode: 19 })
             {
-                ErrorMessage = exception.Message;
+                ViewData["ErrorMessage"] = exception.Message;
                 return Page();
             }
 
