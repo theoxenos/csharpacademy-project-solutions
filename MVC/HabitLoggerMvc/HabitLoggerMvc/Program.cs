@@ -10,25 +10,11 @@ builder.Configuration.AddUserSecrets<Program>();
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-var sqlServerConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var sqliteConnectionString =
     builder.Configuration.GetConnectionString("SqliteConnection") ?? "Data Source=habitlogger.db";
 
-if (string.IsNullOrEmpty(sqlServerConnectionString) && string.IsNullOrEmpty(sqliteConnectionString))
-{
-    throw new InvalidOperationException("No valid connection string found.");
-}
-
-if (!string.IsNullOrEmpty(sqlServerConnectionString))
-{
-    builder.Services.AddDbContext<HabitLoggerContext>(options =>
-        options.UseSqlServer(sqlServerConnectionString));
-}
-else
-{
-    builder.Services.AddDbContext<HabitLoggerContext>(options =>
-        options.UseSqlite(sqliteConnectionString));
-}
+builder.Services.AddDbContext<HabitLoggerContext>(options =>
+    options.UseSqlite(sqliteConnectionString));
 
 builder.Services.AddScoped<IRepository<Habit>, HabitRepository>();
 builder.Services.AddScoped<IHabitUnitRepository, HabitUnitRepository>();
@@ -62,21 +48,15 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<HabitLoggerContext>();
 
-    if (context.Database.IsSqlite())
+    var connectionString = context.Database.GetConnectionString();
+    var builderSqlite = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder(connectionString);
+    var databaseFile = builderSqlite.DataSource;
+    if (!string.IsNullOrEmpty(databaseFile) && databaseFile != ":memory:")
     {
-        var connectionString = context.Database.GetConnectionString();
-        if (connectionString != null)
+        var directory = Path.GetDirectoryName(databaseFile);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
         {
-            var builderSqlite = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder(connectionString);
-            var databaseFile = builderSqlite.DataSource;
-            if (!string.IsNullOrEmpty(databaseFile) && databaseFile != ":memory:")
-            {
-                var directory = Path.GetDirectoryName(databaseFile);
-                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-            }
+            Directory.CreateDirectory(directory);
         }
     }
 
