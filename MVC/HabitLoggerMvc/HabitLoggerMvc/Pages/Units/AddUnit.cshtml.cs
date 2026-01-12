@@ -8,7 +8,7 @@ namespace HabitLoggerMvc.Pages.Units;
 
 public class AddUnit(IHabitUnitRepository repository) : PageModel
 {
-    [BindProperty] public HabitUnit NewHabitUnit { get; set; }
+    [BindProperty] public HabitUnit NewHabitUnit { get; set; } = new();
 
     public IActionResult OnGet()
     {
@@ -25,7 +25,7 @@ public class AddUnit(IHabitUnitRepository repository) : PageModel
         }
         catch (DbUpdateException)
         {
-            ModelState.AddModelError("NewHabitUnit.Name", "An error occurred while saving. Ensure the name is unique if required.");
+            ModelState.AddModelError("NewHabitUnit.Name", $"{NewHabitUnit.Name} already exists.");
 
             return Page();
         }

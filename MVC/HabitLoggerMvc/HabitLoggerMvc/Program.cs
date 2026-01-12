@@ -1,5 +1,4 @@
 using HabitLoggerMvc.Data;
-using HabitLoggerMvc.Middleware;
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -24,16 +23,16 @@ builder.Services.AddScoped<IHabitLogRepository, HabitLogRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// if (!app.Environment.IsDevelopment())
-// {
-//     app.UseExceptionHandler("/Error");
-//     app.UseHsts();
-// }
-// else
-// {
-//     app.UseDeveloperExceptionPage();
-// }
-app.UseExceptionHandler("/Error");
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+else
+{
+    app.UseDeveloperExceptionPage();
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

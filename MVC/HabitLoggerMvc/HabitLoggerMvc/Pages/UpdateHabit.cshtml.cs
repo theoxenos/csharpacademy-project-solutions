@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages;
 
-public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepository habitUnitRepository) : PageModel
+public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepository habitUnitRepository) : ErrorPageModel
 {
     [BindProperty] public Habit HabitModel { get; set; }
 
@@ -28,7 +28,8 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepositor
         }
         catch (Exception ex)
         {
-            return RedirectToPage("/Error", new { message = ex.Message });
+            ErrorMessage = ex.Message;
+            return Page();
         }
     }
 
