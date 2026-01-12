@@ -18,6 +18,7 @@ public class HabitLoggerContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<HabitUnit>().HasIndex(u => u.Name).IsUnique();
         modelBuilder.Entity<HabitUnit>(b =>
         {
             b.HasData
@@ -30,6 +31,7 @@ public class HabitLoggerContext : DbContext
             );
         });
 
+        modelBuilder.Entity<Habit>().HasIndex(h => h.Name).IsUnique();
         modelBuilder.Entity<Habit>(b =>
         {
             b.HasData(

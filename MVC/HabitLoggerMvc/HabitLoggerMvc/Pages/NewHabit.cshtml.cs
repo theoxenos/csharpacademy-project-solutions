@@ -1,15 +1,15 @@
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages;
 
-public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habit> habitRepository) : PageModel
+public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habit> habitRepository) : ErrorPageModel
 {
     [BindProperty] public Habit HabitModel { get; set; } = new();
-    public List<HabitUnit> HabitUnits { get; set; }
+    public List<HabitUnit> HabitUnits { get; set; } = [];
 
     public async Task OnGet()
     {
@@ -19,9 +19,7 @@ public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habi
         }
         catch (Exception ex)
         {
-            // If we can't get units, the page won't work correctly.
-            // We might want to redirect to error or just handle it.
-            HabitUnits = new List<HabitUnit>();
+            ErrorMessage = $"Something went wrong: {ex.Message}";
         }
     }
 
@@ -38,10 +36,17 @@ public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habi
         {
             await habitRepository.AddAsync(HabitModel);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException exception)
         {
-            ModelState.AddModelError("HabitModel.Name", "An error occurred while saving. Ensure the name is unique if required.");
+            if (exception.InnerException is not SqliteException { SqliteErrorCode: 19 })
+            {
+                ErrorMessage = exception.Message;
+                return Page();
+            }
+
+            ModelState.AddModelError("HabitModel.Name", $"{HabitModel.Name} already exists.");
             HabitUnits = (await habitUnitRepository.GetAll()).ToList();
+
             return Page();
         }
 

@@ -1,13 +1,12 @@
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HabitLoggerMvc.Pages;
 
-public class DeleteHabit(IRepository<Habit> habitRepository) : PageModel
+public class DeleteHabit(IRepository<Habit> habitRepository) : ErrorPageModel
 {
-    [BindProperty] public Habit HabitModel { get; set; } = default!;
+    [BindProperty] public Habit HabitModel { get; set; } = null!;
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
@@ -24,7 +23,8 @@ public class DeleteHabit(IRepository<Habit> habitRepository) : PageModel
         }
         catch (Exception ex)
         {
-            return RedirectToPage("/Error", new { message = ex.Message });
+            ErrorMessage = ex.Message;
+            return Page();
         }
     }
 
@@ -37,7 +37,8 @@ public class DeleteHabit(IRepository<Habit> habitRepository) : PageModel
         }
         catch (Exception ex)
         {
-            return RedirectToPage("/Error", new { message = ex.Message });
+            ErrorMessage = ex.Message;
+            return Page();
         }
     }
 }
