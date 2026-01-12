@@ -30,9 +30,5 @@ public class DetailHabit(
         {
             return NotFound();
         }
-        // catch (Exception ex)
-        // {
-        //     return RedirectToPage("/Error", new { message = ex.Message });
-        // }
     }
 }

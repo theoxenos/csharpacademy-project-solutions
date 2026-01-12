@@ -1,10 +1,11 @@
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HabitLoggerMvc.Pages.Logs;
 
-public class DeleteHabitLog(IHabitLogRepository repository) : ErrorPageModel
+public class DeleteHabitLog(IHabitLogRepository repository) : PageModel
 {
     [BindProperty] public HabitLog HabitLog { get; set; }
     public int HabitId => HabitLog.HabitId;
@@ -27,7 +28,7 @@ public class DeleteHabitLog(IHabitLogRepository repository) : ErrorPageModel
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
+            ViewData["ErrorMessage"] = ex.Message;
             return Page();
         }
     }
@@ -42,7 +43,7 @@ public class DeleteHabitLog(IHabitLogRepository repository) : ErrorPageModel
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
+            ViewData["ErrorMessage"] = ex.Message;
             return Page();
         }
     }

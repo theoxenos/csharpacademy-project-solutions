@@ -4,6 +4,14 @@
 <div class="alert alert-warning">
     Are you sure you want to delete the log @Model.HabitLog.Date.ToShortDateString()?
 </div>
+
+@if (ViewData["ErrorMessage"] is not null)
+{
+    <div class="alert alert-warning">
+        @ViewData["ErrorMessage"]
+    </div>
+}
+
 <div class="row">
     <form method="post">
         @Html.HiddenFor(model => model.HabitLog.Id)

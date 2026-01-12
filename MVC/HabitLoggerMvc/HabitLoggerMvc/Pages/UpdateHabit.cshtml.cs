@@ -1,11 +1,12 @@
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages;
 
-public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepository habitUnitRepository) : ErrorPageModel
+public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepository habitUnitRepository) : PageModel
 {
     [BindProperty] public Habit HabitModel { get; set; }
 
@@ -27,7 +28,7 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepositor
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
+            ViewData["ErrorMessage"] = ex.Message;
             return Page();
         }
     }
