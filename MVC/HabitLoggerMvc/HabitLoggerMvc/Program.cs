@@ -9,9 +9,10 @@ builder.Configuration.AddUserSecrets<Program>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+// builder.Services.AddExceptionHandler<ExceptionHandler>();
 
 var sqliteConnectionString =
-    builder.Configuration.GetConnectionString("SqliteConnection") ?? "Data Source=habitlogger.db";
+    builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=habitlogger.db";
 
 builder.Services.AddDbContext<HabitLoggerContext>(options =>
     options.UseSqlite(sqliteConnectionString));
@@ -23,18 +24,16 @@ builder.Services.AddScoped<IHabitLogRepository, HabitLogRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
-}
-else
-{
-    app.UseDeveloperExceptionPage();
-}
-
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-
+// if (!app.Environment.IsDevelopment())
+// {
+//     app.UseExceptionHandler("/Error");
+//     app.UseHsts();
+// }
+// else
+// {
+//     app.UseDeveloperExceptionPage();
+// }
+app.UseExceptionHandler("/Error");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

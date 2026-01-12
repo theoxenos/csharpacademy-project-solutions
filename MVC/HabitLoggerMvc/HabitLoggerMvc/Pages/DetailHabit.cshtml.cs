@@ -18,10 +18,21 @@ public class DetailHabit(
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        HabitModel = await habitRepository.GetByIdAsync(id);
-        HabitLogs = (await habitLog.GetByHabitId(id)).OrderByDescending(l => l.Date).ToList();
-        HabitUnit = await habitUnitRepository.GetByIdAsync(HabitModel.HabitUnitId);
+        try
+        {
+            HabitModel = await habitRepository.GetByIdAsync(id);
+            HabitLogs = (await habitLog.GetByHabitId(id)).OrderByDescending(l => l.Date).ToList();
+            HabitUnit = await habitUnitRepository.GetByIdAsync(HabitModel.HabitUnitId);
 
-        return Page();
+            return Page();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        // catch (Exception ex)
+        // {
+        //     return RedirectToPage("/Error", new { message = ex.Message });
+        // }
     }
 }

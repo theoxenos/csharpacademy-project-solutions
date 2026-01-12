@@ -14,9 +14,19 @@ public class UpdateUnit(IHabitUnitRepository repository) : PageModel
     {
         if (id is null or 0) return RedirectToPage("./Units");
 
-        HabitUnit = await repository.GetByIdAsync(id.Value);
-
-        return Page();
+        try
+        {
+            HabitUnit = await repository.GetByIdAsync(id.Value);
+            return Page();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error", new { message = ex.Message });
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()

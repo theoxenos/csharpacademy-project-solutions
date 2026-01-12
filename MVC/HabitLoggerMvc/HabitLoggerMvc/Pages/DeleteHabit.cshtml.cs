@@ -11,17 +11,33 @@ public class DeleteHabit(IRepository<Habit> habitRepository) : PageModel
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        if (id > 0)
-            HabitModel = await habitRepository.GetByIdAsync(id);
-        else
-            return NotFound();
+        if (id <= 0) return NotFound();
 
-        return Page();
+        try
+        {
+            HabitModel = await habitRepository.GetByIdAsync(id);
+            return Page();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error", new { message = ex.Message });
+        }
     }
 
     public async Task<IActionResult> OnPostAsync(int id)
     {
-        await habitRepository.DeleteAsync(id);
-        return RedirectToPage("./Index");
+        try
+        {
+            await habitRepository.DeleteAsync(id);
+            return RedirectToPage("./Index");
+        }
+        catch (Exception ex)
+        {
+            return RedirectToPage("/Error", new { message = ex.Message });
+        }
     }
 }
