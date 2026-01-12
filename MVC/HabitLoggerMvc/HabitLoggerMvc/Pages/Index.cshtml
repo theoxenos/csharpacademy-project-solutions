@@ -22,13 +22,16 @@
             <tr>
                 <td>@Html.DisplayFor(model => habit.Name)</td>
                 <td class="text-end">
-                    <a class="btn btn-outline-primary btn-sm me-1" asp-page="./DetailHabit" asp-route-id="@habit.Id" title="View Details">
+                    <a class="btn btn-outline-primary btn-sm me-1" asp-page="./DetailHabit" asp-route-id="@habit.Id"
+                       title="View Details">
                         <i class="bi bi-eye"></i>
                     </a>
-                    <a class="btn btn-outline-secondary btn-sm me-1" asp-page="./UpdateHabit" asp-route-id="@habit.Id" title="Edit">
+                    <a class="btn btn-outline-secondary btn-sm me-1" asp-page="./UpdateHabit" asp-route-id="@habit.Id"
+                       title="Edit">
                         <i class="bi bi-pencil"></i>
                     </a>
-                    <a class="btn btn-outline-danger btn-sm" asp-page="./DeleteHabit" asp-route-id="@habit.Id" title="Delete">
+                    <a class="btn btn-outline-danger btn-sm" asp-page="./DeleteHabit" asp-route-id="@habit.Id"
+                       title="Delete">
                         <i class="bi bi-trash"></i>
                     </a>
                 </td>

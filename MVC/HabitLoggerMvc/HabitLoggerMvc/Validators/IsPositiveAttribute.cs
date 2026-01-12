@@ -13,7 +13,7 @@ public class IsPositiveAttribute : ValidationAttribute
     {
         if (IsValid(value)) return ValidationResult.Success;
 
-        var errorMessage = FormatErrorMessage(validationContext.DisplayName);
+        string errorMessage = FormatErrorMessage(validationContext.DisplayName);
         return new ValidationResult(errorMessage);
     }
 

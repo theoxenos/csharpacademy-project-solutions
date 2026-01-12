@@ -2,7 +2,7 @@ using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages.Logs;
 
@@ -28,9 +28,9 @@ public class UpdateHabitLog(IHabitLogRepository habitLogRepository) : PageModel
         {
             await habitLogRepository.UpdateAsync(HabitLog);
         }
-        catch (SqlException e) when (e is { Number: 2627 } or { Number: 2601 })
+        catch (DbUpdateException)
         {
-            ModelState.AddModelError($"{nameof(HabitLog)}.{nameof(HabitLog.Date)}", "Date must be unique.");
+            ModelState.AddModelError($"{nameof(HabitLog)}.{nameof(HabitLog.Date)}", "An error occurred while saving. Ensure the date is unique if required.");
             return Page();
         }
 
