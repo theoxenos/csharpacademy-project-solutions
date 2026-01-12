@@ -1,6 +1,6 @@
-using Dapper;
 using HabitLoggerMvc.Data;
 using HabitLoggerMvc.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Repositories;
 
@@ -8,53 +8,40 @@ public class HabitUnitRepository(HabitLoggerContext context) : IHabitUnitReposit
 {
     public async Task<HabitUnit> AddAsync(HabitUnit habitUnit)
     {
-        using var connection = context.GetConnection();
-        const string sql = """
-                           INSERT INTO HabitUnits (Name) VALUES (@Name)
-                           SELECT * FROM HabitUnits WHERE Id = SCOPE_IDENTITY();
-                           """;
-        return await connection.QuerySingleAsync<HabitUnit>(sql, habitUnit);
+        context.HabitUnits.Add(habitUnit);
+        await context.SaveChangesAsync();
+        return habitUnit;
     }
 
     public async Task<IEnumerable<HabitUnit>> GetAll()
     {
-        using var connection = context.GetConnection();
-
-        const string sql = "SELECT * FROM HabitUnits";
-        return connection.Query<HabitUnit>(sql);
+        return await context.HabitUnits.ToListAsync();
     }
 
     public async Task<HabitUnit> UpdateAsync(HabitUnit habitUnit)
     {
-        using var connection = context.GetConnection();
-        const string sql = """
-                           UPDATE HabitUnits SET Name = @Name WHERE Id = @Id;
-                           SELECT * FROM HabitUnits WHERE Id = @Id;
-                           """;
-
-        return await connection.QuerySingleAsync<HabitUnit>(sql, habitUnit);
+        context.HabitUnits.Update(habitUnit);
+        await context.SaveChangesAsync();
+        return habitUnit;
     }
 
     public async Task DeleteAsync(int id)
     {
-        using var connection = context.GetConnection();
-        const string sql = "DELETE FROM HabitUnits WHERE Id = @Id";
-        var result = await connection.ExecuteAsync(sql, new { Id = id });
-        if (result != 1) throw new Exception($"Something went wrong deleting habit unit with Id: {id}.");
+        var habitUnit = await context.HabitUnits.FindAsync(id);
+        if (habitUnit != null)
+        {
+            context.HabitUnits.Remove(habitUnit);
+            await context.SaveChangesAsync();
+        }
     }
 
     public async Task<HabitUnit> GetByIdAsync(int id)
     {
-        using var connection = context.GetConnection();
-        const string sql = "SELECT * FROM HabitUnits WHERE Id=@Id";
-        return await connection.QuerySingleAsync<HabitUnit>(sql, new { Id = id });
+        return await context.HabitUnits.FindAsync(id) ?? throw new KeyNotFoundException($"HabitUnit with Id {id} not found.");
     }
 
     public async Task<bool> HabitUnitHasHabits(int id)
     {
-        using var connection = context.GetConnection();
-        const string sql = "SELECT COUNT(Id) FROM Habits WHERE HabitUnitId = @Id";
-        var habitCount = await connection.ExecuteScalarAsync<int>(sql, new { Id = id });
-        return habitCount >= 1;
+        return await context.Habits.AnyAsync(h => h.HabitUnitId == id);
     }
 }

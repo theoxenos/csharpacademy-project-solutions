@@ -2,7 +2,7 @@ using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages.Units;
 
@@ -27,9 +27,9 @@ public class UpdateUnit(IHabitUnitRepository repository) : PageModel
         {
             await repository.UpdateAsync(HabitUnit);
         }
-        catch (SqlException e) when (e is { Number: 2627 } or { Number: 2601 })
+        catch (DbUpdateException)
         {
-            ModelState.AddModelError("HabitUnit.Name", "Name already exists.");
+            ModelState.AddModelError("HabitUnit.Name", "An error occurred while saving. Ensure the name is unique if required.");
 
             return Page();
         }

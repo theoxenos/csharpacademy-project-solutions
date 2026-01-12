@@ -1,6 +1,6 @@
 services:
   sqlserver:
-#    image: mcr.microsoft.com/mssql/server:2019-latest
+    #    image: mcr.microsoft.com/mssql/server:2019-latest
     image: rapidfort/microsoft-sql-server-2019-ib
     environment:
       ACCEPT_EULA: Y
