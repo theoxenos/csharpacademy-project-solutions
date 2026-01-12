@@ -4,22 +4,20 @@ namespace HabitLoggerMvc.Validators;
 
 public class IsPositiveAttribute : ValidationAttribute
 {
-    public override bool IsValid(object? value)
-    {
-        return value is >= 0;
-    }
+    public override bool IsValid(object? value) => value is >= 0;
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        if (IsValid(value)) return ValidationResult.Success;
+        if (IsValid(value))
+        {
+            return ValidationResult.Success;
+        }
 
         string errorMessage = FormatErrorMessage(validationContext.DisplayName);
         return new ValidationResult(errorMessage);
     }
 
-    public override string FormatErrorMessage(string name)
-    {
+    public override string FormatErrorMessage(string name) =>
         // Customize the error message here
-        return $"{name} must not be negative.";
-    }
+        $"{name} must not be negative.";
 }

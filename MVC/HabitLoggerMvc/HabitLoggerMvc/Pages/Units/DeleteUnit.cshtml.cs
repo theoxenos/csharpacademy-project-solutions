@@ -13,7 +13,10 @@ public class DeleteUnit(IHabitUnitRepository repository) : PageModel
 
     public async Task<IActionResult> OnGetAsync(int? id)
     {
-        if (!id.HasValue) return RedirectToPage("./Units");
+        if (!id.HasValue)
+        {
+            return RedirectToPage("./Units");
+        }
 
         try
         {
@@ -33,7 +36,10 @@ public class DeleteUnit(IHabitUnitRepository repository) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
         try
         {

@@ -1,16 +1,17 @@
 using HabitLoggerMvc.Data;
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 // builder.Services.AddExceptionHandler<ExceptionHandler>();
 
-var sqliteConnectionString =
+string sqliteConnectionString =
     builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=habitlogger.db";
 
 builder.Services.AddDbContext<HabitLoggerContext>(options =>
@@ -20,7 +21,7 @@ builder.Services.AddScoped<IRepository<Habit>, HabitRepository>();
 builder.Services.AddScoped<IHabitUnitRepository, HabitUnitRepository>();
 builder.Services.AddScoped<IHabitLogRepository, HabitLogRepository>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -42,16 +43,16 @@ app.UseRouting();
 
 app.MapRazorPages();
 
-using (var scope = app.Services.CreateScope())
+using (IServiceScope scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<HabitLoggerContext>();
+    HabitLoggerContext context = scope.ServiceProvider.GetRequiredService<HabitLoggerContext>();
 
-    var connectionString = context.Database.GetConnectionString();
-    var builderSqlite = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder(connectionString);
-    var databaseFile = builderSqlite.DataSource;
+    string? connectionString = context.Database.GetConnectionString();
+    SqliteConnectionStringBuilder builderSqlite = new(connectionString);
+    string databaseFile = builderSqlite.DataSource;
     if (!string.IsNullOrEmpty(databaseFile) && databaseFile != ":memory:")
     {
-        var directory = Path.GetDirectoryName(databaseFile);
+        string? directory = Path.GetDirectoryName(databaseFile);
         if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
         {
             Directory.CreateDirectory(directory);

@@ -10,7 +10,10 @@ public class DeleteHabit(IRepository<Habit> habitRepository) : ErrorPageModel
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        if (id <= 0) return NotFound();
+        if (id <= 0)
+        {
+            return NotFound();
+        }
 
         try
         {

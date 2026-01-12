@@ -13,7 +13,11 @@ public class Units(IHabitUnitRepository repository) : PageModel
     {
         try
         {
-            if (HabitUnits == null) HabitUnits = (await repository.GetAll()).ToList();
+            if (HabitUnits == null)
+            {
+                HabitUnits = (await repository.GetAll()).ToList();
+            }
+
             return Page();
         }
         catch (Exception ex)

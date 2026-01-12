@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HabitLoggerMvc.Models;
 
-public class ErrorPageModel: PageModel
+public class ErrorPageModel : PageModel
 {
     public string? ErrorMessage { get; set; }
 }

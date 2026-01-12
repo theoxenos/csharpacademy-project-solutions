@@ -13,10 +13,7 @@ public class HabitRepository(HabitLoggerContext context) : IRepository<Habit>
         return habit;
     }
 
-    public async Task<IEnumerable<Habit>> GetAll()
-    {
-        return await context.Habits.ToListAsync();
-    }
+    public async Task<IEnumerable<Habit>> GetAll() => await context.Habits.ToListAsync();
 
     public async Task<Habit> UpdateAsync(Habit habit)
     {
@@ -27,7 +24,7 @@ public class HabitRepository(HabitLoggerContext context) : IRepository<Habit>
 
     public async Task DeleteAsync(int id)
     {
-        var habit = await context.Habits.FindAsync(id);
+        Habit? habit = await context.Habits.FindAsync(id);
         if (habit != null)
         {
             context.Habits.Remove(habit);
@@ -35,8 +32,6 @@ public class HabitRepository(HabitLoggerContext context) : IRepository<Habit>
         }
     }
 
-    public async Task<Habit> GetByIdAsync(int id)
-    {
-        return await context.Habits.FindAsync(id) ?? throw new KeyNotFoundException($"Habit with Id {id} not found.");
-    }
+    public async Task<Habit> GetByIdAsync(int id) => await context.Habits.FindAsync(id) ??
+                                                     throw new KeyNotFoundException($"Habit with Id {id} not found.");
 }

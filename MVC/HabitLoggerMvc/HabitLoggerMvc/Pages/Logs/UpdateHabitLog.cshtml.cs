@@ -13,7 +13,10 @@ public class UpdateHabitLog(IHabitLogRepository habitLogRepository) : PageModel
 
     public async Task<IActionResult> OnGetAsync(int? id)
     {
-        if (!id.HasValue) return RedirectToPage("../Index");
+        if (!id.HasValue)
+        {
+            return RedirectToPage("../Index");
+        }
 
         try
         {
@@ -32,7 +35,10 @@ public class UpdateHabitLog(IHabitLogRepository habitLogRepository) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
         try
         {
@@ -40,7 +46,8 @@ public class UpdateHabitLog(IHabitLogRepository habitLogRepository) : PageModel
         }
         catch (DbUpdateException)
         {
-            ModelState.AddModelError($"{nameof(HabitLog)}.{nameof(HabitLog.Date)}", "An error occurred while saving. Ensure the date is unique if required.");
+            ModelState.AddModelError($"{nameof(HabitLog)}.{nameof(HabitLog.Date)}",
+                "An error occurred while saving. Ensure the date is unique if required.");
             return Page();
         }
 

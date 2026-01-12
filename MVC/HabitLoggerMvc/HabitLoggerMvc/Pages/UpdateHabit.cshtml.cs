@@ -1,7 +1,6 @@
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages;
@@ -17,7 +16,7 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepositor
         try
         {
             HabitModel = await habitRepository.GetByIdAsync(id);
-            var units = await habitUnitRepository.GetAll();
+            IEnumerable<HabitUnit> units = await habitUnitRepository.GetAll();
             HabitUnits = units.ToList();
 
             return Page();
@@ -35,7 +34,10 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepositor
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
         try
         {
@@ -43,8 +45,9 @@ public class UpdateHabit(IRepository<Habit> habitRepository, IHabitUnitRepositor
         }
         catch (DbUpdateException)
         {
-            ModelState.AddModelError("HabitModel.Name", "An error occurred while saving. Ensure the name is unique if required.");
-            var units = await habitUnitRepository.GetAll();
+            ModelState.AddModelError("HabitModel.Name",
+                "An error occurred while saving. Ensure the name is unique if required.");
+            IEnumerable<HabitUnit> units = await habitUnitRepository.GetAll();
             HabitUnits = units.ToList();
             return Page();
         }

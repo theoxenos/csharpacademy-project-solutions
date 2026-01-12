@@ -13,10 +13,7 @@ public class HabitLogRepository(HabitLoggerContext context) : IHabitLogRepositor
         return habitLog;
     }
 
-    public async Task<IEnumerable<HabitLog>> GetAll()
-    {
-        return await context.HabitLogs.ToListAsync();
-    }
+    public async Task<IEnumerable<HabitLog>> GetAll() => await context.HabitLogs.ToListAsync();
 
     public async Task<HabitLog> UpdateAsync(HabitLog habitLog)
     {
@@ -27,7 +24,7 @@ public class HabitLogRepository(HabitLoggerContext context) : IHabitLogRepositor
 
     public async Task DeleteAsync(int id)
     {
-        var habitLog = await context.HabitLogs.FindAsync(id);
+        HabitLog? habitLog = await context.HabitLogs.FindAsync(id);
         if (habitLog != null)
         {
             context.HabitLogs.Remove(habitLog);
@@ -35,13 +32,10 @@ public class HabitLogRepository(HabitLoggerContext context) : IHabitLogRepositor
         }
     }
 
-    public async Task<HabitLog> GetByIdAsync(int id)
-    {
-        return await context.HabitLogs.FindAsync(id) ?? throw new KeyNotFoundException($"HabitLog with Id {id} not found.");
-    }
+    public async Task<HabitLog> GetByIdAsync(int id) => await context.HabitLogs.FindAsync(id) ??
+                                                        throw new KeyNotFoundException(
+                                                            $"HabitLog with Id {id} not found.");
 
-    public async Task<IEnumerable<HabitLog>> GetByHabitId(int id)
-    {
-        return await context.HabitLogs.Where(hl => hl.HabitId == id).ToListAsync();
-    }
+    public async Task<IEnumerable<HabitLog>> GetByHabitId(int id) =>
+        await context.HabitLogs.Where(hl => hl.HabitId == id).ToListAsync();
 }
