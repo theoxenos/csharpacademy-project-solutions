@@ -12,7 +12,10 @@ public class UpdateUnit(IHabitUnitRepository repository) : PageModel
 
     public async Task<IActionResult> OnGetAsync(int? id)
     {
-        if (id is null or 0) return RedirectToPage("./Units");
+        if (id is null or 0)
+        {
+            return RedirectToPage("./Units");
+        }
 
         try
         {
@@ -31,7 +34,10 @@ public class UpdateUnit(IHabitUnitRepository repository) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
         try
         {
@@ -39,7 +45,8 @@ public class UpdateUnit(IHabitUnitRepository repository) : PageModel
         }
         catch (DbUpdateException)
         {
-            ModelState.AddModelError("HabitUnit.Name", "An error occurred while saving. Ensure the name is unique if required.");
+            ModelState.AddModelError("HabitUnit.Name",
+                "An error occurred while saving. Ensure the name is unique if required.");
 
             return Page();
         }

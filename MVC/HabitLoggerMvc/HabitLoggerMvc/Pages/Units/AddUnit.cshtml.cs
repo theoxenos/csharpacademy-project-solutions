@@ -10,14 +10,14 @@ public class AddUnit(IHabitUnitRepository repository) : PageModel
 {
     [BindProperty] public HabitUnit NewHabitUnit { get; set; } = new();
 
-    public IActionResult OnGet()
-    {
-        return Page();
-    }
+    public IActionResult OnGet() => Page();
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
         try
         {

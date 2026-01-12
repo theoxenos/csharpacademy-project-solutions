@@ -11,7 +11,10 @@ public class DeleteHabitLog(IHabitLogRepository repository) : ErrorPageModel
 
     public async Task<IActionResult> OnGetAsync(int? id)
     {
-        if (!id.HasValue) return RedirectToPage("../Index");
+        if (!id.HasValue)
+        {
+            return RedirectToPage("../Index");
+        }
 
         try
         {
@@ -33,7 +36,7 @@ public class DeleteHabitLog(IHabitLogRepository repository) : ErrorPageModel
     {
         try
         {
-            var habitId = HabitLog.HabitId;
+            int habitId = HabitLog.HabitId;
             await repository.DeleteAsync(HabitLog.Id);
             return RedirectToPage("../DetailHabit", new { id = habitId });
         }

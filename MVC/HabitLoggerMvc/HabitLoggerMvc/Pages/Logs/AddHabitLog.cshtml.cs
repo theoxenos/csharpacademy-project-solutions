@@ -18,7 +18,10 @@ public class AddHabitLog(IHabitLogRepository repository) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
         try
         {
@@ -28,7 +31,8 @@ public class AddHabitLog(IHabitLogRepository repository) : PageModel
         {
             // Simplified check for unique constraint if needed, but for now we'll just handle it generally
             // EF Core doesn't give us the SQL Error number easily without reaching into the provider
-            ModelState.AddModelError($"{nameof(HabitLog)}.{nameof(HabitLog.Date)}", "An error occurred while saving. Ensure the date is unique if required.");
+            ModelState.AddModelError($"{nameof(HabitLog)}.{nameof(HabitLog.Date)}",
+                "An error occurred while saving. Ensure the date is unique if required.");
             return Page();
         }
 

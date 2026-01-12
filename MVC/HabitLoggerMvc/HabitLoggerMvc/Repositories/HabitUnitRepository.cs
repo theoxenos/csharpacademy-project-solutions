@@ -13,10 +13,7 @@ public class HabitUnitRepository(HabitLoggerContext context) : IHabitUnitReposit
         return habitUnit;
     }
 
-    public async Task<IEnumerable<HabitUnit>> GetAll()
-    {
-        return await context.HabitUnits.ToListAsync();
-    }
+    public async Task<IEnumerable<HabitUnit>> GetAll() => await context.HabitUnits.ToListAsync();
 
     public async Task<HabitUnit> UpdateAsync(HabitUnit habitUnit)
     {
@@ -27,7 +24,7 @@ public class HabitUnitRepository(HabitLoggerContext context) : IHabitUnitReposit
 
     public async Task DeleteAsync(int id)
     {
-        var habitUnit = await context.HabitUnits.FindAsync(id);
+        HabitUnit? habitUnit = await context.HabitUnits.FindAsync(id);
         if (habitUnit != null)
         {
             context.HabitUnits.Remove(habitUnit);
@@ -35,13 +32,9 @@ public class HabitUnitRepository(HabitLoggerContext context) : IHabitUnitReposit
         }
     }
 
-    public async Task<HabitUnit> GetByIdAsync(int id)
-    {
-        return await context.HabitUnits.FindAsync(id) ?? throw new KeyNotFoundException($"HabitUnit with Id {id} not found.");
-    }
+    public async Task<HabitUnit> GetByIdAsync(int id) => await context.HabitUnits.FindAsync(id) ??
+                                                         throw new KeyNotFoundException(
+                                                             $"HabitUnit with Id {id} not found.");
 
-    public async Task<bool> HabitUnitHasHabits(int id)
-    {
-        return await context.Habits.AnyAsync(h => h.HabitUnitId == id);
-    }
+    public async Task<bool> HabitUnitHasHabits(int id) => await context.Habits.AnyAsync(h => h.HabitUnitId == id);
 }

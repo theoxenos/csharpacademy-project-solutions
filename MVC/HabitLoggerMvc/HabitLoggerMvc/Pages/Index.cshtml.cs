@@ -13,7 +13,7 @@ public class IndexModel(IRepository<Habit> repository) : PageModel
     {
         try
         {
-            var result = await repository.GetAll();
+            IEnumerable<Habit> result = await repository.GetAll();
             Habits = result.ToList();
             return Page();
         }
