@@ -21,7 +21,7 @@ public class FoodJournalContext(DbContextOptions options) : DbContext(options)
             {
                 Id = 2,
                 Name = "Fruit",
-                Icon = "icons8-kawaii-grapes-96.png"
+                Icon = "icons8-grapes-96.png"
             },
             new Food
             {

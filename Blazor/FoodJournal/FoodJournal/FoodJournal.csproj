@@ -11,4 +11,9 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\bootstrap-icons.woff" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\bootstrap-icons.woff2" />
+    </ItemGroup>
+
 </Project>
