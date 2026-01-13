@@ -1,0 +1,36 @@
+@page
+@model Units
+
+<div class="text-center mb-4">
+    <h2 class="display-4">Habit Units</h2>
+</div>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.HabitUnits[0].Name)</th>
+            <th class="text-end">Manage</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var unit in Model.HabitUnits)
+        {
+            <tr>
+                <td>@Html.DisplayFor(model => unit.Name)</td>
+                <td class="text-end">
+                    <a class="btn btn-outline-secondary btn-sm me-1" asp-page="./UpdateUnit" asp-route-id="@unit.Id">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a class="btn btn-outline-danger btn-sm me-1" asp-page="./DeleteUnit" asp-route-id="@unit.Id">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-end">
+    <a class="btn btn-outline-success" asp-page="./AddUnit">+ New habit unit</a>
+</div>

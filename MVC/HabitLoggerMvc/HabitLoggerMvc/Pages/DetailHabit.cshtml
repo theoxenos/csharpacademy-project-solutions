@@ -1,0 +1,41 @@
+@page
+@model DetailHabit
+
+<h2 class="mb-4 text-center">Viewing logs for the habit: @Model.HabitModel.Name</h2>
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th class="text-end">Quantity</th>
+            <th>Unit</th>
+            <th class="text-end">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var log in Model.HabitLogs)
+        {
+            <tr>
+                <td>@Html.DisplayFor(model => log.Date)</td>
+                <td class="text-end">@Html.DisplayFor(model => log.Quantity)</td>
+                <td>@Html.DisplayFor(model => model.HabitUnit.Name)</td>
+                <td class="text-end">
+                    <a class="btn btn-outline-secondary btn-sm me-1" asp-page="./Logs/UpdateHabitLog"
+                       asp-route-id="@log.Id" title="Edit">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a class="btn btn-outline-danger btn-sm" asp-page="./Logs/DeleteHabitLog" asp-route-id="@log.Id"
+                       title="Delete">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-end mt-3">
+    <a class="btn btn-outline-primary" asp-page="./Index">Back</a>
+    <a class="btn btn-outline-success" asp-page="./Logs/AddHabitLog" asp-route-id="@Model.HabitModel.Id">+ Add New
+        Log</a>
+</div>

@@ -1,0 +1,29 @@
+@page
+@model DeleteUnit
+
+<h2 class="mb-4 text-center">Delete @Model.HabitUnit.Name?</h2>
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        @if (Model.CanDelete)
+        {
+            <div class="alert alert-warning">
+                Are you sure you want to delete the unit @Model.HabitUnit.Name?
+            </div>
+            <div class="row">
+                <form method="post">
+                    @Html.HiddenFor(model => model.HabitUnit.Id)
+                    @Html.HiddenFor(model => model.HabitUnit.Name)
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                    <a class="btn btn-outline-secondary" asp-page="./Units">Cancel</a>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger">
+                Can't delete unit because there are habits coupled to this unit. Delete them first.
+            </div>
+            <a class="" asp-page="./Units">Back to units list</a>
+        }
+    </div>
+</div>

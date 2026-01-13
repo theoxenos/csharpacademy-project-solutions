@@ -1,0 +1,22 @@
+@page
+@model DeleteHabitLog
+
+<div class="alert alert-warning">
+    Are you sure you want to delete the log @Model.HabitLog.Date.ToShortDateString()?
+</div>
+
+@if (ViewData["ErrorMessage"] is not null)
+{
+    <div class="alert alert-warning">
+        @ViewData["ErrorMessage"]
+    </div>
+}
+
+<div class="row">
+    <form method="post">
+        @Html.HiddenFor(model => model.HabitLog.Id)
+        @Html.HiddenFor(model => model.HabitLog.HabitId)
+        <button class="btn btn-danger" type="submit">Delete</button>
+        <a class="btn btn-outline-secondary" asp-page="../DetailHabit" asp-route-id="@Model.HabitId">Cancel</a>
+    </form>
+</div>
