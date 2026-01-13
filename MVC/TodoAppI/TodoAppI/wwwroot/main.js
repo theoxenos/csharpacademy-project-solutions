@@ -28,18 +28,18 @@ const todoModule = (() => {
             const todoItemId = document.querySelector('#todoId').value;
 
             const method = todoItemId === '' ? 'post' : 'put';
+            const url = todoItemId === '' ? 'todos' : `todos/${todoItemId}`;
             const init = {
                 method,
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    id: Number(todoItemId),
                     name: nameElement.value,
                     completed: completedElement.checked
                 })
             }
-            const response = await fetch(`todos/${todoItemId}`, init);
+            const response = await fetch(url, init);
 
             if (response.status === 204) {
                 upsertModal.hide();
@@ -150,4 +150,4 @@ const todoModule = (() => {
     };
 })();
 
-todoModule.init();
+void todoModule.init();

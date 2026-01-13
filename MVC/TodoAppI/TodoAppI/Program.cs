@@ -1,15 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using TodoAppI.Data;
-using TodoAppI.Models;
+using TodoAppI.Endpoints;
+using TodoAppI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("todolist"));
+builder.Services.AddScoped<ITodoService, TodoService>();
 
 var app = builder.Build();
 
@@ -29,49 +30,6 @@ using (var scope = app.Services.CreateScope())
     scope.ServiceProvider.GetRequiredService<TodoContext>().Database.EnsureCreated();
 }
 
-var todoRoute = app.MapGroup("/todos");
-todoRoute.MapGet("", async (TodoContext context) => await context.TodoItems.ToArrayAsync()).WithName("GetTodos")
-    .WithOpenApi();
-
-todoRoute.MapPost("", async (TodoContext context, TodoItem todoItem) =>
-{
-    if (string.IsNullOrEmpty(todoItem.Name))
-        return Results.BadRequest();
-
-    context.TodoItems.Add(todoItem);
-    await context.SaveChangesAsync();
-
-    return Results.NoContent();
-}).WithName("CreateTodo").WithOpenApi();
-
-todoRoute.MapPut("{id:int}", async (TodoContext context, int id, TodoItem item) =>
-{
-    var todoItem = await context.TodoItems.FindAsync(id);
-    if (todoItem == null)
-        return Results.NotFound();
-
-    if (!string.IsNullOrEmpty(item.Name))
-        todoItem.Name = item.Name;
-
-    if (item.Completed != null)
-        todoItem.Completed = item.Completed;
-
-    context.TodoItems.Update(todoItem);
-    await context.SaveChangesAsync();
-
-    return Results.NoContent();
-}).WithName("UpdateTodo").WithOpenApi();
-
-todoRoute.MapDelete("{id:int}", async (TodoContext context, int id) =>
-{
-    var todoItem = await context.TodoItems.FindAsync(id);
-    if (todoItem == null)
-        return Results.NotFound();
-
-    context.TodoItems.Remove(todoItem);
-    await context.SaveChangesAsync();
-
-    return Results.NoContent();
-});
+app.MapTodoEndpoints();
 
 app.Run();
