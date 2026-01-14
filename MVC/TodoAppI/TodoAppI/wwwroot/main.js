@@ -1,8 +1,8 @@
-import todosService from "./js/todosApiService.js";
-import elementsService from "./js/elementsService.js";
-import deleteModal from "./js/deleteModal.js";
-import {deleteTodoItemListener, updateTodoItemListener} from "./js/eventHandlers.js";
-import upsertModal from "./js/upsertModal.js";
+import todosService from "./src/todosApiService.js";
+import elementsService from "./src/elementsService.js";
+import deleteModal from "./src/deleteModal.js";
+import {deleteTodoItemListener, updateTodoItemListener} from "./src/eventHandlers.js";
+import upsertModal from "./src/upsertModal.js";
 
 const todoListEl = document.querySelector('#todoList');
 
