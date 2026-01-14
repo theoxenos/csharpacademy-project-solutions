@@ -25,7 +25,7 @@ public class MoviesController(MvcMovieContext context) : Controller
         ViewData["PriceSortParm"] = sortOrder == "Price" ? "price_desc" : "Price";
         ViewData["RatingSortParm"] = sortOrder == "Rating" ? "rating_desc" : "Rating";
 
-        var movies = context.Movie.AsQueryable();
+        IQueryable<Movie> movies = context.Movie.AsQueryable();
 
         if (!string.IsNullOrEmpty(searchString))
         {
@@ -51,7 +51,7 @@ public class MoviesController(MvcMovieContext context) : Controller
             _ => movies.OrderBy(s => s.Title)
         };
 
-        var genreViewModel = new MovieGenreViewModel
+        MovieGenreViewModel genreViewModel = new()
         {
             Genres = new SelectList(await context.Movie.Select(m => m.Genre).Distinct().ToListAsync()),
             Movies = await movies.ToListAsync(),
@@ -71,7 +71,7 @@ public class MoviesController(MvcMovieContext context) : Controller
             return NotFound();
         }
 
-        var movie = await context.Movie
+        Movie? movie = await context.Movie
             .FirstOrDefaultAsync(m => m.Id == id);
         if (movie == null)
         {
@@ -82,10 +82,7 @@ public class MoviesController(MvcMovieContext context) : Controller
     }
 
     // GET: Movies/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
+    public IActionResult Create() => View();
 
     // POST: Movies/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -94,7 +91,10 @@ public class MoviesController(MvcMovieContext context) : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price,Rating")] Movie movie)
     {
-        if (!ModelState.IsValid) return View(movie);
+        if (!ModelState.IsValid)
+        {
+            return View(movie);
+        }
 
         context.Add(movie);
         await context.SaveChangesAsync();
@@ -110,11 +110,12 @@ public class MoviesController(MvcMovieContext context) : Controller
             return NotFound();
         }
 
-        var movie = await context.Movie.FindAsync(id);
+        Movie? movie = await context.Movie.FindAsync(id);
         if (movie == null)
         {
             return NotFound();
         }
+
         return View(movie);
     }
 
@@ -130,7 +131,10 @@ public class MoviesController(MvcMovieContext context) : Controller
             return NotFound();
         }
 
-        if (!ModelState.IsValid) return View(movie);
+        if (!ModelState.IsValid)
+        {
+            return View(movie);
+        }
 
         try
         {
@@ -158,7 +162,7 @@ public class MoviesController(MvcMovieContext context) : Controller
             return NotFound();
         }
 
-        var movie = await context.Movie
+        Movie? movie = await context.Movie
             .FirstOrDefaultAsync(m => m.Id == id);
         if (movie == null)
         {
@@ -169,11 +173,12 @@ public class MoviesController(MvcMovieContext context) : Controller
     }
 
     // POST: Movies/Delete/5
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
+    [ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var movie = await context.Movie.FindAsync(id);
+        Movie? movie = await context.Movie.FindAsync(id);
         if (movie != null)
         {
             context.Movie.Remove(movie);
@@ -184,13 +189,8 @@ public class MoviesController(MvcMovieContext context) : Controller
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+    public IActionResult Error() =>
+        View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 
-    private bool MovieExists(int id)
-    {
-        return context.Movie.Any(e => e.Id == id);
-    }
+    private bool MovieExists(int id) => context.Movie.Any(e => e.Id == id);
 }

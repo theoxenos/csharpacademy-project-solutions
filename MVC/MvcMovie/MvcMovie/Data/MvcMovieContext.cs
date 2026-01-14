@@ -7,12 +7,11 @@ public class MvcMovieContext(DbContextOptions<MvcMovieContext> options) : DbCont
 {
     public DbSet<Movie> Movie { get; set; } = null!;
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
+    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.Entity<Movie>().HasData(
             new Movie
             {
-                Id =1,
+                Id = 1,
                 Title = "When Harry Met Sally",
                 ReleaseDate = DateOnly.Parse("1989-2-12"),
                 Genre = "Romantic Comedy",
@@ -21,7 +20,7 @@ public class MvcMovieContext(DbContextOptions<MvcMovieContext> options) : DbCont
             },
             new Movie
             {
-                Id=2,
+                Id = 2,
                 Title = "Ghostbusters ",
                 ReleaseDate = DateOnly.Parse("1984-3-13"),
                 Genre = "Comedy",
@@ -30,7 +29,7 @@ public class MvcMovieContext(DbContextOptions<MvcMovieContext> options) : DbCont
             },
             new Movie
             {
-                Id=3,
+                Id = 3,
                 Title = "Ghostbusters 2",
                 ReleaseDate = DateOnly.Parse("1986-2-23"),
                 Genre = "Comedy",
@@ -39,7 +38,7 @@ public class MvcMovieContext(DbContextOptions<MvcMovieContext> options) : DbCont
             },
             new Movie
             {
-                Id =4,
+                Id = 4,
                 Title = "Rio Bravo",
                 ReleaseDate = DateOnly.Parse("1959-4-15"),
                 Genre = "Western",
@@ -47,5 +46,4 @@ public class MvcMovieContext(DbContextOptions<MvcMovieContext> options) : DbCont
                 Price = 3.99M
             }
         );
-    }
 }

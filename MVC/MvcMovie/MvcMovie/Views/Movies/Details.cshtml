@@ -13,7 +13,8 @@
             <div class="card-body p-4">
                 <div class="row">
                     <div class="col-md-4 text-center mb-4 mb-md-0">
-                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center shadow-sm" style="height: 300px;">
+                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center shadow-sm"
+                             style="height: 300px;">
                             <i class="bi bi-film display-1 text-secondary opacity-25"></i>
                         </div>
                     </div>
@@ -22,12 +23,15 @@
 
                         <dl class="row mb-0">
                             <dt class="col-sm-4 text-muted fw-bold">@Html.DisplayNameFor(model => model.ReleaseDate)</dt>
-                            <dd class="col-sm-8"><i class="bi bi-calendar3 me-2 text-primary"></i>@Html.DisplayFor(model => model.ReleaseDate)</dd>
+                            <dd class="col-sm-8"><i
+                                    class="bi bi-calendar3 me-2 text-primary"></i>@Html.DisplayFor(model => model.ReleaseDate)
+                            </dd>
 
                             <dt class="col-sm-4 text-muted fw-bold">@Html.DisplayNameFor(model => model.Genre)</dt>
                             <dd class="col-sm-8">
                                 <a asp-action="Index" asp-route-movieGenre="@Model.Genre" class="text-decoration-none">
-                                    <span class="badge bg-info text-dark rounded-pill">@Html.DisplayFor(model => model.Genre)</span>
+                                    <span
+                                        class="badge bg-info text-dark rounded-pill">@Html.DisplayFor(model => model.Genre)</span>
                                 </a>
                             </dd>
 
@@ -36,7 +40,8 @@
 
                             <dt class="col-sm-4 text-muted fw-bold">@Html.DisplayNameFor(model => model.Rating)</dt>
                             <dd class="col-sm-8">
-                                <span class="badge @(Model.Rating == "R" ? "bg-danger" : "bg-success")">@Html.DisplayFor(model => model.Rating)</span>
+                                <span
+                                    class="badge @(Model.Rating == "R" ? "bg-danger" : "bg-success")">@Html.DisplayFor(model => model.Rating)</span>
                             </dd>
                         </dl>
                     </div>

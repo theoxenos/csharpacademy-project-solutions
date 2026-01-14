@@ -12,7 +12,8 @@ public class Movie
     public string? Title { get; set; }
 
     [Display(Name = "Release Date")]
-    [DataType(DataType.Date), Range(typeof(DateOnly), "1/1/1800", "31/1/3026")]
+    [DataType(DataType.Date)]
+    [Range(typeof(DateOnly), "1/1/1800", "31/1/3026")]
     public DateOnly ReleaseDate { get; set; }
 
     [Range(1, 100)]

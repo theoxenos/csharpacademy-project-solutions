@@ -1,17 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddDbContext<MvcMovieContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ??
+                         throw new InvalidOperationException("Connection string not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -29,7 +30,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Movies}/{action=Index}/{id?}");
+    "default",
+    "{controller=Movies}/{action=Index}/{id?}");
 
 app.Run();
