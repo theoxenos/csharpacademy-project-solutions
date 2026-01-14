@@ -90,7 +90,9 @@
                         <span class="text-muted"><i class="bi bi-calendar3 me-1"></i> @Html.DisplayFor(modelItem => item.ReleaseDate)</span>
                     </td>
                     <td>
-                        <span class="badge bg-info text-dark rounded-pill">@Html.DisplayFor(modelItem => item.Genre)</span>
+                        <a asp-action="Index" asp-route-movieGenre="@item.Genre" class="text-decoration-none">
+                            <span class="badge bg-info text-dark rounded-pill">@Html.DisplayFor(modelItem => item.Genre)</span>
+                        </a>
                     </td>
                     <td class="text-end fw-semibold">
                         @Html.DisplayFor(modelItem => item.Price)
