@@ -4,8 +4,17 @@ POST {{TodoAppI_HostAddress}}/todos
 Content-Type: application/json
 
 {
-  "name": "Lipsum"
+  "name": "Lipsum",
+  "id": null
 }
 
 ###
 DELETE {{TodoAppI_HostAddress}}/todos/1
+
+###
+PUT {{TodoAppI_HostAddress}}/todos/1
+Content-Type: application/json
+
+{
+  "completed": false
+}

@@ -1,5 +1,3 @@
-import eventBus from "./eventBus.js";
-
 const createElement = (tag, {classes = [], attributes = {}, text = ''} = {}) => {
     const el = document.createElement(tag);
     if (classes.length) el.classList.add(...classes);
@@ -26,12 +24,16 @@ const createCheckboxGroup = (todoItem) => {
     return container;
 };
 
-const createButtonGroup = (todoItemId) => {
+const createButtonGroup = () => {
     const container = createElement('span', {classes: ['d-flex', 'gap-1']});
-    const updateButton = createElement('button', {classes: ['btn', 'btn-primary', 'bi', 'bi-pencil']});
-
-    const deleteButton = createElement('button', {classes: ['btn', 'btn-danger', 'bi', 'bi-trash']});
-    deleteButton.addEventListener('click', async () => await eventBus.emit('deleteTodo', todoItemId))
+    const updateButton = createElement('button', {
+        classes: ['btn', 'btn-primary', 'bi', 'bi-pencil'],
+        attributes: {'data-type': 'update'}
+    });
+    const deleteButton = createElement('button', {
+        classes: ['btn', 'btn-danger', 'bi', 'bi-trash'],
+        attributes: {'data-type': 'delete'}
+    });
 
     container.append(updateButton, deleteButton);
     return container;
@@ -39,12 +41,13 @@ const createButtonGroup = (todoItemId) => {
 
 const createTodoItemElement = (todoItem) => {
     const todoItemEl = createElement('li', {
-        classes: ['list-group-item', 'd-flex', 'align-items-center', 'justify-content-between']
+        classes: ['list-group-item', 'd-flex', 'align-items-center', 'justify-content-between'],
+        attributes: {'data-id': todoItem.id}
     });
 
     todoItemEl.append(
         createCheckboxGroup(todoItem),
-        createButtonGroup(todoItem.id)
+        createButtonGroup()
     );
 
     return todoItemEl;
