@@ -1,9 +1,22 @@
 const todoModule = (() => {
     let todos = [];
+    let todoToDeleteId = null;
 
-    const toastLiveExample = document.getElementById('toastSuccess');
+    const toastSuccessElement = document.getElementById('toastSuccess');
+    const toastErrorElement = document.getElementById('toastError');
     const upsertModal = new bootstrap.Modal('#upsertModal');
+    const deleteModal = new bootstrap.Modal('#deleteModal');
     const upsertModalSubmit = document.querySelector('#upsertModalSubmit');
+    const deleteModalConfirm = document.querySelector('#deleteModalConfirm');
+    const updateMessage = document.querySelector('#updateMessage');
+
+    const showToast = (message, isError = false) => {
+        const toastElement = isError ? toastErrorElement : toastSuccessElement;
+        const toastBody = toastElement.querySelector('.toast-body');
+        toastBody.textContent = message;
+        const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
+        toast.show();
+    };
 
     const getElements = () => {
         this.button = document.querySelector('#btnAddTodo');
@@ -18,6 +31,9 @@ const todoModule = (() => {
             completedElement.checked = false;
             nameElement.value = '';
             todoItemId.value = '';
+            
+            updateMessage.classList.add('d-none');
+            document.querySelector('#upsertLabel').textContent = 'Add Todo';
 
             upsertModal.show();
         });
@@ -27,8 +43,14 @@ const todoModule = (() => {
             const completedElement = document.querySelector('#todo-completed');
             const todoItemId = document.querySelector('#todoId').value;
 
-            const method = todoItemId === '' ? 'post' : 'put';
-            const url = todoItemId === '' ? 'todos' : `todos/${todoItemId}`;
+            if (!nameElement.value.trim()) {
+                showToast('Name is required', true);
+                return;
+            }
+
+            const isUpdate = todoItemId !== '';
+            const method = isUpdate ? 'put' : 'post';
+            const url = isUpdate ? `todos/${todoItemId}` : 'todos';
             const init = {
                 method,
                 headers: {
@@ -39,25 +61,56 @@ const todoModule = (() => {
                     completed: completedElement.checked
                 })
             }
-            const response = await fetch(url, init);
+            
+            try {
+                const response = await fetch(url, init);
 
-            if (response.status === 204) {
-                upsertModal.hide();
+                if (response.ok) {
+                    upsertModal.hide();
+                    await fetchTodos();
+                    logTodos();
+                    showToast(`${nameElement.value} ${isUpdate ? 'updated' : 'created'}`);
+                } else {
+                    const errorText = await response.text();
+                    showToast(errorText || `Error ${isUpdate ? 'updating' : 'creating'} todo`, true);
+                }
+            } catch (error) {
+                showToast('A network error occurred', true);
+            }
+        });
 
-                await fetchTodos();
-                logTodos();
+        deleteModalConfirm.addEventListener('click', async () => {
+            if (todoToDeleteId === null) return;
 
-                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-                const toastBody = document.querySelector('#toastSuccess .toast-body');
-                toastBody.textContent = `${nameElement.value} created`
-                toastBootstrap.show();
+            try {
+                const response = await fetch(`todos/${todoToDeleteId}`, {method: 'delete'});
+                if (response.ok) {
+                    deleteModal.hide();
+                    await fetchTodos();
+                    logTodos();
+                    showToast('Todo deleted');
+                } else {
+                    showToast('Error deleting todo', true);
+                }
+            } catch (error) {
+                showToast('A network error occurred', true);
+            } finally {
+                todoToDeleteId = null;
             }
         });
     };
 
     const fetchTodos = async () => {
-        const response = await fetch('/todos');
-        todos = await response.json();
+        try {
+            const response = await fetch('/todos');
+            if (response.ok) {
+                todos = await response.json();
+            } else {
+                showToast('Error fetching todos', true);
+            }
+        } catch (error) {
+            showToast('A network error occurred while fetching todos', true);
+        }
     };
 
     const logTodos = () => {
@@ -84,15 +137,22 @@ const todoModule = (() => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({id: t.id, completed: event.target.checked})
+                    body: JSON.stringify({id: t.id, name: t.name, completed: event.target.checked})
                 };
-                const response = await fetch(`/todos/${t.id}`, init);
+                try {
+                    const response = await fetch(`/todos/${t.id}`, init);
 
-                if (response.status === 204) {
-                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-                    const toastBody = document.querySelector('#toastSuccess .toast-body');
-                    toastBody.textContent = `${t.name} updated`
-                    toastBootstrap.show();
+                    if (response.ok) {
+                        showToast(`${t.name} updated`);
+                        await fetchTodos();
+                        logTodos();
+                    } else {
+                        showToast('Error updating todo status', true);
+                        event.target.checked = !event.target.checked; // Revert checkbox
+                    }
+                } catch (error) {
+                    showToast('A network error occurred', true);
+                    event.target.checked = !event.target.checked; // Revert checkbox
                 }
             });
 
@@ -104,7 +164,7 @@ const todoModule = (() => {
             const btnUpdate = document.createElement('button');
             const btnDelete = document.createElement('button');
 
-            btnUpdate.classList.add('btn', 'btn-warning', 'bi', 'bi-pencil');
+            btnUpdate.classList.add('btn', 'btn-warning', 'bi', 'bi-pencil', 'me-2');
             btnDelete.classList.add('btn', 'btn-danger', 'bi', 'bi-trash');
 
             btnUpdate.addEventListener('click', () => {
@@ -116,21 +176,14 @@ const todoModule = (() => {
                 nameElement.value = t.name;
                 completedElement.checked = t.completed;
 
+                updateMessage.classList.remove('d-none');
+                document.querySelector('#upsertLabel').textContent = 'Update Todo';
                 upsertModal.show();
             });
 
-            btnDelete.addEventListener('click', async () => {
-                const response = await fetch(`/todos/${t.id}`, {method: 'delete'});
-
-                if (response.status === 204) {
-                    await fetchTodos();
-                    logTodos();
-
-                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-                    const toastBody = document.querySelector('#toastSuccess .toast-body');
-                    toastBody.textContent = `${t.name} deleted`
-                    toastBootstrap.show();
-                }
+            btnDelete.addEventListener('click', () => {
+                todoToDeleteId = t.id;
+                deleteModal.show();
             });
 
             buttonGroup.append(btnUpdate, btnDelete);

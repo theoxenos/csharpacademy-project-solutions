@@ -42,8 +42,11 @@ public static class TodoEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, NotFound>> UpdateTodo(ITodoService todoService, int id, UpdateTodoDto updateDto)
+    private static async Task<Results<NoContent, BadRequest, NotFound>> UpdateTodo(ITodoService todoService, int id, UpdateTodoDto updateDto)
     {
+        if (updateDto.Name != null && string.IsNullOrWhiteSpace(updateDto.Name))
+            return TypedResults.BadRequest();
+
         var success = await todoService.UpdateTodoAsync(id, updateDto);
         return success ? TypedResults.NoContent() : TypedResults.NotFound();
     }

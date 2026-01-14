@@ -39,6 +39,8 @@ public class TodoService(TodoContext context) : ITodoService
         var todo = await context.TodoItems.FindAsync(id);
         if (todo == null) return false;
 
+        if (string.IsNullOrWhiteSpace(updateDto.Name)) return false;
+
         if (updateDto.Name != null) todo.Name = updateDto.Name;
         if (updateDto.Completed.HasValue) todo.Completed = updateDto.Completed.Value;
 
