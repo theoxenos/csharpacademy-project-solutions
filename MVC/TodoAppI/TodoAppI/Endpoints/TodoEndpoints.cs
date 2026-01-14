@@ -13,6 +13,10 @@ public static class TodoEndpoints
         todoRoute.MapGet("", GetTodos)
             .WithName("GetTodos")
             .WithOpenApi();
+        
+        todoRoute.MapGet("{id:int}", GetTodoById)
+            .WithName("GetTodoById")
+            .WithOpenApi();
 
         todoRoute.MapPost("", CreateTodo)
             .WithName("CreateTodo")
@@ -25,6 +29,15 @@ public static class TodoEndpoints
         todoRoute.MapDelete("{id:int}", DeleteTodo)
             .WithName("DeleteTodo")
             .WithOpenApi();
+    }
+
+    private static async Task<Results<Ok<TodoItemDto>, NotFound>> GetTodoById(ITodoService todoService, int id)
+    {
+        var todo = await todoService.GetTodoByIdAsync(id);
+        if (todo == null)
+            return TypedResults.NotFound();
+        
+        return TypedResults.Ok(todo);
     }
 
     private static async Task<Ok<IEnumerable<TodoItemDto>>> GetTodos(ITodoService todoService)

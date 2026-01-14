@@ -4,4 +4,9 @@ const getAllTodos = async () => {
     return response.json()
 }
 
-export default {getAllTodos};
+const deleteTodoById = async (id) => {
+    const response = await fetch(`/todos/${id}`, {method: 'DELETE'});
+    if(!response.ok) throw new Error('Something went wrong');
+}
+
+export default {getAllTodos, deleteTodoById};

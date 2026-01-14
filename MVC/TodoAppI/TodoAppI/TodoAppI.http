@@ -1,6 +1,11 @@
 @TodoAppI_HostAddress = http://localhost:5162
 
-GET {{TodoAppI_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{TodoAppI_HostAddress}}/todos
+Content-Type: application/json
+
+{
+  "name": "Lipsum"
+}
 
 ###
+DELETE {{TodoAppI_HostAddress}}/todos/1
