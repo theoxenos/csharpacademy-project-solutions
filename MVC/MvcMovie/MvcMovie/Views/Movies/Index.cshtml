@@ -1,72 +1,118 @@
 @model MvcMovie.Models.MovieGenreViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Movie Collection";
 }
 
-<h1>Index</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-4"><i class="bi bi-collection-play"></i> Movie Collection</h1>
+    <a asp-action="Create" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+        <i class="bi bi-plus-lg"></i> Add New Movie
+    </a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<form asp-controller="Movies" asp-action="Index" method="get">
-    <p>
+<div class="card shadow-sm mb-4 border-0 bg-light">
+    <div class="card-body">
+        <form asp-controller="Movies" asp-action="Index" method="get" class="row g-3">
+            <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
+            <div class="col-md-4">
+                <label for="MovieGenre" class="form-label fw-bold">Filter by Genre</label>
+                <select asp-for="MovieGenre" asp-items="Model.Genres" class="form-select shadow-sm">
+                    <option value="">All Genres</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="SearchString" class="form-label fw-bold">Search Title</label>
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" asp-for="SearchString" class="form-control border-start-0" placeholder="Type a movie name..." />
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-secondary w-100 shadow-sm">
+                    <i class="bi bi-filter"></i> Apply
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
-        <select asp-for="MovieGenre" asp-items="Model.Genres">
-            <option value="">All</option>
-        </select>
-
-        Title: <input type="text" asp-for="SearchString" />
-        <input type="submit" value="Filter" />
-    </p>
-</form>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Movies![0].Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Movies![0].ReleaseDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Movies![0].Genre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Movies![0].Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Movies![0].Rating)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Movies!)
-        {
+<div class="table-responsive shadow-sm rounded-3">
+    <table class="table table-hover align-middle mb-0 bg-white">
+        <thead class="bg-dark text-white">
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ReleaseDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Genre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Rating)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
+                <th class="ps-4">
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["TitleSortParm"]" asp-route-searchString="@Model.SearchString" asp-route-movieGenre="@Model.MovieGenre" class="text-white text-decoration-none">
+                        @Html.DisplayNameFor(model => model.Movies![0].Title)
+                        @if (string.IsNullOrEmpty(Model.SortOrder)) { <i class="bi bi-sort-alpha-down"></i> }
+                        else if (Model.SortOrder == "title_desc") { <i class="bi bi-sort-alpha-up"></i> }
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-searchString="@Model.SearchString" asp-route-movieGenre="@Model.MovieGenre" class="text-white text-decoration-none">
+                        @Html.DisplayNameFor(model => model.Movies![0].ReleaseDate)
+                        @if (Model.SortOrder == "Date") { <i class="bi bi-sort-numeric-down"></i> }
+                        else if (Model.SortOrder == "date_desc") { <i class="bi bi-sort-numeric-up"></i> }
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["GenreSortParm"]" asp-route-searchString="@Model.SearchString" asp-route-movieGenre="@Model.MovieGenre" class="text-white text-decoration-none">
+                        @Html.DisplayNameFor(model => model.Movies![0].Genre)
+                        @if (Model.SortOrder == "Genre") { <i class="bi bi-sort-alpha-down"></i> }
+                        else if (Model.SortOrder == "genre_desc") { <i class="bi bi-sort-alpha-up"></i> }
+                    </a>
+                </th>
+                <th class="text-end">
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["PriceSortParm"]" asp-route-searchString="@Model.SearchString" asp-route-movieGenre="@Model.MovieGenre" class="text-white text-decoration-none">
+                        @if (Model.SortOrder == "Price") { <i class="bi bi-sort-numeric-down"></i> }
+                        else if (Model.SortOrder == "price_desc") { <i class="bi bi-sort-numeric-up"></i> }
+                        @Html.DisplayNameFor(model => model.Movies![0].Price)
+                    </a>
+                </th>
+                <th class="text-center">
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["RatingSortParm"]" asp-route-searchString="@Model.SearchString" asp-route-movieGenre="@Model.MovieGenre" class="text-white text-decoration-none">
+                        @Html.DisplayNameFor(model => model.Movies![0].Rating)
+                        @if (Model.SortOrder == "Rating") { <i class="bi bi-sort-alpha-down"></i> }
+                        else if (Model.SortOrder == "rating_desc") { <i class="bi bi-sort-alpha-up"></i> }
+                    </a>
+                </th>
+                <th class="text-end pe-4">Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Movies!)
+            {
+                <tr>
+                    <td class="ps-4">
+                        <span class="fw-bold text-dark">@Html.DisplayFor(modelItem => item.Title)</span>
+                    </td>
+                    <td>
+                        <span class="text-muted"><i class="bi bi-calendar3 me-1"></i> @Html.DisplayFor(modelItem => item.ReleaseDate)</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-info text-dark rounded-pill">@Html.DisplayFor(modelItem => item.Genre)</span>
+                    </td>
+                    <td class="text-end fw-semibold">
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td class="text-center">
+                        <span class="badge @(item.Rating == "R" ? "bg-danger" : "bg-success")">@Html.DisplayFor(modelItem => item.Rating)</span>
+                    </td>
+                    <td class="text-end pe-4">
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm" title="Details">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
