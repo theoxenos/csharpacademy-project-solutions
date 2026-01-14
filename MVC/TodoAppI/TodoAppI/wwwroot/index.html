@@ -12,23 +12,6 @@
     <script defer src="main.js"></script>
 </head>
 <body class="d-flex flex-column vh-100">
-<nav class="navbar navbar-expand-lg navbar-light bg-light flex-shrink-0">
-    <a class="navbar-brand" href="#">TodoApp</a>
-    <button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
-            data-target="#navbarNav" data-toggle="collapse" type="button">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <button class="nav-link" id="btnAddTodo">Add Todo</button>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/swagger">Swagger</a>
-            </li>
-        </ul>
-    </div>
-</nav>
 <main class="container-lg flex-grow-1">
     <div class="row">
         <div class="col-12">
@@ -38,7 +21,11 @@
             </ul>
         </div>
     </div>
+    <div class="d-flex justify-content-end mt-3">
+        <button class="btn btn-primary" id="btnAddTodo">Add Todo</button>
+    </div>
 </main>
+<!-- Toast -->
 <div aria-atomic="true" aria-live="assertive" class="toast align-items-center text-bg-success border-0" id="toastSuccess"
      role="alert">
     <div class="d-flex">
@@ -48,6 +35,7 @@
                 type="button"></button>
     </div>
 </div>
+<!-- Upsert Modal -->
 <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="upsertModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -69,8 +57,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
-                <button class="btn btn-primary" id="upsertModalSubmit" type="button">Submit</button>
+                <button class="btn btn-warning" data-bs-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-success" id="upsertModalSubmit" type="button">Submit</button>
             </div>
         </div>
     </div>
