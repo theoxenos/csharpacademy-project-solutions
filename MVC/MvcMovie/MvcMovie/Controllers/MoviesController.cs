@@ -48,10 +48,10 @@ public class MoviesController(MvcMovieContext context) : Controller
             "price_desc" => movies.OrderByDescending(s => s.Price),
             "Rating" => movies.OrderBy(s => s.Rating),
             "rating_desc" => movies.OrderByDescending(s => s.Rating),
-            _ => movies.OrderBy(s => s.Title),
+            _ => movies.OrderBy(s => s.Title)
         };
 
-        var genreViewModel = new MovieGenreViewModel()
+        var genreViewModel = new MovieGenreViewModel
         {
             Genres = new SelectList(await context.Movie.Select(m => m.Genre).Distinct().ToListAsync()),
             Movies = await movies.ToListAsync(),
@@ -59,7 +59,7 @@ public class MoviesController(MvcMovieContext context) : Controller
             MovieGenre = movieGenre,
             SortOrder = sortOrder
         };
-            
+
         return View(genreViewModel);
     }
 
@@ -95,10 +95,10 @@ public class MoviesController(MvcMovieContext context) : Controller
     public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price,Rating")] Movie movie)
     {
         if (!ModelState.IsValid) return View(movie);
-            
+
         context.Add(movie);
         await context.SaveChangesAsync();
-            
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -131,7 +131,7 @@ public class MoviesController(MvcMovieContext context) : Controller
         }
 
         if (!ModelState.IsValid) return View(movie);
-            
+
         try
         {
             context.Update(movie);
@@ -146,7 +146,7 @@ public class MoviesController(MvcMovieContext context) : Controller
 
             throw;
         }
-            
+
         return RedirectToAction(nameof(Index));
     }
 

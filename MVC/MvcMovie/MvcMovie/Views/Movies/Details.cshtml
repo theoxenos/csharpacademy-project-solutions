@@ -19,7 +19,7 @@
                     </div>
                     <div class="col-md-8">
                         <h3 class="display-6 fw-bold mb-3">@Html.DisplayFor(model => model.Title)</h3>
-                        
+
                         <dl class="row mb-0">
                             <dt class="col-sm-4 text-muted fw-bold">@Html.DisplayNameFor(model => model.ReleaseDate)</dt>
                             <dd class="col-sm-8"><i class="bi bi-calendar3 me-2 text-primary"></i>@Html.DisplayFor(model => model.ReleaseDate)</dd>
@@ -42,7 +42,7 @@
                     <a asp-action="Index" class="btn btn-outline-secondary px-4 me-md-2">
                         <i class="bi bi-arrow-left me-1"></i> Back to List
                     </a>
-                    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary px-5 shadow-sm">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary px-5 shadow-sm">
                         <i class="bi bi-pencil me-1"></i> Edit Movie
                     </a>
                 </div>
