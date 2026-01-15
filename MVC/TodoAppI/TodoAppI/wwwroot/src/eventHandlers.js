@@ -1,5 +1,13 @@
 import todosApiService from "./todosApiService.js";
 
+export const addTodoItemListener = async (todo) => {
+    try {
+        await todosApiService.createTodo(todo);
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const deleteTodoItemListener = async (id) => {
     try {
         await todosApiService.deleteTodoById(id);

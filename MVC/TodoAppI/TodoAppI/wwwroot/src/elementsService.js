@@ -1,3 +1,5 @@
+import {ACTION_TYPE} from "./consts.js";
+
 const createElement = (tag, {classes = [], attributes = {}, text = ''} = {}) => {
     const el = document.createElement(tag);
     if (classes.length) el.classList.add(...classes);
@@ -13,7 +15,7 @@ const createCheckboxGroup = (todoItem) => {
     const container = createElement('span');
     const checkbox = createElement('input', {
         classes: ['me-2', 'form-check-input'],
-        attributes: {type: 'checkbox', checked: todoItem.completed}
+        attributes: {type: 'checkbox', checked: todoItem.completed, 'data-action-type': ACTION_TYPE.COMPLETE}
     });
     const label = createElement('label', {
         classes: ['form-check-label'],
@@ -28,11 +30,11 @@ const createButtonGroup = () => {
     const container = createElement('span', {classes: ['d-flex', 'gap-1']});
     const updateButton = createElement('button', {
         classes: ['btn', 'btn-primary', 'bi', 'bi-pencil'],
-        attributes: {'data-type': 'update'}
+        attributes: {'data-action-type': ACTION_TYPE.UPDATE}
     });
     const deleteButton = createElement('button', {
         classes: ['btn', 'btn-danger', 'bi', 'bi-trash'],
-        attributes: {'data-type': 'delete'}
+        attributes: {'data-action-type': ACTION_TYPE.DELETE}
     });
 
     container.append(updateButton, deleteButton);
