@@ -5,7 +5,7 @@ namespace TodoAppI.Data;
 
 public class TodoContext(DbContextOptions options) : DbContext(options)
 {
-    public DbSet<TodoItem> TodoItems { get; set; } = default!;
+    public DbSet<TodoItem> TodoItems { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
