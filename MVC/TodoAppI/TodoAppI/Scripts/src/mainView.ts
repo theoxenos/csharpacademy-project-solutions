@@ -1,26 +1,19 @@
 import elementsService from "./elementsService.js";
 import {ACTION_TYPE, ActionType} from "./consts.js";
-import {Todo} from "./types.js";
+import {Callback, CallbackWithId, Todo} from "./types.js";
 
 class MainView {
     private addTodoButton: HTMLButtonElement;
     private todoList: HTMLElement;
-    private events: Record<ActionType, (id?: any) => void>;
+
+    onCompleteClick?: CallbackWithId;
+    onDeleteClick?: CallbackWithId;
+    onUpdateClick?: CallbackWithId;
+    onCreateClick?: Callback;
 
     constructor() {
         this.addTodoButton = document.querySelector('#btnAddTodo') as HTMLButtonElement;
         this.todoList = document.querySelector('#todoList') as HTMLElement;
-
-        this.events = {
-            [ACTION_TYPE.COMPLETE]: () => {
-            },
-            [ACTION_TYPE.DELETE]: () => {
-            },
-            [ACTION_TYPE.UPDATE]: () => {
-            },
-            [ACTION_TYPE.CREATE]: () => {
-            }
-        };
 
         this.init();
     }
@@ -41,26 +34,21 @@ class MainView {
             if (!li) return;
 
             const todoId = Number(li.getAttribute('data-id'));
-            if (actionType && this.events[actionType]) this.events[actionType](todoId);
+
+            switch (actionType) {
+                case ACTION_TYPE.COMPLETE:
+                    this.onCompleteClick?.(todoId);
+                    break;
+                case ACTION_TYPE.DELETE:
+                    this.onDeleteClick?.(todoId);
+                    break;
+                case ACTION_TYPE.UPDATE:
+                    this.onUpdateClick?.(todoId);
+                    break;
+            }
         });
 
-        this.addTodoButton.onclick = () => this.events[ACTION_TYPE.CREATE]();
-    }
-
-    onCompletedClick(fn: (id: number) => void) {
-        this.events[ACTION_TYPE.COMPLETE] = fn;
-    }
-
-    onDeleteClick(fn: (id: number) => void) {
-        this.events[ACTION_TYPE.DELETE] = fn;
-    }
-
-    onUpdateClick(fn: (id: number) => void) {
-        this.events[ACTION_TYPE.UPDATE] = fn;
-    }
-
-    onCreateClick(fn: () => void) {
-        this.events[ACTION_TYPE.CREATE] = fn;
+        this.addTodoButton.onclick = () => this.onCreateClick?.();
     }
 }
 

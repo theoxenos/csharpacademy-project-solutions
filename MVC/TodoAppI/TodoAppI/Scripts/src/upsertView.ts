@@ -9,7 +9,8 @@ class UpsertView {
   private nameInput: HTMLInputElement;
   private titleHeader: HTMLElement;
   private todoInputId: HTMLInputElement;
-  private onModalSubmitted: (todo: TodoUpsert) => void;
+
+  onModalSubmitted?: (todo: TodoUpsert) => void;
 
   constructor() {
     this.confirmButton = document.querySelector('#upsertModalSubmit') as HTMLButtonElement;
@@ -18,14 +19,8 @@ class UpsertView {
     this.nameInput = document.querySelector('#todo-name') as HTMLInputElement;
     this.titleHeader = document.querySelector('#upsertLabel') as HTMLElement;
     this.todoInputId = document.querySelector('#todo-id') as HTMLInputElement;
-    this.onModalSubmitted = () => {
-    };
 
     this.confirmButton.onclick = () => this.handleConfirm();
-  }
-
-  setOnModalSubmitted(callback: (todo: TodoUpsert) => void) {
-    this.onModalSubmitted = callback;
   }
 
   formatTitle(modalType: string) {
@@ -52,9 +47,9 @@ class UpsertView {
 
   handleConfirm() {
     this.modal.hide();
-    this.onModalSubmitted({
+    this.onModalSubmitted?.({
       name: this.nameInput.value,
-      id: Number(this.todoInputId.value) || undefined,
+      id: this.todoInputId.value ? Number(this.todoInputId.value) : undefined,
       completed: this.completedInput.checked
     });
   }

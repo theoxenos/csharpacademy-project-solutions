@@ -4,20 +4,15 @@ class DeleteView {
     private modal: any;
     private confirmButton: HTMLButtonElement;
     private toDeleteId: number | null;
-    private onModalSubmitted: (id: number) => void;
+
+    onModalSubmitted?: (id: number) => void;
 
     constructor() {
         this.modal = new bootstrap.Modal('#deleteModal');
         this.confirmButton = document.querySelector('#deleteModalConfirm') as HTMLButtonElement;
         this.toDeleteId = null;
-        this.onModalSubmitted = () => {
-        };
 
         this.confirmButton.onclick = () => this.handleConfirm();
-    }
-
-    setOnModalSubmitted(fn: (id: number) => void) {
-        this.onModalSubmitted = fn;
     }
 
     show(id: number) {
@@ -28,7 +23,7 @@ class DeleteView {
     handleConfirm() {
         this.modal.hide();
         if (this.toDeleteId !== null) {
-            this.onModalSubmitted(this.toDeleteId);
+            this.onModalSubmitted?.(this.toDeleteId);
         }
     }
 }

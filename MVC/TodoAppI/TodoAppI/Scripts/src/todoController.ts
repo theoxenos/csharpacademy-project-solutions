@@ -12,13 +12,13 @@ class TodoController {
     }
 
     async init() {
-        mainView.onDeleteClick((id: number) => this.handleDeleteClick(id));
-        mainView.onCreateClick(() => this.handleCreateClick());
-        mainView.onUpdateClick((id: number) => this.handleUpdateClick(id));
-        mainView.onCompletedClick((id: number) => this.handleToggleComplete(id));
+        mainView.onDeleteClick = (id: number) => this.handleDeleteClick(id);
+        mainView.onCreateClick = () => this.handleCreateClick();
+        mainView.onUpdateClick = (id: number) => this.handleUpdateClick(id);
+        mainView.onCompleteClick = (id: number) => this.handleToggleComplete(id);
 
-        deleteView.setOnModalSubmitted((id: number) => this.handleDeleteConfirm(id));
-        upsertView.setOnModalSubmitted((todoData: TodoUpsert) => this.handleUpsertConfirm(todoData));
+        deleteView.onModalSubmitted = (id: number) => this.handleDeleteConfirm(id);
+        upsertView.onModalSubmitted = (todoData: TodoUpsert) => this.handleUpsertConfirm(todoData);
 
         await this.loadTodos();
     }
