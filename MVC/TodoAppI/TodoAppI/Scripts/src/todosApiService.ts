@@ -1,15 +1,17 @@
-const getAllTodos = async () => {
+import {Todo, TodoUpsert} from './types.js';
+
+const getAllTodos = async (): Promise<Todo[]> => {
     const response = await fetch('/todos');
     if(!response.ok) throw new Error('Something went wrong when fetching todos');
     return response.json()
 }
 
-const deleteTodoById = async (id) => {
+const deleteTodoById = async (id: number): Promise<void> => {
     const response = await fetch(`/todos/${id}`, {method: 'DELETE'});
     if(!response.ok) throw new Error('Something went wrong when deleting todo');
 }
 
-const createTodo = async (todo) => {
+const createTodo = async (todo: TodoUpsert): Promise<void> => {
     const {name} = todo;
     const response = await fetch('/todos', {
         method: 'POST',
@@ -21,7 +23,7 @@ const createTodo = async (todo) => {
     if(!response.ok) throw new Error('Something went wrong when creating todo');
 }
 
-const updateTodo = async (todo) => {
+const updateTodo = async (todo: TodoUpsert): Promise<void> => {
     const {id, name, completed} = todo;
     const response = await fetch(`/todos/${id}`, {
         method: 'PUT',

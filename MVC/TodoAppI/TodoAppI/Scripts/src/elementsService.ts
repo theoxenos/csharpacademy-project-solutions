@@ -1,17 +1,28 @@
 import {ACTION_TYPE} from "./consts.js";
+import {Todo} from "./types.js";
 
-const createElement = (tag, {classes = [], attributes = {}, text = ''} = {}) => {
+interface CreateElementOptions {
+    classes?: string[];
+    attributes?: Record<string, any>;
+    text?: string;
+}
+
+const createElement = (tag: string, {
+    classes = [],
+    attributes = {},
+    text = ''
+}: CreateElementOptions = {}): HTMLElement => {
     const el = document.createElement(tag);
     if (classes.length) el.classList.add(...classes);
     Object.entries(attributes).forEach(([key, value]) => {
-        if (key === 'checked') el.checked = value;
-        else el.setAttribute(key, value);
+        if (key === 'checked' && el instanceof HTMLInputElement) el.checked = value;
+        else el.setAttribute(key, String(value));
     });
     if (text) el.textContent = text;
     return el;
 };
 
-const createCheckboxGroup = (todoItem) => {
+const createCheckboxGroup = (todoItem: Todo) => {
     const container = createElement('span');
     const checkbox = createElement('input', {
         classes: ['me-2', 'form-check-input'],
@@ -41,7 +52,7 @@ const createButtonGroup = () => {
     return container;
 };
 
-const createTodoItemElement = (todoItem) => {
+const createTodoItemElement = (todoItem: Todo) => {
     const todoItemEl = createElement('li', {
         classes: ['list-group-item', 'd-flex', 'align-items-center', 'justify-content-between'],
         attributes: {'data-id': todoItem.id}

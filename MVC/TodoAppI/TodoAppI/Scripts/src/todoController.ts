@@ -2,20 +2,23 @@ import todosApiService from './todosApiService.js';
 import mainView from './mainView.js';
 import deleteView from './deleteView.js';
 import upsertView from './upsertView.js';
+import {Todo, TodoUpsert} from './types.js';
 
 class TodoController {
+    private todos: Todo[];
+
     constructor() {
         this.todos = [];
     }
 
     async init() {
-        mainView.onDeleteClick(id => this.handleDeleteClick(id));
+        mainView.onDeleteClick((id: number) => this.handleDeleteClick(id));
         mainView.onCreateClick(() => this.handleCreateClick());
-        mainView.onUpdateClick(id => this.handleUpdateClick(id));
-        mainView.onCompletedClick(id => this.handleToggleComplete(id));
+        mainView.onUpdateClick((id: number) => this.handleUpdateClick(id));
+        mainView.onCompletedClick((id: number) => this.handleToggleComplete(id));
 
-        deleteView.setOnModalSubmitted(id => this.handleDeleteConfirm(id));
-        upsertView.setOnModalSubmitted(todoData => this.handleUpsertConfirm(todoData));
+        deleteView.setOnModalSubmitted((id: number) => this.handleDeleteConfirm(id));
+        upsertView.setOnModalSubmitted((todoData: TodoUpsert) => this.handleUpsertConfirm(todoData));
 
         await this.loadTodos();
     }
@@ -29,11 +32,11 @@ class TodoController {
         }
     }
 
-    handleDeleteClick(id) {
+    handleDeleteClick(id: number) {
         deleteView.show(id);
     }
 
-    async handleDeleteConfirm(id) {
+    async handleDeleteConfirm(id: number) {
         try {
             await todosApiService.deleteTodoById(id);
             await this.loadTodos();
@@ -46,14 +49,14 @@ class TodoController {
         upsertView.show();
     }
 
-    handleUpdateClick(id) {
+    handleUpdateClick(id: number) {
         const todo = this.todos.find(t => t.id === id);
         if (todo) {
             upsertView.show(todo);
         }
     }
 
-    async handleUpsertConfirm(todoData) {
+    async handleUpsertConfirm(todoData: TodoUpsert) {
         try {
             if (todoData.id) {
                 await todosApiService.updateTodo(todoData);
@@ -66,7 +69,7 @@ class TodoController {
         }
     }
 
-    async handleToggleComplete(id) {
+    async handleToggleComplete(id: number) {
         const todo = this.todos.find(t => t.id === id);
         if (todo) {
             try {
