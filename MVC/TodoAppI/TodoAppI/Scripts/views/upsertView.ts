@@ -1,4 +1,4 @@
-import {Todo, TodoUpsert} from "./types.js";
+import {Todo, TodoUpsert} from "../types.js";
 
 declare var bootstrap: any;
 

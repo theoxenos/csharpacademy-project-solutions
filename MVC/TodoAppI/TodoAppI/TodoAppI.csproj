@@ -16,6 +16,36 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <TypeScriptCompile Remove="Scripts\src\deleteView.ts"/>
+        <TypeScriptCompile Remove="Scripts\src\mainView.ts"/>
+        <TypeScriptCompile Remove="Scripts\src\upsertView.ts"/>
+        <TypeScriptCompile Remove="Scripts\src\todoController.ts"/>
+        <TypeScriptCompile Remove="Scripts\src\elementsService.ts"/>
+        <TypeScriptCompile Remove="Scripts\src\todosApiService.ts"/>
+        <TypeScriptCompile Remove="Scripts\src\views\deleteView.ts"/>
+        <TypeScriptCompile Remove="Scripts\src\views\mainView.ts"/>
+        <TypeScriptCompile Remove="Scripts\src\views\upsertView.ts"/>
+        <TypeScriptCompile Remove="Scripts\src\consts.ts"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\consts.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\controllers\todoController.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\deleteView.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\elementsService.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\mainView.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\services\elementsService.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\services\todosApiService.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\todoController.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\todosApiService.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\types.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\upsertView.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\views\deleteView.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\views\mainView.js"/>
+        <_ContentIncludedByDefault Remove="wwwroot\js\src\views\upsertView.js"/>
+    </ItemGroup>
+
     <!--    <Target Name="BuildTS" BeforeTargets="Build">-->
     <!--        <Exec Command="npm install" />-->
     <!--        <Exec Command="npm run build" />-->

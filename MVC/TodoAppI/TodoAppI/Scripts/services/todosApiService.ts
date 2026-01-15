@@ -1,4 +1,4 @@
-import {Todo, TodoUpsert} from './types.js';
+import {Todo, TodoUpsert} from '../types.js';
 
 const getAllTodos = async (): Promise<Todo[]> => {
     const response = await fetch('/todos');

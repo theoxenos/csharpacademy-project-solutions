@@ -1,6 +1,6 @@
-import elementsService from "./elementsService.js";
-import {ACTION_TYPE, ActionType} from "./consts.js";
-import {Callback, CallbackWithId, Todo} from "./types.js";
+import elementsService from "../services/elementsService.js";
+import {ACTION_TYPE, ActionType} from "../consts.js";
+import {Callback, CallbackWithId, Todo} from "../types.js";
 
 class MainView {
     private addTodoButton: HTMLButtonElement;

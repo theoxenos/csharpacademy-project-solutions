@@ -1,5 +1,5 @@
-import {ACTION_TYPE} from "./consts.js";
-import {Todo} from "./types.js";
+import {ACTION_TYPE} from "../consts.js";
+import {Todo} from "../types.js";
 
 interface CreateElementOptions {
     classes?: string[];

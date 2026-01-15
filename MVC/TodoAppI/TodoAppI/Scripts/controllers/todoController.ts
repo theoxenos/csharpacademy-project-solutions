@@ -1,8 +1,8 @@
-import todosApiService from './todosApiService.js';
-import mainView from './mainView.js';
-import deleteView from './deleteView.js';
-import upsertView from './upsertView.js';
-import {Todo, TodoUpsert} from './types.js';
+import todosApiService from '../services/todosApiService.js';
+import mainView from '../views/mainView.js';
+import deleteView from '../views/deleteView.js';
+import upsertView from '../views/upsertView.js';
+import {Todo, TodoUpsert} from '../types.js';
 
 class TodoController {
     private todos: Todo[];

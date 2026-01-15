@@ -1,3 +1,3 @@
-import todoController from "./src/todoController.js";
+import todoController from "./controllers/todoController.js";
 
 await todoController.init();
