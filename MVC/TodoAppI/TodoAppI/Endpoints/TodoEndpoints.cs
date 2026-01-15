@@ -11,24 +11,19 @@ public static class TodoEndpoints
         var todoRoute = app.MapGroup("/todos");
 
         todoRoute.MapGet("", GetTodos)
-            .WithName("GetTodos")
-            .WithOpenApi();
-        
+            .WithName("GetTodos");
+
         todoRoute.MapGet("{id:int}", GetTodoById)
-            .WithName("GetTodoById")
-            .WithOpenApi();
+            .WithName("GetTodoById");
 
         todoRoute.MapPost("", CreateTodo)
-            .WithName("CreateTodo")
-            .WithOpenApi();
+            .WithName("CreateTodo");
 
         todoRoute.MapPut("{id:int}", UpdateTodo)
-            .WithName("UpdateTodo")
-            .WithOpenApi();
+            .WithName("UpdateTodo");
 
         todoRoute.MapDelete("{id:int}", DeleteTodo)
-            .WithName("DeleteTodo")
-            .WithOpenApi();
+            .WithName("DeleteTodo");
     }
 
     private static async Task<Results<Ok<TodoItemDto>, NotFound>> GetTodoById(ITodoService todoService, int id)
@@ -36,7 +31,7 @@ public static class TodoEndpoints
         var todo = await todoService.GetTodoByIdAsync(id);
         if (todo == null)
             return TypedResults.NotFound();
-        
+
         return TypedResults.Ok(todo);
     }
 
@@ -46,7 +41,8 @@ public static class TodoEndpoints
         return TypedResults.Ok(todos);
     }
 
-    private static async Task<Results<NoContent, BadRequest>> CreateTodo(ITodoService todoService, CreateTodoDto createDto)
+    private static async Task<Results<NoContent, BadRequest>> CreateTodo(ITodoService todoService,
+        CreateTodoDto createDto)
     {
         if (string.IsNullOrWhiteSpace(createDto.Name))
             return TypedResults.BadRequest();
@@ -55,7 +51,8 @@ public static class TodoEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, BadRequest, NotFound>> UpdateTodo(ITodoService todoService, int id, UpdateTodoDto updateDto)
+    private static async Task<Results<NoContent, BadRequest, NotFound>> UpdateTodo(ITodoService todoService, int id,
+        UpdateTodoDto updateDto)
     {
         if (updateDto.Name != null && string.IsNullOrWhiteSpace(updateDto.Name))
             return TypedResults.BadRequest();
