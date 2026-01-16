@@ -99,6 +99,7 @@ $newTransactionButton.click(() => {
     }
     
     $upsertForm[0].reset();
+    $upsertForm.find('[name="Transaction.Id"]').val(0);
 
     upsertModal.show();
 });
