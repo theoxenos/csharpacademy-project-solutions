@@ -1,0 +1,27 @@
+@TodoAppI_HostAddress = http://localhost:5162
+
+POST {{TodoAppI_HostAddress}}/todos
+Content-Type: application/json
+
+{
+  "name": "Lipsum",
+  "id": null
+}
+
+### Wrong post
+POST {{TodoAppI_HostAddress}}/todos
+Content-Type: application/json
+
+{
+}
+
+###
+DELETE {{TodoAppI_HostAddress}}/todos/1
+
+###
+PUT {{TodoAppI_HostAddress}}/todos/1
+Content-Type: application/json
+
+{
+  "completed": false
+}

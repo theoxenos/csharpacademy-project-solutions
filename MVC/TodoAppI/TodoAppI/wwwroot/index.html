@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TODO APPi - CSharp Academy</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/bootstrap-icons.min.css" rel="stylesheet"/>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script defer src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js" type="module"></script>
+</head>
+<body class="d-flex flex-column vh-100" data-bs-theme="dark">
+<main class="container-lg flex-grow-1">
+    <div class="row">
+        <div class="col py-3">
+            <div class="py-4 mb-0 rounded-top-1" id="todoTitle">
+                <h2 class="text-center fw-bold m-0" style="letter-spacing: 0.1rem;color: var(--nord7)">TODO APPi</h2>
+            </div>
+            <!-- Todo items will go here -->
+            <ul class="list-group border-top-0 border-bottom-0" id="todoList">
+
+            </ul>
+            <nav class="py-3 rounded-bottom-1" id="pagination">
+                <ul class="pagination justify-content-center m-0">
+                    <li class="page-item">
+                        <button class="page-link" id="prevPage">Previous</button>
+                    </li>
+                    <li class="page-item"><span class="page-link" id="currentPage">1</span></li>
+                    <li class="page-item">
+                        <button class="page-link" id="nextPage">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+        <button class="btn btn-primary" id="btnAddTodo">Add Todo</button>
+    </div>
+</main>
+<!-- Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div aria-atomic="true" aria-live="assertive" class="toast align-items-center text-bg-success border-0"
+         id="toastContainer"
+         role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+            </div>
+            <button aria-label="Close" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    type="button"></button>
+        </div>
+    </div>
+</div>
+<!-- Upsert Modal -->
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="upsertModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="upsertLabel">Upsert todo</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <form class="was-validated">
+                    <input id="todo-id" type="hidden"/>
+                    <div class="mb-3">
+                        <label class="col-form-label" for="todo-name">Name:</label>
+                        <input class="form-control" id="todo-name" required type="text">
+                        <div class="invalid-feedback">
+                            Name is required
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="col-form-label" for="todo-completed">Completed:</label>
+                        <input class="form-check" id="todo-completed" type="checkbox"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-warning" data-bs-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-success" id="upsertModalSubmit" type="button">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div aria-hidden="true" class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Todo</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this todo?
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+                <button class="btn btn-danger" id="deleteModalConfirm" type="button">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

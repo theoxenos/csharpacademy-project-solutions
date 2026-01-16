@@ -1,0 +1,37 @@
+:root {
+    --nord0: #2e3440;
+    --nord1: #3b4252;
+    --nord2: #434c5e;
+    --nord3: #4c566a;
+
+    --nord7: #8fbcbb;
+    --nord10: #5e81ac;
+
+    --nord11: #bf616a;
+}
+
+body {
+    background-color: var(--nord0);
+}
+
+#todoList {
+    border-radius: 0;
+}
+
+#todoList > li {
+    border-color: var(--nord2);
+    background-color: var(--nord3);
+}
+
+#todoTitle, #pagination {
+    background-color: var(--nord2);
+    border: 1px solid var(--nord2);
+}
+
+.btn-danger {
+    background-color: var(--nord11);
+}
+
+.btn-primary {
+    background-color: var(--nord10);
+}
