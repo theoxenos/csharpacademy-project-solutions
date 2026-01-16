@@ -1,33 +1,27 @@
-// Dynamic content
-const transactionsTableRows = document.querySelector('#transactionsTableRows');
+const $transactionsTableRows = $('#transactionsTableRows');
+const $newTransactionButton = $('#btnTransactionNew');
+const $upsertModalElement = $('#transactionUpsertModal');
+const upsertModal = new bootstrap.Modal($upsertModalElement[0]);
+const $submitUpsertModalButton = $('#btnTransactionUpsert');
+const $upsertForm = $('#frmTransactionUpsert');
+const $confirmationModalElement = $('#confirmationModal');
+const confirmationModal = new bootstrap.Modal($confirmationModalElement[0]);
+const $transactionDeleteIdElement = $('#deleteTransactionId');
+const $confirmDeleteButton = $('#btnTransactionConfirmDelete');
 
-// Table buttons
-const newTransactionButton = document.querySelector('#btnTransactionNew');
-
-// Transaction modal elements
-const upsertModalElement = document.querySelector('#transactionUpsertModal');
-
-const upsertModal = new bootstrap.Modal(upsertModalElement);
-const submitUpsertModalButton = document.querySelector('#btnTransactionUpsert');
-const upsertForm = document.querySelector('#frmTransactionUpsert');
-
-// Confirm modal elements
-const confirmationModalElement = document.querySelector('#confirmationModal');
-
-const confirmationModal = new bootstrap.Modal(confirmationModalElement);
-const transactionDeleteIdElement = document.querySelector('#deleteTransactionId');
-const confirmDeleteButton = document.querySelector('#btnTransactionConfirmDelete');
-
-upsertForm.addEventListener('submit', async (event) => {
+$upsertForm.on('submit', function (event) {
     event.preventDefault();
 
-    const formData = new FormData(event.target);
+    if (!$upsertForm.valid()) {
+        return;
+    }
+
     const transaction = {
-        id: Number(formData.get('Transaction.Id')),
-        date: formData.get('Transaction.Date'),
-        comment: formData.get('Transaction.Comment'),
-        amount: formData.get('Transaction.Amount'),
-        categoryId: formData.get('Transaction.CategoryId')
+        id: Number($upsertForm.find('[name="Transaction.Id"]').val()),
+        date: $upsertForm.find('[name="Transaction.Date"]').val(),
+        comment: $upsertForm.find('[name="Transaction.Comment"]').val(),
+        amount: $upsertForm.find('[name="Transaction.Amount"]').val(),
+        categoryId: $upsertForm.find('[name="Transaction.CategoryId"]').val()
     }
 
     let method = 'PUT';
@@ -37,129 +31,100 @@ upsertForm.addEventListener('submit', async (event) => {
         route = '/transactions/create';
     }
 
-    const init = {
-        method,
-        headers: {
-            'Content-Type' : 'application/json'
+    $.ajax({
+        url: route,
+        method: method,
+        contentType: 'application/json',
+        data: JSON.stringify(transaction),
+        success: function (data) {
+            $transactionsTableRows.html(data);
+            upsertModal.hide();
         },
-        body: JSON.stringify(transaction)
-    }
-    const response = await fetch(route, init);
-
-    if (response.status === 400) {
-        // upsertForm.innerHTML = await response.text();
-        return;
-    } else if (!response.ok) {
-        throw new Error(`HTML Error: ${response.status}`);
-    }
-
-    transactionsTableRows.innerHTML = await response.text();
-    upsertModal.hide();
-});
-
-submitUpsertModalButton.addEventListener('click', () => {
-    // Create a new 'submit' event
-    let event = new Event('submit', {
-        bubbles: true, // Event will bubble up through the DOM
-        cancelable: true // Event can be canceled
+        error: function (xhr) {
+            if (xhr.status !== 400) {
+                console.error(`HTML Error: ${xhr.status}`);
+            }
+        }
     });
-
-    // Dispatch it on the form
-    if (upsertForm.dispatchEvent(event)) {
-        upsertModal.hide(); // Hide the modal only if the event wasn't canceled
-    }
 });
 
-transactionsTableRows.addEventListener('click', async (event) => {
-    if (!event.target) {
-        return;
+$submitUpsertModalButton.click(() => {
+    $upsertForm.trigger('submit');
+});
+
+$transactionsTableRows.on('click', '.edit-transaction', function () {
+    if (typeof resetFormValidation === 'function') {
+        resetFormValidation($upsertForm);
     }
 
-    if (event.target.matches('.edit-transaction')) {
-        if (typeof resetFormValidation === 'function') {
-            resetFormValidation(upsertForm);
-        }
-
-        const transactionId = event.target.dataset.transactionid;
-        const response = await fetch('Transactions/Detail/' + transactionId);
-
-        if (!response.ok) {
-            throw new Error(`HTML Error: ${response.status}`);
-        }
-
-        const transaction = await response.json();
-
-        upsertForm['Transaction.Id'].value = transaction.id;
+    const transactionId = $(this).data('transactionid');
+    $.get('Transactions/Detail/' + transactionId, function (transaction) {
+        $upsertForm.find('[name="Transaction.Id"]').val(transaction.id);
         if (transaction.date) {
-            upsertForm['Transaction.Date'].value = transaction.date.substring(0, 16);
+            $upsertForm.find('[name="Transaction.Date"]').val(transaction.date.substring(0, 16));
         }
-        upsertForm['Transaction.Comment'].value = transaction.comment;
-        upsertForm['Transaction.Amount'].value = transaction.amount;
-        upsertForm['Transaction.CategoryId'].value = transaction.categoryId;
+        $upsertForm.find('[name="Transaction.Comment"]').val(transaction.comment);
+        $upsertForm.find('[name="Transaction.Amount"]').val(transaction.amount);
+        $upsertForm.find('[name="Transaction.CategoryId"]').val(transaction.categoryId);
 
         upsertModal.show();
-    } else if (event.target.matches('.delete-transaction')) {
-        transactionDeleteIdElement.value = event.target.dataset.transactionid;
-        confirmationModal.show();
-    }
+    }).fail(function (xhr) {
+        console.error(`HTML Error: ${xhr.status}`);
+    });
 });
 
-confirmDeleteButton.addEventListener('click', async () => {
-    const transactionId = Number(transactionDeleteIdElement.value);
-    const response = await fetch(`Transactions/Delete/${transactionId}`, { method: 'delete'})
-
-    if (!response.ok) {
-        throw new Error(`HTML Error: ${response.status}`);
-    }
-
-    confirmationModal.hide();
-    transactionsTableRows.innerHTML = await response.text();
+$transactionsTableRows.on('click', '.delete-transaction', function () {
+    $transactionDeleteIdElement.val($(this).data('transactionid'));
+    confirmationModal.show();
 });
 
-newTransactionButton.addEventListener('click', () =>{
+$confirmDeleteButton.click(function () {
+    const transactionId = Number($transactionDeleteIdElement.val());
+    $.ajax({
+        url: `Transactions/Delete/${transactionId}`,
+        method: 'DELETE',
+        success: function (data) {
+            confirmationModal.hide();
+            $transactionsTableRows.html(data);
+        },
+        error: function (xhr) {
+            console.error(`HTML Error: ${xhr.status}`);
+        }
+    });
+});
+
+$newTransactionButton.click(() => {
     if (typeof resetFormValidation === 'function') {
-        resetFormValidation(upsertForm);
+        resetFormValidation($upsertForm);
     }
-
-    upsertForm['Transaction.Id'].value = '';
-    upsertForm['Transaction.Date'].value = '';
-    upsertForm['Transaction.Comment'].value = '';
-    upsertForm['Transaction.Amount'].value = '';
-    upsertForm['Transaction.CategoryId'].value = '0';
+    
+    $upsertForm[0].reset();
 
     upsertModal.show();
 });
 
-const searchForm = document.querySelector('#frmSearch');
-if (searchForm) {
-    searchForm.addEventListener('submit', async (e) => {
+const $searchForm = $('#frmSearch');
+if ($searchForm.length) {
+    $searchForm.submit(function (e) {
         e.preventDefault();
 
-        const formData = new FormData(e.target);
-
         const searchVm = {
-            CategoryFilter: formData.get('CategoryFilter') || 0,
-            DateFilter: formData.get('DateFilter') || '',
-            TransactionFilter: formData.get('TransactionFilter') || ''
+            CategoryFilter: $searchForm.find('[name="CategoryFilter"]').val() || 0,
+            DateFilter: $searchForm.find('[name="DateFilter"]').val() || '',
+            TransactionFilter: $searchForm.find('[name="TransactionFilter"]').val() || ''
         };
 
-        const queryString = Object.keys(searchVm)
-            .filter(key => searchVm[key] !== null && searchVm[key] !== undefined && searchVm[key] !== '' && searchVm[key] !== 0 && searchVm[key] !== '0')
-            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(searchVm[key])}`)
-            .join('&');
+        const queryString = $.param(Object.fromEntries(
+            Object.entries(searchVm).filter(([_, v]) => v !== null && v !== undefined && v !== '' && v !== 0 && v !== '0')
+        ));
 
-        const url = `/Transactions/Filter/?${queryString}`;
-        const response = await fetch(url);
-
-        transactionsTableRows.innerHTML = await response.text();
+        $.get(`/Transactions/Filter/?${queryString}`, function (data) {
+            $transactionsTableRows.html(data);
+        });
     });
 
-    const clearButton = searchForm.querySelector('button[type="button"]');
-    if (clearButton) {
-        clearButton.onclick = null; // Remove inline handler
-        clearButton.addEventListener('click', () => {
-            searchForm.reset();
-            searchForm.dispatchEvent(new Event('submit'));
-        });
-    }
+    $searchForm.find('button[type="button"]').click(function () {
+        $searchForm[0].reset();
+        $searchForm.trigger('submit');
+    });
 }

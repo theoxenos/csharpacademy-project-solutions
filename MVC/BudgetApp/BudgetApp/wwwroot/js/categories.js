@@ -1,116 +1,94 @@
-// Dynamic content
-const categoriesTableBody = document.querySelector('#categoriesTableBody');
+const $categoriesTableBody = $('#categoriesTableBody');
+const $newCategoryButton = $('#btnCategoryNew');
+const $editModalElement = $('#editModal');
+const editModal = new bootstrap.Modal($editModalElement[0]);
+const $categoryUpsertForm = $('#categoryUpsertForm');
+const $categoryUpsertButton = $('#btnCategoryUpdate');
+const $deleteModalElement = $('#confirmationModal');
+const deleteModal = new bootstrap.Modal($deleteModalElement[0]);
+const $deleteCategoryIdElement = $('#deleteCategoryId');
+const $categoryDeleteButton = $('#btnCategoryConfirmDelete');
 
-// Table buttons
-const newCategoryButton = document.querySelector('#btnCategoryNew');
-
-// Upsert modal elements
-const editModalElement = document.querySelector('#editModal');
-
-const editModal = new bootstrap.Modal(editModalElement);
-const categoryUpsertForm = document.querySelector('#categoryUpsertForm');
-const categoryUpsertButton = document.querySelector('#btnCategoryUpdate');
-
-// Delete modal elements
-const deleteModalElement = document.querySelector('#confirmationModal');
-
-const deleteModal = new bootstrap.Modal(deleteModalElement);
-const deleteCategoryIdElement = document.querySelector('#deleteCategoryId');
-const categoryDeleteButton = document.querySelector('#btnCategoryConfirmDelete');
-
-// Event handling       
-categoriesTableBody.addEventListener('click', async (event) =>{
-    const {target} = event;
-
-    if(!target) {
-        return;
+$categoriesTableBody.on('click', '.edit-category', function () {
+    if (typeof resetFormValidation === 'function') {
+        resetFormValidation($categoryUpsertForm);
     }
 
-    if (target.matches('.edit-category')) {
-        if (typeof resetFormValidation === 'function') {
-            resetFormValidation(categoryUpsertForm);
-        }
-
-        const response = await fetch('/Categories/Detail/' + target.dataset.categoryid)
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const category = await response.json();
-
-        categoryUpsertForm['editCategoryId'].value = category.id;
-        categoryUpsertForm['Name'].value = category.name;
-        categoryUpsertForm['Color'].value = category.color;
+    const categoryId = $(this).data('categoryid');
+    $.get('/Categories/Detail/' + categoryId, function (category) {
+        $categoryUpsertForm.find('#editCategoryId').val(category.id);
+        $categoryUpsertForm.find('#Name').val(category.name);
+        $categoryUpsertForm.find('#Color').val(category.color);
 
         editModal.show();
-    } else if (target.matches('.delete-category')) {
-        deleteCategoryIdElement.value = target.dataset.categoryid;
-
-        deleteModal.show();
-    }
+    }).fail(function (xhr) {
+        console.error(`HTTP error! status: ${xhr.status}`);
+    });
 });
 
-newCategoryButton.addEventListener('click', () => {
+$categoriesTableBody.on('click', '.delete-category', function () {
+    $deleteCategoryIdElement.val($(this).data('categoryid'));
+    deleteModal.show();
+});
+
+$newCategoryButton.click(() => {
     if (typeof resetFormValidation === 'function') {
-        resetFormValidation(categoryUpsertForm);
+        resetFormValidation($categoryUpsertForm);
     }
-    categoryUpsertForm['editCategoryId'].value = '';
-    categoryUpsertForm['Name'].value = '';
-    categoryUpsertForm['Color'].value = '#6c757d';
+    $categoryUpsertForm[0].reset();
+    $categoryUpsertForm.find('#editCategoryId').val(0);
 
     editModal.show();
 });
 
-categoryUpsertForm.addEventListener('submit', async (evt) => {
+$categoryUpsertForm.on('submit', function (evt) {
     evt.preventDefault();
 
+    if (!$categoryUpsertForm.valid()) {
+        return;
+    }
+
     const todo = {
-        id: Number(categoryUpsertForm['editCategoryId'].value),
-        name: categoryUpsertForm['Name'].value,
-        color: categoryUpsertForm['Color'].value
+        id: Number($categoryUpsertForm.find('#editCategoryId').val()),
+        name: $categoryUpsertForm.find('#Name').val(),
+        color: $categoryUpsertForm.find('#Color').val()
     };
+
     const route = todo.id === 0
-        ? 'Categories/Create'
+        ? '/Categories/Create'
         : `/Categories/Update/${todo.id}`;
     const method = todo.id === 0 ? 'POST' : 'PUT';
 
-    const response = await fetch(route, {
+    $.ajax({
+        url: route,
         method: method,
-        headers: {
-            'Content-Type': 'application/json',
+        contentType: 'application/json',
+        data: JSON.stringify(todo),
+        success: function (data) {
+            $categoriesTableBody.html(data);
+            editModal.hide();
         },
-        body: JSON.stringify(todo)
+        error: function (xhr) {
+            console.error(`HTTP error! status: ${xhr.status}`);
+        }
     });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    editModal.hide();
-    categoriesTableBody.innerHTML = await response.text();
 });
 
-categoryUpsertButton.addEventListener('click', () => {
-    // Create a new 'submit' event
-    let event = new Event('submit', {
-        bubbles: true, // Event will bubble up through the DOM
-        cancelable: true // Event can be canceled
-    });
-
-    // Dispatch it on the form
-    if (categoryUpsertForm.dispatchEvent(event)) {
-        editModal.hide(); // Hide the modal only if the event wasn't canceled
-    }
+$categoryUpsertButton.click(() => {
+    $categoryUpsertForm.trigger('submit');
 });
 
-categoryDeleteButton.addEventListener('click', async () => {
-    const response = await fetch('/Categories/Delete/' + Number(deleteCategoryIdElement.value), { method: 'delete'});
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    deleteModal.hide();
-    categoriesTableBody.innerHTML = await response.text();
+$categoryDeleteButton.click(function () {
+    const categoryId = Number($deleteCategoryIdElement.val());
+    $.ajax({
+        url: '/Categories/Delete/' + categoryId,
+        method: 'DELETE',
+        success: function (data) {
+            $categoriesTableBody.html(data);
+            deleteModal.hide();
+        },
+        error: function (xhr) {
+            console.error(`HTTP error! status: ${xhr.status}`);
+        }
+    });
 });
