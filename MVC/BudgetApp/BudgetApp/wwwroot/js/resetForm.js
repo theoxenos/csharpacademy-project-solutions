@@ -1,6 +1,6 @@
 function resetFormValidation(formSelector) {
     // Obtain a reference to the form element
-    var $form = $(formSelector);
+    const $form = $(formSelector);
 
     // Remove error class from input elements
     $form.find('.input-validation-error').removeClass('input-validation-error');
