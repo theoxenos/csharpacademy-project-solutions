@@ -1,0 +1,57 @@
+@model IssueTracker.Models.Issue
+
+@{
+    ViewBag.Title = "Issue Detail";
+    Layout = "_Layout";
+}
+
+<h2>Issue #@Model.Id</h2>
+<dl class="row">
+    <dt class = "col-3">
+        @Html.DisplayNameFor(m => m.Title)
+    </dt>
+    <dd class = "col-9">
+        @Html.DisplayFor(m => m.Title)
+    </dd>
+    <dt class = "col-3">
+        @Html.DisplayNameFor(m => m.Description)
+    </dt>
+    <dd class = "col-9">
+        @Html.DisplayFor(m => m.Description)
+    </dd>
+    <dt class = "col-3">
+        @Html.DisplayNameFor(m => m.Project.Name)
+    </dt>
+    <dd class = "col-9">
+        @Html.DisplayFor(m => m.Project.Name)
+    </dd>
+    <dt class = "col-3">
+        @Html.DisplayNameFor(m => m.Assignee.Name)
+    </dt>
+    <dd class = "col-9">
+        @Html.DisplayFor(m => m.Assignee.Name)
+    </dd>
+    <dt class = "col-3">
+        @Html.DisplayNameFor(m => m.CreatedAt)
+    </dt>
+    <dd class = "col-9">
+        @Html.DisplayFor(m => m.CreatedAt)
+    </dd>
+    <dt class = "col-3">
+        @Html.DisplayNameFor(m => m.ModifiedAt)
+    </dt>
+    <dd class = "col-9">
+        @Html.DisplayFor(m => m.ModifiedAt)
+    </dd>
+    <dt class = "col-3">
+        @Html.DisplayNameFor(m => m.Status)
+    </dt>
+    <dd class = "col-9">
+        @Html.DisplayFor(m => m.Status)
+    </dd>
+</dl>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Delete" asp-route-id="@Model?.Id">Delete</a> |
+    <a asp-controller="Home">Back to List</a>
+</div>
