@@ -8,6 +8,13 @@ Content-Type: application/json
   "id": null
 }
 
+### Wrong post
+POST {{TodoAppI_HostAddress}}/todos
+Content-Type: application/json
+
+{
+}
+
 ###
 DELETE {{TodoAppI_HostAddress}}/todos/1
 

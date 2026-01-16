@@ -19,13 +19,13 @@ public class TodoContext(DbContextOptions options) : DbContext(options)
             new TodoItem
             {
                 Id = 2,
-                Name = "Vibe code enterprise SaaS",
+                Name = "Learn prompt engineering",
                 Completed = false
             },
             new TodoItem
             {
                 Id = 3,
-                Name = "Get rich",
+                Name = "Vibe code enterprise SaaS",
                 Completed = false
             },
             new TodoItem

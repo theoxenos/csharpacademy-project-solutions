@@ -64,7 +64,8 @@ class TodoController {
             toastView.show('Todo deleted successfully!', TOAST_TYPE.SUCCESS);
         } catch (error) {
             console.error('Failed to delete todo:', error);
-            toastView.show('Failed to delete todo. Please try again later.', TOAST_TYPE.ERROR);
+            if (error instanceof Error)
+                toastView.show(`Failed to delete todo. ${error.message}.`, TOAST_TYPE.ERROR);
         }
     }
 
@@ -90,7 +91,8 @@ class TodoController {
             toastView.show('Todo saved successfully!', TOAST_TYPE.SUCCESS);
         } catch (error) {
             console.error('Failed to upsert todo:', error);
-            toastView.show('Failed to save todo. Please try again later.', TOAST_TYPE.ERROR);
+            if (error instanceof Error)
+                toastView.show(`Failed to save todo. ${error.message}.`, TOAST_TYPE.ERROR);
         }
     }
 

@@ -61,11 +61,14 @@
                 <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
             </div>
             <div class="modal-body">
-                <form>
+                <form class="was-validated">
                     <input id="todo-id" type="hidden"/>
                     <div class="mb-3">
                         <label class="col-form-label" for="todo-name">Name:</label>
-                        <input class="form-control" id="todo-name" type="text">
+                        <input class="form-control" id="todo-name" required type="text">
+                        <div class="invalid-feedback">
+                            Name is required
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="col-form-label" for="todo-completed">Completed:</label>

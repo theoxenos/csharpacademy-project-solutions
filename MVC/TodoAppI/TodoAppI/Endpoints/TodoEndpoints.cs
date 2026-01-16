@@ -26,11 +26,11 @@ public static class TodoEndpoints
             .WithName("DeleteTodo");
     }
 
-    private static async Task<Results<Ok<TodoItemDto>, NotFound>> GetTodoById(ITodoService todoService, int id)
+    private static async Task<Results<Ok<TodoItemDto>, NotFound<string>>> GetTodoById(ITodoService todoService, int id)
     {
         var todo = await todoService.GetTodoByIdAsync(id);
         if (todo == null)
-            return TypedResults.NotFound();
+            return TypedResults.NotFound($"Todo with id {id} not found");
 
         return TypedResults.Ok(todo);
     }
@@ -42,29 +42,30 @@ public static class TodoEndpoints
         return TypedResults.Ok(todos);
     }
 
-    private static async Task<Results<NoContent, BadRequest>> CreateTodo(ITodoService todoService,
+    private static async Task<Results<NoContent, BadRequest<string>>> CreateTodo(ITodoService todoService,
         CreateTodoDto createDto)
     {
         if (string.IsNullOrWhiteSpace(createDto.Name))
-            return TypedResults.BadRequest();
+            return TypedResults.BadRequest("Name is required");
 
         await todoService.CreateTodoAsync(createDto);
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, BadRequest, NotFound>> UpdateTodo(ITodoService todoService, int id,
+    private static async Task<Results<NoContent, BadRequest<string>, NotFound<string>>> UpdateTodo(
+        ITodoService todoService, int id,
         UpdateTodoDto updateDto)
     {
         if (updateDto.Name != null && string.IsNullOrWhiteSpace(updateDto.Name))
-            return TypedResults.BadRequest();
+            return TypedResults.BadRequest("Name is required");
 
         var success = await todoService.UpdateTodoAsync(id, updateDto);
-        return success ? TypedResults.NoContent() : TypedResults.NotFound();
+        return success ? TypedResults.NoContent() : TypedResults.NotFound($"Note with id {id} not found");
     }
 
-    private static async Task<Results<NoContent, NotFound>> DeleteTodo(ITodoService todoService, int id)
+    private static async Task<Results<NoContent, NotFound<string>>> DeleteTodo(ITodoService todoService, int id)
     {
         var success = await todoService.DeleteTodoAsync(id);
-        return success ? TypedResults.NoContent() : TypedResults.NotFound();
+        return success ? TypedResults.NoContent() : TypedResults.NotFound($"Note with id {id} not found");
     }
 }

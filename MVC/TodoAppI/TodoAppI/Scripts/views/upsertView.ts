@@ -47,8 +47,9 @@ class UpsertView {
 
   handleConfirm() {
     this.modal.hide();
+
     this.onModalSubmitted?.({
-      name: this.nameInput.value,
+      name: this.nameInput.value.trim(),
       id: this.todoInputId.value ? Number(this.todoInputId.value) : undefined,
       completed: this.completedInput.checked
     });

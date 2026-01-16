@@ -8,7 +8,10 @@ const getAllTodos = async (pageNumber: number, pageSize: number): Promise<PagedR
 
 const deleteTodoById = async (id: number): Promise<void> => {
     const response = await fetch(`/todos/${id}`, {method: 'DELETE'});
-    if(!response.ok) throw new Error('Something went wrong when deleting todo');
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Something went wrong when deleting todo: ${errorMessage}`);
+    }
 }
 
 const createTodo = async (todo: TodoUpsert): Promise<void> => {
@@ -20,7 +23,10 @@ const createTodo = async (todo: TodoUpsert): Promise<void> => {
         },
         body: JSON.stringify({name})
     });
-    if(!response.ok) throw new Error('Something went wrong when creating todo');
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Something went wrong when creating todo: ${errorMessage}`);
+    }
 }
 
 const updateTodo = async (todo: TodoUpsert): Promise<void> => {
@@ -32,7 +38,10 @@ const updateTodo = async (todo: TodoUpsert): Promise<void> => {
         },
         body: JSON.stringify({name, completed})
     });
-    if(!response.ok) throw new Error('Something went wrong when updating todo');
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Something went wrong when updating todo: ${errorMessage}`);
+    }
 }
 
 export default {getAllTodos, deleteTodoById, createTodo, updateTodo};
