@@ -5,7 +5,7 @@
     <tr>
         <td>@Html.DisplayFor(m => transaction.Date)</td>
         <td>@transaction.Comment</td>
-        <td class="text-end">@transaction.Amount</td>
+        <td class="text-end">@Html.DisplayFor(m => transaction.Amount)</td>
         <td>@transaction.Category.Name</td>
         <td class="text-end">
             <btn class="btn btn-warning edit-transaction" data-transactionid="@transaction.Id">Edit</btn>
