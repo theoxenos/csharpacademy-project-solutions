@@ -4,9 +4,10 @@
     --nord2: #434c5e;
     --nord3: #4c566a;
 
-    --nord11: #bf616a;
+    --nord7: #8fbcbb;
+    --nord10: #5e81ac;
 
-    --bs-danger: var(--nord11);
+    --nord11: #bf616a;
 }
 
 body {
@@ -14,7 +15,7 @@ body {
 }
 
 #todoList {
-    background-color: var(--nord1);
+    border-radius: 0;
 }
 
 #todoList > li {
@@ -22,23 +23,15 @@ body {
     background-color: var(--nord3);
 }
 
-.todo-title {
+#todoTitle, #pagination {
     background-color: var(--nord2);
     border: 1px solid var(--nord2);
-    border-radius: 0.375rem 0.375rem 0 0;
-    color: white;
-}
-
-#todoList {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-}
-
-#todoList > li:first-child {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
 }
 
 .btn-danger {
     background-color: var(--nord11);
+}
+
+.btn-primary {
+    background-color: var(--nord10);
 }

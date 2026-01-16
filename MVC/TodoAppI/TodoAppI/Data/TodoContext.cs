@@ -19,7 +19,7 @@ public class TodoContext(DbContextOptions options) : DbContext(options)
             new TodoItem
             {
                 Id = 2,
-                Name = "Vibe code enterprise SAS",
+                Name = "Vibe code enterprise SaaS",
                 Completed = false
             },
             new TodoItem
