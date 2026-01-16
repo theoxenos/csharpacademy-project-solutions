@@ -20,14 +20,14 @@
         <div class="card-body bg-light">
             <form id="frmSearch" class="row g-3 align-items-end">
                 <div class="col-md-3">
+                    <label asp-for="DateFilter" class="form-label">Date</label>
+                    <input asp-for="DateFilter" type="date" class="form-control"/>
+                </div>
+                <div class="col-md-3">
                     <label asp-for="CategoryFilter" class="form-label">Category</label>
                     <select asp-for="CategoryFilter" asp-items="@(new SelectList(Model.Categories, nameof(Category.Id), nameof(Category.Name), Model.CategoryFilter))" class="form-select">
                         <option value="0">All Categories</option>
                     </select>
-                </div>
-                <div class="col-md-3">
-                    <label asp-for="DateFilter" class="form-label">Date</label>
-                    <input asp-for="DateFilter" type="date" class="form-control"/>
                 </div>
                 <div class="col-md-4">
                     <label asp-for="TransactionFilter" class="form-label">Search by Name</label>
