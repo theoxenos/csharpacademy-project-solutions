@@ -38,7 +38,7 @@ const createCheckboxGroup = (todoItem: Todo) => {
 };
 
 const createButtonGroup = () => {
-    const container = createElement('span', {classes: ['d-flex', 'gap-1']});
+    const container = createElement('span', {classes: ['d-flex', 'gap-2']});
     const updateButton = createElement('button', {
         classes: ['btn', 'btn-primary', 'bi', 'bi-pencil'],
         attributes: {'data-action-type': ACTION_TYPE.UPDATE}
