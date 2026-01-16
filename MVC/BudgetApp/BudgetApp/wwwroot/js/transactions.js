@@ -90,7 +90,9 @@ transactionsTableRows.addEventListener('click', async (event) => {
         const transaction = await response.json();
 
         upsertForm['Transaction.Id'].value = transaction.id;
-        upsertForm['Transaction.Date'].value = transaction.date;
+        if (transaction.date) {
+            upsertForm['Transaction.Date'].value = transaction.date.substring(0, 16);
+        }
         upsertForm['Transaction.Comment'].value = transaction.comment;
         upsertForm['Transaction.Amount'].value = transaction.amount;
         upsertForm['Transaction.CategoryId'].value = transaction.categoryId;
@@ -136,16 +138,17 @@ if (searchForm) {
         const formData = new FormData(e.target);
 
         const searchVm = {
-            CategoryFilter: formData.get('CategoryFilter'),
-            DateFilter: formData.get('DateFilter'),
-            TransactionFilter: formData.get('TransactionFilter')
+            CategoryFilter: formData.get('CategoryFilter') || 0,
+            DateFilter: formData.get('DateFilter') || '',
+            TransactionFilter: formData.get('TransactionFilter') || ''
         };
 
-        const queryString = Object.keys(searchVm).map(key =>
-            `${encodeURIComponent(key)}=${encodeURIComponent(searchVm[key])}`
-        ).join('&');
+        const queryString = Object.keys(searchVm)
+            .filter(key => searchVm[key] !== null && searchVm[key] !== undefined && searchVm[key] !== '' && searchVm[key] !== 0 && searchVm[key] !== '0')
+            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(searchVm[key])}`)
+            .join('&');
 
-        const url = `Transactions/Filter/?${queryString}`;
+        const url = `/Transactions/Filter/?${queryString}`;
         const response = await fetch(url);
 
         transactionsTableRows.innerHTML = await response.text();

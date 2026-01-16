@@ -21,11 +21,14 @@ public class TransactionsController(BudgetContext context) : Controller
 
     public async Task<IActionResult> Filter(TransactionIndexViewModel indexViewModel)
     {
+        var searchTerm = indexViewModel.TransactionFilter.Trim();
         var filteredTransactions = context.Transactions.Include(t => t.Category).AsQueryable();
 
-        if (!string.IsNullOrEmpty(indexViewModel.TransactionFilter))
+        if (!string.IsNullOrEmpty(searchTerm))
         {
-            filteredTransactions = filteredTransactions.Where(t => t.Comment.Contains(indexViewModel.TransactionFilter));
+            filteredTransactions = filteredTransactions.Where(t =>
+                EF.Functions.Like(t.Comment, $"%{searchTerm}%")
+            );
         }
 
         if (indexViewModel.DateFilter.HasValue)
@@ -37,7 +40,7 @@ public class TransactionsController(BudgetContext context) : Controller
         {
             filteredTransactions = filteredTransactions.Where(t => t.CategoryId == indexViewModel.CategoryFilter);
         }
-        
+
         return PartialView("TransactionsTableRows", await filteredTransactions.OrderBy(t => t.Date).ToArrayAsync());
     }
 
@@ -50,7 +53,7 @@ public class TransactionsController(BudgetContext context) : Controller
         {
             return BadRequest();
         }
-        
+
         context.Transactions.Add(transaction);
         await context.SaveChangesAsync();
 
@@ -78,14 +81,14 @@ public class TransactionsController(BudgetContext context) : Controller
         }
 
         ModelState.Remove(nameof(Transaction.Category));
-        
+
         if (!ModelState.IsValid)
         {
             return BadRequest();
         }
-        
+
         context.Entry(transaction).State = EntityState.Modified;
-        
+
         try
         {
             await context.SaveChangesAsync();
@@ -115,7 +118,7 @@ public class TransactionsController(BudgetContext context) : Controller
 
         context.Transactions.Remove(transaction);
         await context.SaveChangesAsync();
-        
+
         return PartialView("TransactionsTableRows",
             await context.Transactions.OrderBy(t => t.Date).Include(t => t.Category).ToArrayAsync());
     }
@@ -130,7 +133,8 @@ public class TransactionsController(BudgetContext context) : Controller
         return new TransactionUpsertViewModel
         {
             Transaction = transaction ?? new(),
-            Categories = new SelectList(await context.Categories.ToListAsync(), nameof(Category.Id), nameof(Category.Name))
+            Categories = new SelectList(await context.Categories.ToListAsync(), nameof(Category.Id),
+                nameof(Category.Name))
         };
     }
 }
