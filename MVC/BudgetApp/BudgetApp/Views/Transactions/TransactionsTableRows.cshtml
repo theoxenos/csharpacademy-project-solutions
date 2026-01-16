@@ -3,13 +3,17 @@
 @foreach (var transaction in Model)
 {
     <tr>
-        <td>@Html.DisplayFor(m => transaction.Date)</td>
+        <td class="ps-4">@Html.DisplayFor(m => transaction.Date)</td>
         <td>@transaction.Comment</td>
-        <td class="text-end">@Html.DisplayFor(m => transaction.Amount)</td>
-        <td>@transaction.Category.Name</td>
-        <td class="text-end">
-            <btn class="btn btn-warning edit-transaction" data-transactionid="@transaction.Id">Edit</btn>
-            <btn class="btn btn-danger delete-transaction" data-transactionid="@transaction.Id">Delete</btn>
+        <td><span class="badge bg-secondary">@transaction.Category.Name</span></td>
+        <td class="text-end fw-bold">@Html.DisplayFor(m => transaction.Amount)</td>
+        <td class="text-center pe-4">
+            <button class="btn btn-sm btn-outline-primary edit-transaction" data-transactionid="@transaction.Id">
+                Edit
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete-transaction" data-transactionid="@transaction.Id">
+                Delete
+            </button>
         </td>
     </tr>
 }

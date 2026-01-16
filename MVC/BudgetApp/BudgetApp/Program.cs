@@ -32,6 +32,14 @@ using (var scope = app.Services.CreateScope())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+var supportedCultures = new[] { "en-GB", "en-US", "es-ES", "nl-NL" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[1])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+
 app.UseRouting();
 
 app.UseAuthorization();

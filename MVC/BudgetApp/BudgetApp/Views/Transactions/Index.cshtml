@@ -1,52 +1,88 @@
 @model BudgetApp.Models.TransactionIndexViewModel
 
-<h2 class="display-5 text-center">Transactions overview</h2>
-<div class="d-flex justify-content-end">
-    <button class="btn btn-success" id="btnTransactionNew">New Transaction</button>
-</div>
-<div class="mb-3 row">
-    <form id="frmSearch" class="d-flex gap-1">
-        <select asp-for="CategoryFilter" asp-items="@(new SelectList(Model.Categories, nameof(Category.Id), nameof(Category.Name), Model.CategoryFilter))" class="form-select">
-                <option value="0">All</option>
-            </select>
-            <input asp-for="DateFilter" type="date" class="form-control"/>
-            <input asp-for="TransactionFilter" type="search" class="form-control"/>
-            <button class="btn btn-primary" type="submit">Search</button>
-    </form>
-</div>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(m => m.Transactions[0].Date)</th>
-            <th>@Html.DisplayNameFor(m => m.Transactions[0].Comment)</th>
-            <th class="text-end">@Html.DisplayNameFor(m => m.Transactions[0].Amount)</th>
-            <th>@Html.DisplayNameFor(m => m.Transactions[0].Category.Name)</th>
-            <th class="text-end">Manage</th>
-        </tr>
-        </thead>
-        <tbody id="transactionsTableRows">
-            @await Html.PartialAsync("TransactionsTableRows", Model.Transactions)
-        </tbody>
-    </table>
+@{
+    ViewData["Title"] = "Transactions";
+}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h2 class="display-6 fw-bold mb-0">Transactions</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-success shadow-sm" id="btnTransactionNew">
+                <i class="bi bi-plus-lg"></i> New Transaction
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body bg-light">
+            <form id="frmSearch" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label asp-for="CategoryFilter" class="form-label">Category</label>
+                    <select asp-for="CategoryFilter" asp-items="@(new SelectList(Model.Categories, nameof(Category.Id), nameof(Category.Name), Model.CategoryFilter))" class="form-select">
+                        <option value="0">All Categories</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="DateFilter" class="form-label">Date</label>
+                    <input asp-for="DateFilter" type="date" class="form-control"/>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="TransactionFilter" class="form-label">Search by Name</label>
+                    <div class="input-group">
+                        <input asp-for="TransactionFilter" type="search" class="form-control" placeholder="Search transactions..."/>
+                        <button class="btn btn-primary" type="submit">
+                            Search
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-outline-secondary w-100" onclick="document.getElementById('frmSearch').reset(); document.getElementById('frmSearch').dispatchEvent(new Event('submit'));">
+                        Clear
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th class="ps-4">@Html.DisplayNameFor(m => m.Transactions[0].Date)</th>
+                    <th>@Html.DisplayNameFor(m => m.Transactions[0].Comment)</th>
+                    <th>Category</th>
+                    <th class="text-end">@Html.DisplayNameFor(m => m.Transactions[0].Amount)</th>
+                    <th class="text-center pe-4" style="width: 150px;">Manage</th>
+                </tr>
+                </thead>
+                <tbody id="transactionsTableRows">
+                    @await Html.PartialAsync("TransactionsTableRows", Model.Transactions)
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 @* Confirmation Modal *@
 <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Confirm Deletion</h5>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="modalLabel">Confirm Deletion</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                @* TODO *@
+            <div class="modal-body py-4 text-center">
                 <input type="hidden" id="deleteTransactionId"/>
-                Are you sure you want to delete this transaction?
+                <p class="mb-0 fs-5">Are you sure you want to delete this transaction?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="btnCategoryDelete">Confirm</button>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger px-4" id="btnTransactionConfirmDelete">Delete Transaction</button>
             </div>
         </div>
     </div>
@@ -73,7 +109,7 @@
         // Confirm modal elements
         const confirmationModal = new bootstrap.Modal('#confirmationModal');
         const transactionDeleteIdElement = document.querySelector('#deleteTransactionId');
-        const confirmDeleteButton = document.querySelector('#btnCategoryDelete');
+        const confirmDeleteButton = document.querySelector('#btnTransactionConfirmDelete');
         
         upsertForm.addEventListener('submit', async (event) => {
             event.preventDefault();

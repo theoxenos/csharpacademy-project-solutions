@@ -21,14 +21,22 @@ public class TransactionsController(BudgetContext context) : Controller
 
     public async Task<IActionResult> Filter(TransactionIndexViewModel indexViewModel)
     {
-        indexViewModel.DateFilter ??= new();
-        
-        var filteredTransactions =
-            context.Transactions.Include(t => t.Category).Where(t =>
-                (string.IsNullOrEmpty(indexViewModel.TransactionFilter) || t.Comment.Contains(indexViewModel.TransactionFilter))
-                && t.Date >= indexViewModel.DateFilter 
-                && (indexViewModel.CategoryFilter == 0 || t.CategoryId == indexViewModel.CategoryFilter)
-            );
+        var filteredTransactions = context.Transactions.Include(t => t.Category).AsQueryable();
+
+        if (!string.IsNullOrEmpty(indexViewModel.TransactionFilter))
+        {
+            filteredTransactions = filteredTransactions.Where(t => t.Comment.Contains(indexViewModel.TransactionFilter));
+        }
+
+        if (indexViewModel.DateFilter.HasValue)
+        {
+            filteredTransactions = filteredTransactions.Where(t => t.Date.Date == indexViewModel.DateFilter.Value.Date);
+        }
+
+        if (indexViewModel.CategoryFilter != 0)
+        {
+            filteredTransactions = filteredTransactions.Where(t => t.CategoryId == indexViewModel.CategoryFilter);
+        }
         
         return PartialView("TransactionsTableRows", await filteredTransactions.OrderBy(t => t.Date).ToArrayAsync());
     }

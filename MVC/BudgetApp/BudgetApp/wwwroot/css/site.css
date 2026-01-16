@@ -8,15 +8,79 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
   margin-bottom: 60px;
+  background-color: #f8f9fa;
+  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-bottom: 2px solid #0056b3;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: #0056b3 !important;
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: none;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+}
+
+.table {
+  background-color: #fff;
+}
+
+.table thead th {
+  background-color: #f1f3f5;
+  border-bottom: 2px solid #dee2e6;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  color: #495057;
+}
+
+.btn-primary {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn-primary:hover {
+  background-color: #004494;
+  border-color: #004494;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.modal-header {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.total-card {
+  background: linear-gradient(135deg, #0056b3 0%, #007bff 100%);
+  color: white;
 }
