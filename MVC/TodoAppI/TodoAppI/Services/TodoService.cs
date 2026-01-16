@@ -7,11 +7,21 @@ namespace TodoAppI.Services;
 
 public class TodoService(TodoContext context) : ITodoService
 {
-    public async Task<IEnumerable<TodoItemDto>> GetAllTodosAsync()
+    public async Task<PagedResponse<TodoItemDto>> GetAllTodosAsync(int page = 1, int pageSize = 5)
     {
-        return await context.TodoItems
-            .Select(t => new TodoItemDto(t.Id, t.Name, t.Completed))
-            .ToListAsync();
+        var query = context.TodoItems.AsQueryable();
+        var count = await query.CountAsync();
+
+        return new PagedResponse<TodoItemDto>(
+            await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(t => new TodoItemDto(t.Id, t.Name, t.Completed))
+                .ToListAsync(),
+            page,
+            pageSize,
+            count
+        );
     }
 
     public async Task<TodoItemDto?> GetTodoByIdAsync(int id)

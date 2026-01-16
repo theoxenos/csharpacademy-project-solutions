@@ -8,9 +8,12 @@ import {TOAST_TYPE} from "../consts.js";
 
 class TodoController {
     private todos: Todo[];
+    private currentPage: number;
+    private pageSize: number = 5;
 
     constructor() {
         this.todos = [];
+        this.currentPage = 1;
     }
 
     async init() {
@@ -18,6 +21,8 @@ class TodoController {
         mainView.onCreateClick = () => this.handleCreateClick();
         mainView.onUpdateClick = (id: number) => this.handleUpdateClick(id);
         mainView.onCompleteClick = (id: number) => this.handleToggleComplete(id);
+        mainView.onPrevPageClick = () => this.handlePrevPage();
+        mainView.onNextPageClick = () => this.handleNextPage();
 
         deleteView.onModalSubmitted = (id: number) => this.handleDeleteConfirm(id);
         upsertView.onModalSubmitted = (todoData: TodoUpsert) => this.handleUpsertConfirm(todoData);
@@ -27,12 +32,25 @@ class TodoController {
 
     async loadTodos() {
         try {
-            this.todos = await todosApiService.getAllTodos();
-            mainView.render(this.todos);
+            const response = await todosApiService.getAllTodos(this.currentPage, this.pageSize);
+            this.todos = response.data;
+            mainView.render(this.todos, this.currentPage, response.totalRecords);
         } catch (error) {
             console.error('Failed to load todos:', error);
             toastView.show('Failed to load todos. Please try again later.', TOAST_TYPE.ERROR);
         }
+    }
+
+    async handlePrevPage() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            await this.loadTodos();
+        }
+    }
+
+    async handleNextPage() {
+        this.currentPage++;
+        await this.loadTodos();
     }
 
     handleDeleteClick(id: number) {

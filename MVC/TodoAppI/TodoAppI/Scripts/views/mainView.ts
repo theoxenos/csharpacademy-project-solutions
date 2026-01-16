@@ -5,22 +5,33 @@ import {Callback, CallbackWithId, Todo} from "../types.js";
 class MainView {
     private addTodoButton: HTMLButtonElement;
     private todoList: HTMLElement;
+    onPrevPageClick?: Callback;
+    onNextPageClick?: Callback;
+    private prevPageButton: HTMLButtonElement;
 
     onCompleteClick?: CallbackWithId;
     onDeleteClick?: CallbackWithId;
     onUpdateClick?: CallbackWithId;
     onCreateClick?: Callback;
+    private nextPageButton: HTMLButtonElement;
+    private currentPageSpan: HTMLElement;
 
     constructor() {
         this.addTodoButton = document.querySelector('#btnAddTodo') as HTMLButtonElement;
         this.todoList = document.querySelector('#todoList') as HTMLElement;
+        this.prevPageButton = document.querySelector('#prevPage') as HTMLButtonElement;
+        this.nextPageButton = document.querySelector('#nextPage') as HTMLButtonElement;
+        this.currentPageSpan = document.querySelector('#currentPage') as HTMLElement;
 
         this.init();
     }
 
-    render(todos: Todo[]) {
+    render(todos: Todo[], page: number, totalTodos: number) {
         this.todoList.innerHTML = '';
         this.todoList.append(...todos.map(elementsService.createTodoItemElement));
+        this.currentPageSpan.innerText = page.toString();
+        this.prevPageButton.disabled = page === 1;
+        this.nextPageButton.disabled = (page * 5) >= totalTodos;
     }
 
     init() {
@@ -49,6 +60,8 @@ class MainView {
         });
 
         this.addTodoButton.onclick = () => this.onCreateClick?.();
+        this.prevPageButton.onclick = () => this.onPrevPageClick?.();
+        this.nextPageButton.onclick = () => this.onNextPageClick?.();
     }
 }
 

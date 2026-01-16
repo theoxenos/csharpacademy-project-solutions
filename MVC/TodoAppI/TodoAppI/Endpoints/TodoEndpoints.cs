@@ -35,9 +35,10 @@ public static class TodoEndpoints
         return TypedResults.Ok(todo);
     }
 
-    private static async Task<Ok<IEnumerable<TodoItemDto>>> GetTodos(ITodoService todoService)
+    private static async Task<Ok<PagedResponse<TodoItemDto>>> GetTodos(ITodoService todoService,
+        [AsParameters] PaginationRequest request)
     {
-        var todos = await todoService.GetAllTodosAsync();
+        var todos = await todoService.GetAllTodosAsync(request.PageNumber, request.PageSize);
         return TypedResults.Ok(todos);
     }
 

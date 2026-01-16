@@ -1,7 +1,7 @@
-import {Todo, TodoUpsert} from '../types.js';
+import {PagedResponse, Todo, TodoUpsert} from '../types.js';
 
-const getAllTodos = async (): Promise<Todo[]> => {
-    const response = await fetch('/todos');
+const getAllTodos = async (pageNumber: number, pageSize: number): Promise<PagedResponse<Todo>> => {
+    const response = await fetch(`/todos?pageNumber=${pageNumber}&pageSize=${pageSize}`);
     if(!response.ok) throw new Error('Something went wrong when fetching todos');
     return response.json()
 }

@@ -11,14 +11,26 @@
     <script defer src="js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js" type="module"></script>
 </head>
-<body class="d-flex flex-column vh-100">
+<body class="d-flex flex-column vh-100" data-bs-theme="dark">
 <main class="container-lg flex-grow-1">
     <div class="row">
-        <div class="col-12">
+        <div class="col">
+            <h1 class="h3 text-center fw-bold py-3 mb-0 todo-title mt-5" style="letter-spacing: 0.1rem;">TODO APPi</h1>
             <!-- Todo items will go here -->
-            <ul class="list-group mt-3" id="todoList">
+            <ul class="list-group" id="todoList">
 
             </ul>
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                        <button class="page-link" id="prevPage">Previous</button>
+                    </li>
+                    <li class="page-item"><span class="page-link" id="currentPage">1</span></li>
+                    <li class="page-item">
+                        <button class="page-link" id="nextPage">Next</button>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
     <div class="d-flex justify-content-end mt-3">

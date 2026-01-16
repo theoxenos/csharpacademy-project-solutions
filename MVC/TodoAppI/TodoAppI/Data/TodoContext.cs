@@ -25,7 +25,7 @@ public class TodoContext(DbContextOptions options) : DbContext(options)
             new TodoItem
             {
                 Id = 3,
-                Name = "Get job",
+                Name = "Get rich",
                 Completed = false
             },
             new TodoItem
