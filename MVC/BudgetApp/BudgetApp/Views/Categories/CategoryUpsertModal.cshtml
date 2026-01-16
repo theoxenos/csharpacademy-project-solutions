@@ -16,6 +16,11 @@
                         <input asp-for="Name" type="text" class="form-control" placeholder="Enter category name...">
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
+                    <div class="mb-3">
+                        <label asp-for="Color" class="form-label">Category Color</label>
+                        <input asp-for="Color" type="color" class="form-control form-control-color w-100" title="Choose your color">
+                        <span asp-validation-for="Color" class="text-danger"></span>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer border-0 px-4 pb-4">

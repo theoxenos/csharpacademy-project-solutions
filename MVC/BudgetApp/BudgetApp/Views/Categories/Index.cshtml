@@ -100,6 +100,7 @@
 
                 categoryUpsertForm['editCategoryId'].value = category.id;
                 categoryUpsertForm['Name'].value = category.name;
+                categoryUpsertForm['Color'].value = category.color;
                 
                 editModal.show();    
             } else if (target.matches('.delete-category')) {
@@ -113,6 +114,7 @@
             resetFormValidation(categoryUpsertForm);
             categoryUpsertForm['editCategoryId'].value = '';
             categoryUpsertForm['Name'].value = '';
+            categoryUpsertForm['Color'].value = '#6c757d';
 
             editModal.show();
         });
@@ -120,7 +122,11 @@
         categoryUpsertForm.addEventListener('submit', async (evt) => {
             evt.preventDefault();
 
-            const todo = { id: Number(categoryUpsertForm['editCategoryId'].value), name: categoryUpsertForm['Name'].value };
+            const todo = { 
+                id: Number(categoryUpsertForm['editCategoryId'].value), 
+                name: categoryUpsertForm['Name'].value,
+                color: categoryUpsertForm['Color'].value
+            };
             const route = todo.id === 0
                 ? 'Categories/Create'
                 : `/Categories/Update/${todo.id}`;

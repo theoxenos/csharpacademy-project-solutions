@@ -3,7 +3,12 @@
 @foreach (var category in Model)
 {
     <tr>
-        <td class="ps-4">@category.Name</td>
+        <td class="ps-4">
+            <div class="d-flex align-items-center">
+                <div class="me-3" style="width: 20px; height: 20px; border-radius: 4px; background-color: @category.Color; border: 1px solid #dee2e6;"></div>
+                <span>@category.Name</span>
+            </div>
+        </td>
         <td class="text-center pe-4">
             <button class="btn btn-sm btn-outline-primary edit-category" data-categoryid="@category.Id">
                 Edit

@@ -21,22 +21,26 @@ public class BudgetContext(DbContextOptions options) : DbContext(options)
             new Category
             {
                 Id = 1,
-                Name = "Rent"
+                Name = "Rent",
+                Color = "#0d6efd"
             },
             new Category
             {
                 Id = 2,
-                Name = "Insurance"
+                Name = "Insurance",
+                Color = "#198754"
             },
             new Category
             {
                 Id = 3,
-                Name = "Car"
+                Name = "Car",
+                Color = "#ffc107"
             },
             new Category
             {
                 Id = 4,
-                Name = "Groceries"
+                Name = "Groceries",
+                Color = "#dc3545"
             }
         );
 

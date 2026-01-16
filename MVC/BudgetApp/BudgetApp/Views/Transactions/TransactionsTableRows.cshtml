@@ -4,8 +4,10 @@
 {
     <tr>
         <td class="ps-4">@Html.DisplayFor(m => transaction.Date)</td>
-        <td>@transaction.Comment</td>
-        <td><span class="badge bg-secondary">@transaction.Category.Name</span></td>
+        <td>
+            <span class="badge" style="background-color: @transaction.Category.Color">@transaction.Category.Name</span>
+            <span class="fw-bold ms-1">@transaction.Comment</span>
+        </td>
         <td class="text-end fw-bold">@Html.DisplayFor(m => transaction.Amount)</td>
         <td class="text-center pe-4">
             <button class="btn btn-sm btn-outline-primary edit-transaction" data-transactionid="@transaction.Id">
