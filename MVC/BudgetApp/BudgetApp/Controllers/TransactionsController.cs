@@ -10,7 +10,7 @@ public class TransactionsController(BudgetContext context) : Controller
 {
     public async Task<IActionResult> Index()
     {
-        var vm = new TransactionIndexViewModel
+        TransactionIndexViewModel vm = new()
         {
             Transactions = await context.Transactions.OrderBy(t => t.Date).Include(t => t.Category).ToArrayAsync(),
             TransactionUpsertViewModel = await CreateTransactionUpsertViewModel(),
@@ -21,8 +21,8 @@ public class TransactionsController(BudgetContext context) : Controller
 
     public async Task<IActionResult> Filter(TransactionIndexViewModel indexViewModel)
     {
-        var searchTerm = indexViewModel.TransactionFilter.Trim();
-        var filteredTransactions = context.Transactions.Include(t => t.Category).AsQueryable();
+        string searchTerm = indexViewModel.TransactionFilter.Trim();
+        IQueryable<Transaction> filteredTransactions = context.Transactions.Include(t => t.Category).AsQueryable();
 
         if (!string.IsNullOrEmpty(searchTerm))
         {
@@ -64,7 +64,7 @@ public class TransactionsController(BudgetContext context) : Controller
 
     public async Task<IActionResult> Detail(int id)
     {
-        var transaction = await context.Transactions.FindAsync(id);
+        Transaction? transaction = await context.Transactions.FindAsync(id);
         if (transaction == null)
         {
             return NotFound();
@@ -75,7 +75,8 @@ public class TransactionsController(BudgetContext context) : Controller
 
     [HttpPut]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Update(int id, [FromBody] [Bind("Id,Comment,Amount,Date,CategoryId")] Transaction transaction)
+    public async Task<IActionResult> Update(int id,
+        [FromBody] [Bind("Id,Comment,Amount,Date,CategoryId")] Transaction transaction)
     {
         if (id != transaction.Id)
         {
@@ -113,7 +114,7 @@ public class TransactionsController(BudgetContext context) : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var transaction = await context.Transactions.FindAsync(id);
+        Transaction? transaction = await context.Transactions.FindAsync(id);
         if (transaction == null)
         {
             return BadRequest();
@@ -126,18 +127,14 @@ public class TransactionsController(BudgetContext context) : Controller
             await context.Transactions.OrderBy(t => t.Date).Include(t => t.Category).ToArrayAsync());
     }
 
-    private bool TransactionExists(int id)
-    {
-        return context.Transactions.Any(t => t.Id == id);
-    }
+    private bool TransactionExists(int id) => context.Transactions.Any(t => t.Id == id);
 
-    private async Task<TransactionUpsertViewModel> CreateTransactionUpsertViewModel(Transaction? transaction = default)
-    {
-        return new TransactionUpsertViewModel
+    private async Task<TransactionUpsertViewModel>
+        CreateTransactionUpsertViewModel(Transaction? transaction = null) =>
+        new()
         {
-            Transaction = transaction ?? new(),
+            Transaction = transaction ?? new Transaction(),
             Categories = new SelectList(await context.Categories.ToListAsync(), nameof(Category.Id),
                 nameof(Category.Name))
         };
-    }
 }

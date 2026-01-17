@@ -2,10 +2,10 @@ namespace BudgetApp.Models;
 
 public class TransactionIndexViewModel
 {
-    public Transaction[] Transactions { get; set; } = [];
-    public TransactionUpsertViewModel TransactionUpsertViewModel { get; set; } = default!;
-    public DateTime? DateFilter { get; set; }
-    public string TransactionFilter { get; set; } = string.Empty;
-    public IEnumerable<Category> Categories { get; set; } = [];
-    public int CategoryFilter { get; set; } = default!;
+    public Transaction[] Transactions { get; init; } = [];
+    public TransactionUpsertViewModel TransactionUpsertViewModel { get; init; } = null!;
+    public DateTime? DateFilter { get; init; }
+    public string TransactionFilter { get; init; } = string.Empty;
+    public IEnumerable<Category> Categories { get; init; } = [];
+    public int CategoryFilter { get; init; }
 }

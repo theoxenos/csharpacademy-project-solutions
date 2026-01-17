@@ -4,6 +4,6 @@ namespace BudgetApp.Models;
 
 public class TransactionUpsertViewModel
 {
-    public Transaction Transaction { get; set; } = default!;
-    public SelectList Categories { get; set; } = default!;
+    public Transaction Transaction { get; init; } = null!;
+    public SelectList Categories { get; init; } = null!;
 }

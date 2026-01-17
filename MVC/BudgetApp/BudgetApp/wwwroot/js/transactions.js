@@ -97,7 +97,7 @@ $newTransactionButton.click(() => {
     if (typeof resetFormValidation === 'function') {
         resetFormValidation($upsertForm);
     }
-    
+
     $upsertForm[0].reset();
     $upsertForm.find('[name="Transaction.Id"]').val(0);
 

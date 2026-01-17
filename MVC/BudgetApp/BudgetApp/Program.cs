@@ -1,17 +1,21 @@
 using BudgetApp.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets<Program>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<BudgetContext>(o =>
-    o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<BudgetContext>(o =>
+        o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -21,9 +25,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-using (var scope = app.Services.CreateScope())
+using (IServiceScope scope = app.Services.CreateScope())
 {
-    var databaseFacade = scope.ServiceProvider.GetRequiredService<BudgetContext>().Database;
+    DatabaseFacade databaseFacade = scope.ServiceProvider.GetRequiredService<BudgetContext>().Database;
     databaseFacade.EnsureCreated();
 }
 
@@ -35,7 +39,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Transactions}/{action=Index}/{id?}");
+    "default",
+    "{controller=Transactions}/{action=Index}/{id?}");
 
 app.Run();
