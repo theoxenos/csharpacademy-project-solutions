@@ -15,7 +15,8 @@ builder.Services.AddScoped<MailService>();
 builder.Services.AddScoped<ScraperService>();
 
 builder.Services.AddTransient<MainController>();
+builder.Services.AddHostedService<SportsResultsWorker>();
 
 var host = builder.Build();
 
-host.Services.GetRequiredService<MainController>().Start();
+host.Run();
