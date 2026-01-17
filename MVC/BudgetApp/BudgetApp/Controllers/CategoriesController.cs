@@ -30,7 +30,8 @@ public class CategoriesController(BudgetContext context) : Controller
     }
         
     [HttpPut]
-    public async Task<IActionResult> Update(int id, [FromBody] Category category)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(int id, [FromBody] [Bind("Id,Name,Color")] Category category)
     {
         if (id != category.Id)
         {
@@ -63,7 +64,8 @@ public class CategoriesController(BudgetContext context) : Controller
         
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Category category)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create([FromBody] [Bind("Name,Color")] Category category)
     {
         if (!ModelState.IsValid)
         {
@@ -77,6 +79,7 @@ public class CategoriesController(BudgetContext context) : Controller
     }
         
     [HttpDelete]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         var category = await context.Categories.FindAsync(id);

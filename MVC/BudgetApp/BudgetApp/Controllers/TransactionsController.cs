@@ -45,7 +45,8 @@ public class TransactionsController(BudgetContext context) : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Transaction transaction)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create([FromBody] [Bind("Comment,Amount,Date,CategoryId")] Transaction transaction)
     {
         ModelState.Remove(nameof(Transaction.Category));
 
@@ -73,7 +74,8 @@ public class TransactionsController(BudgetContext context) : Controller
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(int id, [FromBody] Transaction transaction)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(int id, [FromBody] [Bind("Id,Comment,Amount,Date,CategoryId")] Transaction transaction)
     {
         if (id != transaction.Id)
         {
@@ -108,6 +110,7 @@ public class TransactionsController(BudgetContext context) : Controller
     }
 
     [HttpDelete]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         var transaction = await context.Transactions.FindAsync(id);
