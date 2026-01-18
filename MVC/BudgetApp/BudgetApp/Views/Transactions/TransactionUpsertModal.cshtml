@@ -1,0 +1,53 @@
+@using System.Globalization
+@model TransactionUpsertViewModel
+
+@* Upsert modal  *@
+<div class="modal fade" id="transactionUpsertModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="exampleModalLabel">Transaction Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4" id="transactionUpsertModalBody">
+                <form id="frmTransactionUpsert">
+                    @Html.HiddenFor(m => m.Transaction.Id)
+                    <div class="mb-3">
+                        <label asp-for="Transaction.Date" class="form-label">Date and Time</label>
+                        <input asp-for="Transaction.Date" type="datetime-local" class="form-control"/>
+                        <span asp-validation-for="Transaction.Date" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Transaction.Comment" class="form-label">Name / Description</label>
+                        <input asp-for="Transaction.Comment" class="form-control"
+                               placeholder="Enter transaction name..."/>
+                        <span asp-validation-for="Transaction.Comment" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Transaction.Amount" class="form-label">Amount</label>
+                        <div class="input-group">
+                            <span
+                                class="input-group-text">@CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol</span>
+                            <input asp-for="Transaction.Amount" type="number" step="0.01" class="form-control"/>
+                        </div>
+                        <span asp-validation-for="Transaction.Amount" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Transaction.CategoryId" class="form-label">Category</label>
+                        <select asp-for="Transaction.CategoryId" asp-items="Model.Categories" class="form-select">
+                            <option value="0" disabled selected>Select a category</option>
+                        </select>
+                        <span asp-validation-for="Transaction.CategoryId" class="text-danger"></span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 px-4 pb-4">
+                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary px-4 shadow-sm" id="btnTransactionUpsert">Save
+                    Transaction
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

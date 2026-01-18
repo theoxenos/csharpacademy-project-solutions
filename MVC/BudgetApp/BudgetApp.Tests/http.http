@@ -1,0 +1,9 @@
+POST localhost:5161/Transactions/Create/
+Content-Type: application/json
+
+{
+  "Amount": 100,
+  "CategoryId": 1,
+  "Comment": "Test Create",
+  "Date": "18-01-2026 12:00"
+}
