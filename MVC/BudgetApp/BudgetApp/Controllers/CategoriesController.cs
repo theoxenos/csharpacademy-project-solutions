@@ -26,7 +26,7 @@ public class CategoriesController(BudgetContext context) : Controller
 
     [HttpPut]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Update(int id, [FromBody] [Bind("Id,Name,Color")] Category category)
+    public async Task<IActionResult> Update(int id, [FromBody] Category category)
     {
         if (id != category.Id || !ModelState.IsValid)
         {
@@ -55,7 +55,7 @@ public class CategoriesController(BudgetContext context) : Controller
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([FromBody] [Bind("Name,Color")] Category category)
+    public async Task<IActionResult> Create([FromBody] Category category)
     {
         if (!ModelState.IsValid)
         {

@@ -36,6 +36,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAntiforgery();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

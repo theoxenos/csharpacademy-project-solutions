@@ -46,10 +46,9 @@ public class TransactionsController(BudgetContext context) : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([FromBody] [Bind("Comment,Amount,Date,CategoryId")] Transaction transaction)
+    public async Task<IActionResult> Create([FromBody] Transaction transaction)
     {
         ModelState.Remove(nameof(Transaction.Category));
-
         if (!ModelState.IsValid)
         {
             return BadRequest();
@@ -75,8 +74,7 @@ public class TransactionsController(BudgetContext context) : Controller
 
     [HttpPut]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Update(int id,
-        [FromBody] [Bind("Id,Comment,Amount,Date,CategoryId")] Transaction transaction)
+    public async Task<IActionResult> Update(int id, [FromBody] Transaction transaction)
     {
         if (id != transaction.Id)
         {
