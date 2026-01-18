@@ -61,12 +61,13 @@ public class TransactionsIntegrationTests(WebApplicationFactory<Program> factory
         var count = await context.Transactions.CountAsync(t => t.Comment == "No Amount");
         Assert.Equal(0, count);
     }
+
     [Fact]
     public async Task Create_ValidModel_Returns400_WhenAntiforgeryMissing()
     {
         // Arrange
         var client = factory.CreateClient();
-        
+
         var validTransaction = new
         {
             Amount = 100,
@@ -81,11 +82,12 @@ public class TransactionsIntegrationTests(WebApplicationFactory<Program> factory
         // Assert
         // Now that app.UseAntiforgery() is added, this SHOULD return 400 Bad Request because of missing token.
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        
+
         // Verify it was NOT added to the database
         using var scope = factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<BudgetContext>();
         var exists = await context.Transactions.AnyAsync(t => t.Comment == "Antiforgery Test");
-        Assert.False(exists, "Transaction should NOT have been added because Antiforgery validation should have failed.");
+        Assert.False(exists,
+            "Transaction should NOT have been added because Antiforgery validation should have failed.");
     }
 }

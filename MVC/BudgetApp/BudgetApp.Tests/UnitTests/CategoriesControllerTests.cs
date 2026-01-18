@@ -11,7 +11,7 @@ public class CategoriesControllerTests
     private BudgetContext GetDbContext()
     {
         var options = new DbContextOptionsBuilder<BudgetContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
         var databaseContext = new BudgetContext(options);
         databaseContext.Database.EnsureCreated();
@@ -30,7 +30,7 @@ public class CategoriesControllerTests
 
         // Assert
         var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsType<IEnumerable<Category>>(viewResult.ViewData.Model, exactMatch: false);
+        var model = Assert.IsType<IEnumerable<Category>>(viewResult.ViewData.Model, false);
         Assert.NotEmpty(model);
     }
 
@@ -47,7 +47,7 @@ public class CategoriesControllerTests
         // Assert
         var partialViewResult = Assert.IsType<PartialViewResult>(result);
         Assert.Equal("CategoriesTableRows", partialViewResult.ViewName);
-        var model = Assert.IsType<IEnumerable<Category>>(partialViewResult.ViewData.Model, exactMatch: false);
+        var model = Assert.IsType<IEnumerable<Category>>(partialViewResult.ViewData.Model, false);
         Assert.NotEmpty(model);
     }
 
@@ -123,10 +123,10 @@ public class CategoriesControllerTests
         await using var context = GetDbContext();
         var controller = new CategoriesController(context);
         var category = context.Categories.First();
-        
+
         // Detach the tracked entity to simulate it being sent from a client
         context.Entry(category).State = EntityState.Detached;
-        
+
         var updatedCategory = new Category { Id = category.Id, Name = "Updated", Color = "#654321" };
 
         // Act
@@ -135,7 +135,7 @@ public class CategoriesControllerTests
         // Assert
         var redirectResult = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("List", redirectResult.ActionName);
-        
+
         Assert.Equal("Updated", context.Categories.Find(category.Id)!.Name);
     }
 

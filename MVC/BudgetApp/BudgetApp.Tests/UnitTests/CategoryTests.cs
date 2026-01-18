@@ -22,14 +22,14 @@ public class CategoryTests
         var category = new Category { Name = "Test", Color = "#ffffff" };
         var context = new ValidationContext(category);
         var results = new List<ValidationResult>();
-        
+
         // Act
         var isValid = Validator.TryValidateObject(category, context, results, true);
-        
+
         // Assert
         Assert.True(isValid);
     }
-    
+
     [Fact]
     public void Category_Validation_ShouldFail_WhenNameIsMissing()
     {
@@ -58,10 +58,10 @@ public class CategoryTests
         var category = new Category { Name = "Test", Color = invalidColour };
         var context = new ValidationContext(category);
         var results = new List<ValidationResult>();
-        
+
         // Act
         var isValid = Validator.TryValidateObject(category, context, results, true);
-        
+
         // Assert
         Assert.False(isValid);
         Assert.Contains(results, r => r.MemberNames.Contains("Color"));

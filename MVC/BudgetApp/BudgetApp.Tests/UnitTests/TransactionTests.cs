@@ -31,14 +31,11 @@ public class TransactionTests
     [InlineData("")]
     [InlineData("ab")] // Too short (min 3)
     [InlineData("a")]
-    [InlineData("this comment is definitely more than four hundred characters long... (simulated)")] 
+    [InlineData("this comment is definitely more than four hundred characters long... (simulated)")]
     public void Transaction_Validation_ShouldFail_WhenCommentIsInvalid(string? comment)
     {
         // Handle the long string case dynamically for the theory
-        if (comment != null && comment.Contains("(simulated)"))
-        {
-            comment = new string('a', 401);
-        }
+        if (comment != null && comment.Contains("(simulated)")) comment = new string('a', 401);
 
         // Arrange
         var transaction = new Transaction

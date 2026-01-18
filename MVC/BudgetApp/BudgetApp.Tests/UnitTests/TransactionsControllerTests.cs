@@ -11,7 +11,7 @@ public class TransactionsControllerTests
     private BudgetContext GetDbContext()
     {
         var options = new DbContextOptionsBuilder<BudgetContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
         var databaseContext = new BudgetContext(options);
         databaseContext.Database.EnsureCreated();
@@ -30,7 +30,7 @@ public class TransactionsControllerTests
 
         // Assert
         var viewResult = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsType<TransactionIndexViewModel>(viewResult.ViewData.Model, exactMatch: false);
+        var model = Assert.IsType<TransactionIndexViewModel>(viewResult.ViewData.Model, false);
         Assert.NotNull(model);
         Assert.NotEmpty(model.Transactions);
     }
@@ -62,12 +62,11 @@ public class TransactionsControllerTests
         // Assert
         var partialViewResult = Assert.IsType<PartialViewResult>(result);
         Assert.Equal("TransactionsTableRows", partialViewResult.ViewName);
-        var model = Assert.IsType<IEnumerable<Transaction>>(partialViewResult.ViewData.Model, exactMatch: false);
+        var model = Assert.IsType<IEnumerable<Transaction>>(partialViewResult.ViewData.Model, false);
         var transactions = model as Transaction[] ?? model.ToArray();
         Assert.Equal(expectedCount, transactions.Length);
 
         if (expectedCount > 0)
-        {
             Assert.All(transactions, t =>
             {
                 if (!string.IsNullOrEmpty(searchTerm))
@@ -77,7 +76,6 @@ public class TransactionsControllerTests
                 if (categoryId != 0)
                     Assert.Equal(categoryId, t.CategoryId);
             });
-        }
     }
 
     [Fact]
@@ -102,7 +100,7 @@ public class TransactionsControllerTests
         var partialViewResult = Assert.IsType<PartialViewResult>(result);
         Assert.Equal("TransactionsTableRows", partialViewResult.ViewName);
 
-        var model = Assert.IsType<IEnumerable<Transaction>>(partialViewResult.ViewData.Model, exactMatch: false);
+        var model = Assert.IsType<IEnumerable<Transaction>>(partialViewResult.ViewData.Model, false);
         var transactions = model.ToList();
 
         Assert.Equal(initialCount + 1, await context.Transactions.CountAsync());
@@ -194,7 +192,7 @@ public class TransactionsControllerTests
         var partialViewResult = Assert.IsType<PartialViewResult>(result);
         Assert.Equal("TransactionsTableRows", partialViewResult.ViewName);
 
-        var model = Assert.IsType<IEnumerable<Transaction>>(partialViewResult.ViewData.Model, exactMatch: false);
+        var model = Assert.IsType<IEnumerable<Transaction>>(partialViewResult.ViewData.Model, false);
         Assert.NotNull(model);
 
         var updatedTransaction = await context.Transactions.FirstOrDefaultAsync(t => t.Id == originalId);
@@ -203,7 +201,7 @@ public class TransactionsControllerTests
         Assert.Equal("Updated Comment", updatedTransaction.Comment);
         Assert.Equal(2, updatedTransaction.CategoryId);
     }
-    
+
     [Fact]
     public async Task Delete_DeletesTransaction_Returns_PartialView_WithUpdatedList()
     {
@@ -211,15 +209,15 @@ public class TransactionsControllerTests
         await using var context = GetDbContext();
         var controller = new TransactionsController(context);
         var transactionToDelete = await context.Transactions.FirstAsync();
-        
+
         // Act
         var result = await controller.Delete(transactionToDelete.Id);
-        
+
         // Assert
         var partialViewResult = Assert.IsType<PartialViewResult>(result);
         Assert.Equal("TransactionsTableRows", partialViewResult.ViewName);
 
-        var model = Assert.IsType<IEnumerable<Transaction>>(partialViewResult.ViewData.Model, exactMatch: false);
+        var model = Assert.IsType<IEnumerable<Transaction>>(partialViewResult.ViewData.Model, false);
         var transactions = model.ToList();
 
         Assert.DoesNotContain(transactions, t => t.Id == transactionToDelete.Id);
