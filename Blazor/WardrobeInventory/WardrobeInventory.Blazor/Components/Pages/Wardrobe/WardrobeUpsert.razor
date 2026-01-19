@@ -1,0 +1,88 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using WardrobeInventory.Blazor.Models
+@using WardrobeInventory.Blazor.Services
+@using MudBlazor
+@inject ImageService ImageService
+@inject WardrobeService WardrobeService
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="wardrobeItem" OnValidSubmit="HandleFormSubmit">
+            <DataAnnotationsValidator />
+            <MudTextField Label="Name" @bind-Value="wardrobeItem.Name" For="@(() => wardrobeItem.Name)" Margin="Margin.Normal" />
+            <MudTextField Label="Brand" @bind-Value="wardrobeItem.Brand" For="@(() => wardrobeItem.Brand)" Margin="Margin.Normal" />
+            <MudSelect T="Category" Label="Category" @bind-Value="wardrobeItem.Category" Margin="Margin.Normal">
+                @foreach (var category in Enum.GetValues<Category>())
+                {
+                    <MudSelectItem Value="@category">@category</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="WardrobeInventory.Blazor.Models.Size" Label="Size" @bind-Value="wardrobeItem.Size" Margin="Margin.Normal">
+                @foreach (var size in Enum.GetValues<WardrobeInventory.Blazor.Models.Size>())
+                {
+                    <MudSelectItem Value="@size">@size</MudSelectItem>
+                }
+            </MudSelect>
+            <MudFileUpload T="IBrowserFile" OnFilesChanged="LoadFile" Class="mt-4">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Upload Image
+                    </MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
+            @if (image != null)
+            {
+                <MudText Typo="Typo.body2" Class="mt-2">Selected: @image.Name</MudText>
+            }
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="HandleFormSubmit">Submit</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter] public int? WardrobeId { get; set; }
+
+    private IBrowserFile? image;
+    private WardrobeItem wardrobeItem = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (WardrobeId.HasValue)
+        {
+            wardrobeItem = await WardrobeService.GetItemByIdAsync(WardrobeId.Value) ?? new();
+        }
+        else
+        {
+            wardrobeItem = new();
+        }
+        image = null;
+    }
+
+    private void LoadFile(InputFileChangeEventArgs obj)
+    {
+        image = obj.File;
+    }
+
+    private async Task HandleFormSubmit()
+    {
+        if (image != null)
+            wardrobeItem.ImageData = await ImageService.ConvertImageToBytes(image);
+
+        if (!WardrobeId.HasValue)
+        {
+            await WardrobeService.AddItemAsync(wardrobeItem);
+        }
+        else
+        {
+            await WardrobeService.UpdateItemAsync(wardrobeItem);
+        }
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
