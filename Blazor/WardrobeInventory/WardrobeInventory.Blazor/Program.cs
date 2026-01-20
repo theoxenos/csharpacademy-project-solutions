@@ -1,8 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using WardrobeInventory.Blazor.Components;
 using WardrobeInventory.Blazor.Data;
 using WardrobeInventory.Blazor.Services;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +27,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
@@ -35,5 +36,11 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<WardrobeContext>();
+    dbContext.Database.Migrate();
+}
 
 app.Run();
