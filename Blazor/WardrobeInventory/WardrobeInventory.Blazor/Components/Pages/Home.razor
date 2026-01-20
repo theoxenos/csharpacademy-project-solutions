@@ -1,0 +1,106 @@
+﻿@page "/"
+@using WardrobeInventory.Blazor.Components.Pages.Wardrobe
+@using WardrobeInventory.Blazor.Models
+@using WardrobeInventory.Blazor.Services
+@using Size = MudBlazor.Size
+
+@inject ImageService ImageService
+@inject WardrobeService WardrobeService
+@inject IDialogService DialogService
+
+<PageTitle>Wardrobe Inventory</PageTitle>
+
+<MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Wardrobe Inventory</MudText>
+
+<div class="d-flex justify-center mb-4">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnAddNewItem">New Item</MudButton>
+</div>
+
+@if (_items == null)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else if (_items.Count == 0)
+{
+    <MudText Typo="Typo.body1" Align="Align.Center">No items found</MudText>
+}
+else
+{
+    <MudGrid Spacing="4">
+        @foreach (var wardrobeItem in _items)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCard Elevation="4" Class="h-100 d-flex flex-column">
+                    <MudCardMedia Image="@ImageService.GetImageUrl(wardrobeItem.ImageData)" Height="250"/>
+                    <MudCardContent Class="flex-grow-1">
+                        <MudText Typo="Typo.h6">@wardrobeItem.Name</MudText>
+                        <MudText Typo="Typo.body2">@wardrobeItem.Brand</MudText>
+                        <MudChip T="string" Color="Color.Info" Size="Size.Small" Label="true">@wardrobeItem.Category</MudChip>
+                        <MudChip T="string" Color="Color.Secondary" Size="Size.Small" Label="true">Size: @wardrobeItem.Size</MudChip>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Warning" OnClick="@(() => OnEditItem(wardrobeItem.Id))">Edit</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="@(() => OnDeleteItem(wardrobeItem))">Delete</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code
+{
+    private List<WardrobeItem>? _items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
+
+    private async Task LoadItems()
+    {
+        _items = await WardrobeService.GetAllAsync();
+    }
+
+    private async Task OnAddNewItem()
+    {
+        var parameters = new DialogParameters<WardrobeUpsert>();
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        
+        var dialog = await DialogService.ShowAsync<WardrobeUpsert>("New Item", parameters, options);
+        var result = await dialog.Result;
+
+        if (result?.Canceled is false)
+        {
+            await LoadItems();
+        }
+    }
+
+    private async Task OnEditItem(int id)
+    {
+        var parameters = new DialogParameters<WardrobeUpsert> { { x => x.WardrobeId, id } };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<WardrobeUpsert>("Edit Item", parameters, options);
+        var result = await dialog.Result;
+
+        if (result?.Canceled is false)
+        {
+            await LoadItems();
+        }
+    }
+
+    private async Task OnDeleteItem(WardrobeItem item)
+    {
+        var parameters = new DialogParameters<WardrobeDeleteModal> { { x => x.WardrobeId, item.Id } };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small };
+
+        var dialog = await DialogService.ShowAsync<WardrobeDeleteModal>("Delete Item", parameters, options);
+        var result = await dialog.Result;
+
+        if (result?.Canceled is false)
+        {
+            await LoadItems();
+        }
+    }
+}
