@@ -8,7 +8,8 @@ namespace WardrobeInventory.Tests.UnitTests;
 
 public class WardrobeServiceTests
 {
-    private async Task<(WardrobeService wardrobeService, WardrobeItem wardrobeItem)> CreateServiceObjectWithTestItem(TestDbContextFactory factory)
+    private async Task<(WardrobeService wardrobeService, WardrobeItem wardrobeItem)> CreateServiceObjectWithTestItem(
+        TestDbContextFactory factory)
     {
         var wardrobeService = new WardrobeService(factory);
 
@@ -19,7 +20,7 @@ public class WardrobeServiceTests
             Category = Category.Shoes,
             Size = Size.S
         };
-        
+
         await wardrobeService.AddItemAsync(wardrobeItem);
         return (wardrobeService, wardrobeItem);
     }
@@ -33,7 +34,7 @@ public class WardrobeServiceTests
 
         return new TestDbContextFactory(options);
     }
-    
+
     [Fact]
     public async Task AddItemAsync_Adds_Item_To_Database()
     {
@@ -131,10 +132,10 @@ public class WardrobeServiceTests
         var factory = CreateTestFactoryObject();
         var (wardrobeService, wardrobeItem) = await CreateServiceObjectWithTestItem(factory);
         wardrobeItem.Brand = "Updated Brand";
-        
+
         // Act
         await wardrobeService.UpdateItemAsync(wardrobeItem);
-        
+
         // Assert (using a separate context with the same options)
         await using var assertContext = factory.CreateDbContext();
         var updatedItem = await assertContext.WardrobeItems.FindAsync(wardrobeItem.Id);
@@ -143,10 +144,20 @@ public class WardrobeServiceTests
         Assert.Equal(wardrobeItem.Name, updatedItem.Name);
         Assert.Equal(wardrobeItem.Category, updatedItem.Category);
         Assert.Equal(wardrobeItem.Size, updatedItem.Size);
-        
+
         Assert.Single(await assertContext.WardrobeItems.ToArrayAsync());
     }
-    
+
+    [Fact]
+    public async Task UpdateItemAsync_Throws_When_Item_Is_Null()
+    {
+        // Arrange
+        var wardrobeService = new WardrobeService(new TestDbContextFactory());
+
+        // Assert & Act
+        await Assert.ThrowsAsync<ArgumentNullException>(() => wardrobeService.UpdateItemAsync(null!));
+    }
+
     [Fact]
     public async Task DeleteItemAsync_Deletes_Item_From_Database()
     {

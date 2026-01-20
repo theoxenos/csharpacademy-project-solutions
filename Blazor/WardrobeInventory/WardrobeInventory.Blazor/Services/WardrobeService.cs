@@ -8,6 +8,8 @@ public class WardrobeService(IDbContextFactory<WardrobeContext> contextFactory)
 {
     public async Task AddItemAsync(WardrobeItem item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         await using var context = await contextFactory.CreateDbContextAsync();
         context.WardrobeItems.Add(item);
         await context.SaveChangesAsync();
@@ -27,6 +29,8 @@ public class WardrobeService(IDbContextFactory<WardrobeContext> contextFactory)
 
     public async Task UpdateItemAsync(WardrobeItem wardrobeItem)
     {
+        ArgumentNullException.ThrowIfNull(wardrobeItem);
+        
         await using var context = await contextFactory.CreateDbContextAsync();
         context.WardrobeItems.Update(wardrobeItem);
         await context.SaveChangesAsync();
