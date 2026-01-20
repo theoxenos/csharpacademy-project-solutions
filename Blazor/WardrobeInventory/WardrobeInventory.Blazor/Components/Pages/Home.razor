@@ -15,18 +15,18 @@
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnAddNewItem">New Item</MudButton>
 </div>
 
-@if (items == null)
+@if (_items == null)
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
 }
-else if (items.Count == 0)
+else if (_items.Count == 0)
 {
     <MudText Typo="Typo.body1" Align="Align.Center">No items found</MudText>
 }
 else
 {
     <MudGrid Spacing="4">
-        @foreach (var wardrobeItem in items)
+        @foreach (var wardrobeItem in _items)
         {
             <MudItem xs="12" sm="6" md="4" lg="3">
                 <MudCard Elevation="4" Class="h-100 d-flex flex-column">
@@ -49,7 +49,7 @@ else
 
 @code
 {
-    private List<WardrobeItem>? items;
+    private List<WardrobeItem>? _items;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,7 +58,7 @@ else
 
     private async Task LoadItems()
     {
-        items = await WardrobeService.GetAllAsync();
+        _items = await WardrobeService.GetAllAsync();
     }
 
     private async Task OnAddNewItem()
@@ -69,7 +69,7 @@ else
         var dialog = await DialogService.ShowAsync<WardrobeUpsert>("New Item", parameters, options);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result?.Canceled is false)
         {
             await LoadItems();
         }
@@ -83,7 +83,7 @@ else
         var dialog = await DialogService.ShowAsync<WardrobeUpsert>("Edit Item", parameters, options);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result?.Canceled is false)
         {
             await LoadItems();
         }
@@ -97,7 +97,7 @@ else
         var dialog = await DialogService.ShowAsync<WardrobeDeleteModal>("Delete Item", parameters, options);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result?.Canceled is false)
         {
             await LoadItems();
         }

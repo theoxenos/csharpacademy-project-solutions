@@ -1,11 +1,10 @@
 @using WardrobeInventory.Blazor.Models
 @using WardrobeInventory.Blazor.Services
-@using MudBlazor
 @inject WardrobeService WardrobeService
 
 <MudDialog>
     <DialogContent>
-        <MudText>Are you sure you want to delete @item.Name?</MudText>
+        <MudText>Are you sure you want to delete @_item.Name?</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -17,14 +16,14 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
     [Parameter] public int? WardrobeId { get; set; }
 
-    private WardrobeItem item = new();
+    private WardrobeItem _item = new();
 
     protected override async Task OnParametersSetAsync()
     {
         if (WardrobeId == null)
             return;
 
-        item = await WardrobeService.GetItemByIdAsync(WardrobeId.Value) ?? new();
+        _item = await WardrobeService.GetItemByIdAsync(WardrobeId.Value) ?? new();
     }
 
     private async Task HandleDelete()
