@@ -32,7 +32,7 @@ public class WardrobeService(IDbContextFactory<WardrobeContext> contextFactory)
         await context.SaveChangesAsync();
     }
 
-    public async Task DeleteItem(int id)
+    public async Task DeleteItemAsync(int id)
     {
         await using var context = await contextFactory.CreateDbContextAsync();
         var item = await context.WardrobeItems.FindAsync(id);

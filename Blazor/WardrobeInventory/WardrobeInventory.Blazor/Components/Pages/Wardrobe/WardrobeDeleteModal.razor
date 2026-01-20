@@ -30,7 +30,7 @@
     {
         if (WardrobeId.HasValue)
         {
-            await WardrobeService.DeleteItem(WardrobeId.Value);
+            await WardrobeService.DeleteItemAsync(WardrobeId.Value);
             MudDialog.Close(DialogResult.Ok(true));
         }
     }

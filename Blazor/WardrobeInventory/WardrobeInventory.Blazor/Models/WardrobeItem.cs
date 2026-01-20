@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace WardrobeInventory.Blazor.Models;
 
@@ -15,7 +14,6 @@ public class WardrobeItem
     public byte[]? ImageData { get; set; }
 }
 
-[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public enum Category
 {
     Shirts,
@@ -24,10 +22,10 @@ public enum Category
     Shoes
 }
 
-[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public enum Size
 {
     S,
     M,
-    L
+    L,
+    XL
 }
