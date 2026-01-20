@@ -38,7 +38,7 @@ public class ImageServiceTests
         {
             result = await imageService.ConvertImageToBytes(null!);
         });
-        
+
         Assert.Null(result);
     }
 
@@ -59,7 +59,7 @@ public class ImageServiceTests
     }
 
     [Fact]
-    public void GetImageUrl_Should_Return_Null_When_File_Does_Not_Exist()
+    public void GetImageUrl_Should_Return_Default_When_File_Does_Not_Exist()
     {
         // Arrange
         var imageService = new ImageService();
@@ -68,6 +68,6 @@ public class ImageServiceTests
         var result = imageService.GetImageUrl(null!);
 
         // Assert
-        Assert.Null(result);
+        Assert.Equal("img/default.png", result);
     }
 }

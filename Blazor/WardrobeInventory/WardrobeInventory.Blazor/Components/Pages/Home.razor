@@ -1,7 +1,8 @@
 ﻿@page "/"
+@using WardrobeInventory.Blazor.Components.Pages.Wardrobe
 @using WardrobeInventory.Blazor.Models
 @using WardrobeInventory.Blazor.Services
-@using WardrobeInventory.Blazor.Components.Pages.Wardrobe
+@using Size = MudBlazor.Size
 
 @inject ImageService ImageService
 @inject WardrobeService WardrobeService
@@ -30,12 +31,12 @@ else
         {
             <MudItem xs="12" sm="6" md="4" lg="3">
                 <MudCard Elevation="4" Class="h-100 d-flex flex-column">
-                    <MudCardMedia Image="@(ImageService.GetImageUrl(wardrobeItem.ImageData) ?? "img/default.png")" Height="250" />
+                    <MudCardMedia Image="@ImageService.GetImageUrl(wardrobeItem.ImageData)" Height="250"/>
                     <MudCardContent Class="flex-grow-1">
                         <MudText Typo="Typo.h6">@wardrobeItem.Name</MudText>
                         <MudText Typo="Typo.body2">@wardrobeItem.Brand</MudText>
-                        <MudChip T="string" Color="Color.Info" Size="MudBlazor.Size.Small" Label="true">@wardrobeItem.Category</MudChip>
-                        <MudChip T="string" Color="Color.Secondary" Size="MudBlazor.Size.Small" Label="true">Size: @wardrobeItem.Size</MudChip>
+                        <MudChip T="string" Color="Color.Info" Size="Size.Small" Label="true">@wardrobeItem.Category</MudChip>
+                        <MudChip T="string" Color="Color.Secondary" Size="Size.Small" Label="true">Size: @wardrobeItem.Size</MudChip>
                     </MudCardContent>
                     <MudCardActions>
                         <MudButton Variant="Variant.Text" Color="Color.Warning" OnClick="@(() => OnEditItem(wardrobeItem.Id))">Edit</MudButton>
