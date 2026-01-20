@@ -30,7 +30,7 @@ else
         {
             <MudItem xs="12" sm="6" md="4" lg="3">
                 <MudCard Elevation="4" Class="h-100 d-flex flex-column">
-                    <MudCardMedia Image="@ImageService.GetImageUrl(wardrobeItem.ImageData)" Height="250" />
+                    <MudCardMedia Image="@(ImageService.GetImageUrl(wardrobeItem.ImageData) ?? "img/default.png")" Height="250" />
                     <MudCardContent Class="flex-grow-1">
                         <MudText Typo="Typo.h6">@wardrobeItem.Name</MudText>
                         <MudText Typo="Typo.body2">@wardrobeItem.Brand</MudText>

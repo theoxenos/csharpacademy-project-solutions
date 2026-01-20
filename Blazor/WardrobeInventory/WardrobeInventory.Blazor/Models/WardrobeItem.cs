@@ -12,7 +12,7 @@ public class WardrobeItem
     public string Brand { get; set; } = string.Empty;
     public Category Category { get; set; }
     public Size Size { get; set; }
-    public byte[] ImageData { get; set; } = null!;
+    public byte[]? ImageData { get; set; }
 }
 
 [SuppressMessage("ReSharper", "UnusedMember.Global")]

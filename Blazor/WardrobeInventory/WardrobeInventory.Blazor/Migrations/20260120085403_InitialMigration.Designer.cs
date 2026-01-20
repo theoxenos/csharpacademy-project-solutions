@@ -10,8 +10,8 @@ using WardrobeInventory.Blazor.Data;
 namespace WardrobeInventory.Blazor.Migrations
 {
     [DbContext(typeof(WardrobeContext))]
-    [Migration("20260119171637_init")]
-    partial class init
+    [Migration("20260120085403_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,6 @@ namespace WardrobeInventory.Blazor.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<byte[]>("ImageData")
-                        .IsRequired()
                         .HasColumnType("BLOB");
 
                     b.Property<string>("Name")

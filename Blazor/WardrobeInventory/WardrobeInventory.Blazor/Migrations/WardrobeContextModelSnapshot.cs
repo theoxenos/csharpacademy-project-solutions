@@ -31,7 +31,6 @@ namespace WardrobeInventory.Blazor.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<byte[]>("ImageData")
-                        .IsRequired()
                         .HasColumnType("BLOB");
 
                     b.Property<string>("Name")

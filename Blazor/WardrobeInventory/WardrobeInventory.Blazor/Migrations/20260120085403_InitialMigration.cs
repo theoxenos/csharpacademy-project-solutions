@@ -5,7 +5,7 @@
 namespace WardrobeInventory.Blazor.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,7 +20,7 @@ namespace WardrobeInventory.Blazor.Migrations
                     Brand = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
                     Category = table.Column<int>(type: "INTEGER", nullable: false),
                     Size = table.Column<int>(type: "INTEGER", nullable: false),
-                    ImageData = table.Column<byte[]>(type: "BLOB", nullable: false)
+                    ImageData = table.Column<byte[]>(type: "BLOB", nullable: true)
                 },
                 constraints: table =>
                 {

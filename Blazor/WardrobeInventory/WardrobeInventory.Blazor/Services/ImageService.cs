@@ -11,8 +11,17 @@ public class ImageService
         return buffer;
     }
 
-    public string GetImageUrl(byte[] data)
+    public string? GetImageUrl(byte[] data)
     {
-        return $"data:image/png;base64,{Convert.ToBase64String(data)}";
+        string base64;
+        try
+        {
+            base64 = Convert.ToBase64String(data);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+        return $"data:image/png;base64,{base64}";
     }
 }
