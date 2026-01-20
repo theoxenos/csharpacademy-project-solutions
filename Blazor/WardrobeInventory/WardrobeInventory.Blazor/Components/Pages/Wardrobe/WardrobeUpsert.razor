@@ -1,5 +1,6 @@
 @using WardrobeInventory.Blazor.Models
 @using WardrobeInventory.Blazor.Services
+@using Size = WardrobeInventory.Blazor.Models.Size
 @inject ImageService ImageService
 @inject WardrobeService WardrobeService
 
@@ -15,8 +16,8 @@
                     <MudSelectItem Value="@category">@category</MudSelectItem>
                 }
             </MudSelect>
-            <MudSelect T="Models.Size" Label="Size" @bind-Value="_wardrobeItem.Size" Margin="Margin.Normal">
-                @foreach (var size in Enum.GetValues<Models.Size>())
+            <MudSelect T="Size" Label="Size" @bind-Value="_wardrobeItem.Size" Margin="Margin.Normal">
+                @foreach (var size in Enum.GetValues<Size>())
                 {
                     <MudSelectItem Value="@size">@size</MudSelectItem>
                 }
@@ -32,12 +33,13 @@
             {
                 <MudText Typo="Typo.body2" Class="mt-2">Selected: @_image.Name</MudText>
             }
+
+            <div class="d-flex justify-end mt-4">
+                <MudButton OnClick="Cancel" Class="ml-auto">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Submit</MudButton>
+            </div>
         </EditForm>
     </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="HandleFormSubmit">Submit</MudButton>
-    </DialogActions>
 </MudDialog>
 
 @code {
