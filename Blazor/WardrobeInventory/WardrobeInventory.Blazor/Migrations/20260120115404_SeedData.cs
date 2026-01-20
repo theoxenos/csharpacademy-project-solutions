@@ -2,10 +2,12 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace WardrobeInventory.Blazor.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class SeedData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,6 +27,17 @@ namespace WardrobeInventory.Blazor.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WardrobeItems", x => x.Id);
+                });
+
+            migrationBuilder.InsertData(
+                table: "WardrobeItems",
+                columns: new[] { "Id", "Brand", "Category", "ImageData", "Name", "Size" },
+                values: new object[,]
+                {
+                    { 1, "BrandA", 0, null, "Shirt", 0 },
+                    { 2, "BrandB", 1, null, "Pants", 1 },
+                    { 3, "BrandC", 3, null, "Shoes", 2 },
+                    { 4, "BrandD", 2, null, "Dress", 3 }
                 });
         }
 

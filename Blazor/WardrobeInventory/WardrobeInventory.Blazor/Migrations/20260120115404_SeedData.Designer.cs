@@ -10,8 +10,8 @@ using WardrobeInventory.Blazor.Data;
 namespace WardrobeInventory.Blazor.Migrations
 {
     [DbContext(typeof(WardrobeContext))]
-    [Migration("20260120085403_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20260120115404_SeedData")]
+    partial class SeedData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,6 +47,40 @@ namespace WardrobeInventory.Blazor.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("WardrobeItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Brand = "BrandA",
+                            Category = 0,
+                            Name = "Shirt",
+                            Size = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Brand = "BrandB",
+                            Category = 1,
+                            Name = "Pants",
+                            Size = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Brand = "BrandC",
+                            Category = 3,
+                            Name = "Shoes",
+                            Size = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Brand = "BrandD",
+                            Category = 2,
+                            Name = "Dress",
+                            Size = 3
+                        });
                 });
 #pragma warning restore 612, 618
         }
