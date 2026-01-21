@@ -5,38 +5,40 @@
 
 @inject ProtectedLocalStorage ProtectedLocalStore
 
-<div class="mb-3">
-    <h1 class="display-4 text-center">Your record times</h1>
-    <p class="text-center">Here you can see your previous records</p>
+<div class="mb-4">
+    <h1 class="display-4 text-center display-space">Mission Logs</h1>
+    <p class="text-center text-info">Review your past galactic adventures</p>
 </div>
 
 @if (_gameScores.Count == 0)
 {
-    <div class="alert alert-warning">
-        <p>No previous games found. Go play some!</p>
+    <div class="alert alert-info bg-dark border-info text-info text-center">
+        <p class="mb-0">No mission data found. Time to explore the universe!</p>
     </div>
 }
 else
 {
     <div class="row justify-content-center">
-        <div class="col col-5">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Record</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var score in _gameScores)
-                {
+        <div class="col col-md-8 col-lg-6">
+            <div class="table-responsive">
+                <table class="table space-table text-center">
+                    <thead>
                     <tr>
-                        <td>@score.Date.ToString("G")</td>
-                        <td>@(TimeSpan.FromTicks(score.GameTicks).ToString(@"mm\:ss"))</td>
+                        <th class="display-space">Date</th>
+                        <th class="display-space">Completion Time</th>
                     </tr>
-                }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    @foreach (var score in _gameScores)
+                    {
+                        <tr>
+                            <td class="align-middle">@score.Date.ToString("G")</td>
+                            <td class="align-middle fw-bold text-info">@(TimeSpan.FromTicks(score.GameTicks).ToString(@"mm\:ss"))</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 }
