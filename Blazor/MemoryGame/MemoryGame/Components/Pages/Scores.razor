@@ -1,16 +1,16 @@
 @page "/records"
 @using MemoryGame.Models
-@using MemoryGame.Services
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @rendermode @(new InteractiveServerRenderMode(false))
 
-@inject LocalStorageService Service
+@inject ProtectedLocalStorage ProtectedLocalStore
 
 <div class="mb-3">
     <h1 class="display-4 text-center">Your record times</h1>
     <p class="text-center">Here you can see your previous records</p>
 </div>
 
-@if (gameScores.Count == 0)
+@if (_gameScores.Count == 0)
 {
     <div class="alert alert-warning">
         <p>No previous games found. Go play some!</p>
@@ -28,7 +28,7 @@ else
                 </tr>
                 </thead>
                 <tbody>
-                @foreach (var score in gameScores)
+                @foreach (var score in _gameScores)
                 {
                     <tr>
                         <td>@score.Date.ToString("G")</td>
@@ -43,11 +43,11 @@ else
 
 @code
 {
-    List<Score> gameScores = [];
+    List<Score> _gameScores = [];
 
     protected override async Task OnInitializedAsync()
     {
-        gameScores = await Service.GetItemAsync<List<Score>>("scores") ?? [];
-        gameScores.Sort((score, score1) => score.GameTicks.CompareTo(score1.GameTicks));
+        _gameScores = (await ProtectedLocalStore.GetAsync<List<Score>>("scores")).Value ?? [];
+        _gameScores.Sort((score, score1) => score.GameTicks.CompareTo(score1.GameTicks));
     }
 }

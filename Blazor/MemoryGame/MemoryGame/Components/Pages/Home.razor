@@ -1,11 +1,11 @@
 ﻿@page "/"
-@using MemoryGame.Models
-@using MemoryGame.Services
 @using System.Timers
+@using MemoryGame.Models
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
 @rendermode @(new InteractiveServerRenderMode(false))
 
-@inject LocalStorageService Service
-
+@inject ProtectedLocalStorage ProtectedLocalStore
 
 <PageTitle>Home</PageTitle>
 
@@ -14,16 +14,17 @@
     <button class="btn btn-success" @onclick="StartGame">Start</button>
     <button class="btn btn-danger" @onclick="StopGame">Stop</button>
     <p class="mt-3 display-6">
-        Game time: @gameTime.ToString(@"mm\:ss")
+        Game time: @_gameTime.ToString(@"mm\:ss")
     </p>
 </div>
 
 <div class="container-lg">
     <div class="gap-2 justify-content-center row row-cols-5 mb-3">
-        @foreach (var card in cards)
+        @foreach (var card in _cards)
         {
             <div class="col border border-dark rounded-3 p-0">
-                <img class="card-img-top rounded-3" src="@(card.IsVisible ? card.Image : "background.webp")" @onclick="() => HandleCardClick(card)"/>
+                <img class="card-img-top rounded-3" src="@(card.IsVisible ? card.Image : "background.webp")"
+                     @onclick="() => HandleCardClick(card)"/>
             </div>
         }
     </div>
@@ -31,93 +32,91 @@
 
 @code
 {
-    readonly Card[] cards = new Card[12];
-    readonly Random rng = new();
-    readonly List<Card> activeCards = new();
-    readonly Timer cardTimer = new(TimeSpan.FromSeconds(2));
-    readonly Timer gameTimer = new(1_000);
-    TimeSpan gameTime;
-    bool gameRunning;
+    readonly Card[] _cards = new Card[12];
+    readonly Random _rng = new();
+    readonly List<Card> _activeCards = new();
+    readonly Timer _cardTimer = new(TimeSpan.FromSeconds(2));
+    readonly Timer _gameTimer = new(1_000);
+    TimeSpan _gameTime;
+    bool _gameRunning;
 
     protected override void OnInitialized()
     {
         InitGame();
 
-        cardTimer.Elapsed += CardTimerOnElapsed;
-        cardTimer.AutoReset = false;
+        _cardTimer.Elapsed += CardTimerOnElapsed;
+        _cardTimer.AutoReset = false;
 
-        gameTimer.Elapsed += GameTimerOnElapsed;
+        _gameTimer.Elapsed += GameTimerOnElapsed;
     }
 
     private void InitGame()
     {
-        gameTime = new TimeSpan();
+        _gameTime = TimeSpan.Zero;
 
         for (var i = 1; i <= 12; i++)
         {
-            cards[i - 1] = new Card
+            _cards[i - 1] = new Card
             {
                 Id = i,
                 Image = $"planet0{i % 6}.png"
             };
         }
 
-        rng.Shuffle(cards);
+        _rng.Shuffle(_cards);
     }
 
     private void GameTimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
-        gameTime = gameTime.Add(TimeSpan.FromSeconds(1));
+        _gameTime = _gameTime.Add(TimeSpan.FromSeconds(1));
         InvokeAsync(StateHasChanged);
     }
 
     private void ResetActiveCards()
     {
-        foreach (var card in activeCards)
+        foreach (var card in _activeCards)
         {
             card.IsVisible = false;
         }
 
-        activeCards.Clear();
+        _activeCards.Clear();
         StateHasChanged();
     }
 
     private async Task HandleCardClick(Card card)
     {
-        if (card.IsMatched || card.IsVisible || !gameRunning)
+        if (card.IsMatched || card.IsVisible || !_gameRunning)
             return;
 
-        if (activeCards.Count == 0)
+        switch (_activeCards.Count)
         {
-            activeCards.Add(card);
-        }
-        else if (activeCards.Count == 1)
-        {
-            if (activeCards[0].Image.Equals(card.Image) && activeCards[0].Id != card.Id)
+            case 0:
+                _activeCards.Add(card);
+                break;
+            case 1 when _activeCards[0].Image.Equals(card.Image) && _activeCards[0].Id != card.Id:
             {
-                activeCards[0].IsMatched = true;
+                _activeCards[0].IsMatched = true;
                 card.IsMatched = true;
-                activeCards.Clear();
+                _activeCards.Clear();
 
-                if (cards.All(c => c.IsMatched))
+                if (_cards.All(c => c.IsMatched))
                 {
                     await GameOver();
                 }
-            }
-            else
-            {
-                activeCards.Add(card);
-                cardTimer.Start();
-            }
-        }
-        else if (activeCards.Count == 2)
-        {
-            if (!activeCards.TrueForAll(c => c.Id != card.Id))
-                return;
 
-            cardTimer.Stop();
-            ResetActiveCards();
-            activeCards.Add(card);
+                break;
+            }
+            case 1:
+                _activeCards.Add(card);
+                _cardTimer.Start();
+                break;
+            case 2 when !_activeCards.TrueForAll(c => c.Id != card.Id):
+                return;
+            case 2:
+                _cardTimer.Stop();
+                ResetActiveCards();
+                _activeCards.Add(card);
+                break;
         }
 
         card.IsVisible = true;
@@ -126,14 +125,15 @@
     private async Task GameOver()
     {
         StopGame();
-        var gameScores = await Service.GetItemAsync<List<Score>>("scores") ?? [];
+        var storedData = await ProtectedLocalStore.GetAsync<List<Score>>("scores");
+        var gameScores = storedData.Value ?? [];
         gameScores.Add(new Score
         {
             Date = DateTime.Now,
-            GameTicks = gameTime.Ticks
+            GameTicks = _gameTime.Ticks
         });
 
-        await Service.SetItemAsync("scores", gameScores);
+        await ProtectedLocalStore.SetAsync("scores", gameScores);
     }
 
     private void CardTimerOnElapsed(object? sender, ElapsedEventArgs e)
@@ -148,18 +148,18 @@
 
     private void StartGame()
     {
-        if (gameRunning)
+        if (_gameRunning)
             return;
 
         InitGame();
 
-        gameTimer.Start();
-        gameRunning = true;
+        _gameTimer.Start();
+        _gameRunning = true;
     }
 
     private void StopGame()
     {
-        gameTimer.Stop();
-        gameRunning = false;
+        _gameTimer.Stop();
+        _gameRunning = false;
     }
 }
