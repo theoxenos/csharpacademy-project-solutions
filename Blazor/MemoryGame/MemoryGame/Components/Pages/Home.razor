@@ -11,22 +11,36 @@
 
 <h1 class="display-4 text-center mb-4 display-space">Memory Game</h1>
 <div class="text-center mb-5">
+    <div class="mb-3">
+        <span class="space-label display-space">Mission Difficulty</span>
+        <div class="difficulty-selector">
+            <button class="btn btn-difficulty @(_selectedDifficulty == Difficulty.Easy ? "active" : "")"
+                    @onclick="() => SetDifficulty(Difficulty.Easy)">Cadet
+            </button>
+            <button class="btn btn-difficulty @(_selectedDifficulty == Difficulty.Medium ? "active" : "")"
+                    @onclick="() => SetDifficulty(Difficulty.Medium)">Commander
+            </button>
+            <button class="btn btn-difficulty @(_selectedDifficulty == Difficulty.Hard ? "active" : "")"
+                    @onclick="() => SetDifficulty(Difficulty.Hard)">Legend
+            </button>
+        </div>
+    </div>
     <div class="game-stats">
         <button class="btn btn-space btn-space-start me-2" @onclick="StartGame">Launch</button>
         <button class="btn btn-space btn-space-stop me-3" @onclick="StopGame">Abort</button>
         <span class="display-6 display-space align-middle">
-            Time: @_gameTime.ToString(@"mm\:ss")
+            Time: @_elapsedGameTime.ToString(@"mm\:ss")
         </span>
     </div>
 </div>
 
 <div class="container-lg card-container">
     <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4 justify-content-center">
-        @foreach (var card in _cards)
+        @foreach (var card in _playField)
         {
             <div class="col">
                 <div class="memory-card @(card.IsMatched ? "matched" : "")" @onclick="() => HandleCardClick(card)">
-                    <img class="planet-img" src="@(card.IsVisible || card.IsMatched ? card.Image : "background.webp")"
+                    <img class="planet-img" src="@(card.Image)"
                          alt="Planet Card"/>
                 </div>
             </div>
@@ -36,13 +50,32 @@
 
 @code
 {
-    readonly Card[] _cards = new Card[16];
-    readonly Random _rng = new();
-    readonly List<Card> _activeCards = new();
-    readonly Timer _cardTimer = new(TimeSpan.FromSeconds(2));
-    readonly Timer _gameTimer = new(1_000);
-    TimeSpan _gameTime;
+    readonly List<Card> _playField = [];
+    readonly List<Card> _selectedCards = [];
+
+    const int CardTimerDuration = 2_000;
+    readonly Timer _cardTimer = new(CardTimerDuration);
+    readonly Timer _gameTimer = new();
+
     bool _gameRunning;
+    TimeSpan _elapsedGameTime;
+
+    enum Difficulty
+    {
+        Easy,
+        Medium,
+        Hard
+    }
+
+    Difficulty _selectedDifficulty = Difficulty.Medium;
+
+    private void SetDifficulty(Difficulty difficulty)
+    {
+        if (_gameRunning) return;
+
+        _selectedDifficulty = difficulty;
+        InitialisePlayField();
+    }
 
     protected override void OnInitialized()
     {
@@ -54,36 +87,61 @@
         _gameTimer.Elapsed += GameTimerOnElapsed;
     }
 
+    private IEnumerable<Card> CreateCards(int amount)
+    {
+        const int availableImages = 10;
+        var cardId = 0;
+        var pairsToCreate = amount / 2;
+
+        for (var i = 0; i < pairsToCreate; i++)
+        {
+            var image = $"planet0{i % availableImages}.png";
+            yield return new Card(cardId++, image);
+            yield return new Card(cardId++, image);
+        }
+    }
+
+    private void InitialisePlayField()
+    {
+        var cardAmount = _selectedDifficulty switch
+        {
+            Difficulty.Easy => 8,
+            Difficulty.Medium => 12,
+            Difficulty.Hard => 16,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        _playField.Clear();
+
+        var cards = CreateCards(cardAmount).Shuffle();
+        _playField.AddRange(cards);
+    }
+
+    private void ResetTime()
+    {
+        _elapsedGameTime = TimeSpan.Zero;
+    }
+
     private void InitGame()
     {
-        _gameTime = TimeSpan.Zero;
-
-        for (var i = 1; i <= 16; i++)
-        {
-            _cards[i - 1] = new Card
-            {
-                Id = i,
-                Image = $"planet0{i % 8}.png"
-            };
-        }
-
-        _rng.Shuffle(_cards);
+        ResetTime();
+        InitialisePlayField();
     }
 
     private void GameTimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
-        _gameTime = _gameTime.Add(TimeSpan.FromSeconds(1));
+        _elapsedGameTime += TimeSpan.FromMilliseconds(_gameTimer.Interval);
         InvokeAsync(StateHasChanged);
     }
 
     private void ResetActiveCards()
     {
-        foreach (var card in _activeCards)
+        foreach (var card in _selectedCards)
         {
             card.IsVisible = false;
         }
 
-        _activeCards.Clear();
+        _selectedCards.Clear();
         StateHasChanged();
     }
 
@@ -92,18 +150,20 @@
         if (card.IsMatched || card.IsVisible || !_gameRunning)
             return;
 
-        switch (_activeCards.Count)
+        card.IsVisible = true;
+
+        switch (_selectedCards.Count)
         {
             case 0:
-                _activeCards.Add(card);
+                _selectedCards.Add(card);
                 break;
-            case 1 when _activeCards[0].Image.Equals(card.Image) && _activeCards[0].Id != card.Id:
+            case 1 when _selectedCards[0].Image.Equals(card.Image) && _selectedCards[0].Id != card.Id:
             {
-                _activeCards[0].IsMatched = true;
+                _selectedCards[0].IsMatched = true;
                 card.IsMatched = true;
-                _activeCards.Clear();
+                _selectedCards.Clear();
 
-                if (_cards.All(c => c.IsMatched))
+                if (_playField.All(c => c.IsMatched))
                 {
                     await GameOver();
                 }
@@ -111,19 +171,17 @@
                 break;
             }
             case 1:
-                _activeCards.Add(card);
+                _selectedCards.Add(card);
                 _cardTimer.Start();
                 break;
-            case 2 when !_activeCards.TrueForAll(c => c.Id != card.Id):
-                return;
+            case 2 when _selectedCards.Any(c => c.Id == card.Id):
+                break;
             case 2:
                 _cardTimer.Stop();
                 ResetActiveCards();
-                _activeCards.Add(card);
+                _selectedCards.Add(card);
                 break;
         }
-
-        card.IsVisible = true;
     }
 
     private async Task GameOver()
@@ -134,7 +192,7 @@
         gameScores.Add(new Score
         {
             Date = DateTime.Now,
-            GameTicks = _gameTime.Ticks
+            GameTicks = _elapsedGameTime.Ticks
         });
 
         await ProtectedLocalStore.SetAsync("scores", gameScores);
