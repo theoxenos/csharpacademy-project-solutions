@@ -38,16 +38,15 @@
 </div>
 
 <div class="container-lg card-container">
-    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4 justify-content-center">
-        @foreach (var card in _playField)
-        {
-            <div class="col">
+    <div class="d-flex justify-content-center">
+        <div class="d-grid" style="grid-template-columns: repeat(4, 192px); grid-column-gap: 1rem; grid-row-gap: 1rem;">
+            @foreach (var card in _playField)
+            {
                 <div class="memory-card @(card.IsMatched ? "matched" : "")" @onclick="() => HandleCardClick(card)">
-                    <img class="planet-img" src="@(card.Image)"
-                         alt="Planet Card"/>
+                    <img class="planet-img" src="@(card.Image)" alt="Planet Card"/>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 </div>
 

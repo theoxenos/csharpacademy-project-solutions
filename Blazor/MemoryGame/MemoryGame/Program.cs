@@ -1,4 +1,4 @@
-using MemoryGame.Components;
+using MemoryGame.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
