@@ -25,6 +25,7 @@ else
                     <thead>
                     <tr>
                         <th class="display-space">Date</th>
+                        <th class="display-space">Difficulty</th>
                         <th class="display-space">Completion Time</th>
                     </tr>
                     </thead>
@@ -33,7 +34,8 @@ else
                     {
                         <tr>
                             <td class="align-middle">@score.Date.ToString("G")</td>
-                            <td class="align-middle fw-bold text-info">@(TimeSpan.FromTicks(score.GameTicks).ToString(@"mm\:ss"))</td>
+                            <td class="align-middle">@score.Difficulty.GetDifficultyName()</td>
+                            <td class="align-middle fw-bold text-info">@(score.GameDuration.ToString(@"mm\:ss"))</td>
                         </tr>
                     }
                     </tbody>
@@ -50,6 +52,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         _gameScores = (await ProtectedLocalStore.GetAsync<List<Score>>("scores")).Value ?? [];
-        _gameScores.Sort((score, score1) => score.GameTicks.CompareTo(score1.GameTicks));
+        _gameScores.Sort((score, score1) => score.GameDuration.CompareTo(score1.GameDuration));
     }
+
+
 }

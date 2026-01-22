@@ -15,13 +15,16 @@
         <span class="space-label display-space">Mission Difficulty</span>
         <div class="difficulty-selector">
             <button class="btn btn-difficulty @(_selectedDifficulty == Difficulty.Easy ? "active" : "")"
-                    @onclick="() => SetDifficulty(Difficulty.Easy)">Cadet
+                    @onclick="() => SetDifficulty(Difficulty.Easy)">
+                @(Difficulty.Easy.GetDifficultyName())
             </button>
             <button class="btn btn-difficulty @(_selectedDifficulty == Difficulty.Medium ? "active" : "")"
-                    @onclick="() => SetDifficulty(Difficulty.Medium)">Commander
+                    @onclick="() => SetDifficulty(Difficulty.Medium)">
+                @(Difficulty.Medium.GetDifficultyName())
             </button>
             <button class="btn btn-difficulty @(_selectedDifficulty == Difficulty.Hard ? "active" : "")"
-                    @onclick="() => SetDifficulty(Difficulty.Hard)">Legend
+                    @onclick="() => SetDifficulty(Difficulty.Hard)">
+                @(Difficulty.Hard.GetDifficultyName())
             </button>
         </div>
     </div>
@@ -59,13 +62,6 @@
 
     bool _gameRunning;
     TimeSpan _elapsedGameTime;
-
-    enum Difficulty
-    {
-        Easy,
-        Medium,
-        Hard
-    }
 
     Difficulty _selectedDifficulty = Difficulty.Medium;
 
@@ -192,7 +188,8 @@
         gameScores.Add(new Score
         {
             Date = DateTime.Now,
-            GameTicks = _elapsedGameTime.Ticks
+            Difficulty = _selectedDifficulty,
+            GameDuration = _elapsedGameTime
         });
 
         await ProtectedLocalStore.SetAsync("scores", gameScores);
