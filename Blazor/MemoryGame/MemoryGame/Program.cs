@@ -1,10 +1,14 @@
 using MemoryGame.Features;
+using MemoryGame.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<CardFactory>();
+builder.Services.AddScoped<GameService>();
 
 var app = builder.Build();
 

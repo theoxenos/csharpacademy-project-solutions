@@ -1,56 +1,40 @@
 ﻿@page "/"
-@using System.Timers
-@using MemoryGame.Features.Game.Components
-@using MemoryGame.Models
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 @rendermode @(new InteractiveServerRenderMode(false))
 
+@using MemoryGame.Features.Game.Components
+@using MemoryGame.Models
+@using MemoryGame.Services
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@implements IDisposable
+
+@inject GameService GameService
 @inject ProtectedLocalStorage ProtectedLocalStore
 
 <PageTitle>Home</PageTitle>
 
 <h1 class="display-4 text-center mb-4 display-space">Memory Game</h1>
 <div class="text-center mb-5">
-    <DifficultySelector SelectedDifficulty="_selectedDifficulty" SelectedDifficultyChanged="SetDifficulty"/>
-    <GameStats ElapsedGameTime="_elapsedGameTime" OnGameStarted="StartGame" OnGameStopped="StopGame"/>
+    <DifficultySelector SelectedDifficulty="GameService.SelectedDifficulty"
+                        SelectedDifficultyChanged="GameService.SetDifficulty"/>
+    <GameStats ElapsedGameTime="GameService.ElapsedTime" OnGameStarted="GameService.StartGame"
+               OnGameStopped="GameService.StopGame"/>
 </div>
 
 <div class="container-lg card-container">
-    <GameField PlayingCards="_playingCards" OnCardClicked="HandleCardClick"/>
+    <GameField PlayingCards="GameService.PlayingCards" OnCardClicked="GameService.HandleCardClick"/>
 </div>
 
 @code
 {
-    readonly List<Card> _playingCards = [];
-    readonly List<Card> _selectedCards = [];
-
-    const int CardTimerDuration = 2_000;
-    readonly Timer _cardTimer = new(CardTimerDuration);
-    readonly Timer _gameTimer = new();
-
-    bool _gameRunning;
-    TimeSpan _elapsedGameTime;
-
-    Difficulty _selectedDifficulty = Difficulty.Medium;
-
-    private void SetDifficulty(Difficulty difficulty)
-    {
-        if (_gameRunning) return;
-
-        _selectedDifficulty = difficulty;
-
-        InitialisePlayField();
-    }
-
     protected override void OnInitialized()
     {
-        InitGame();
+        GameService.OnStateChanged += () => InvokeAsync(StateHasChanged);
+    }
 
-        _cardTimer.Elapsed += CardTimerOnElapsed;
-        _cardTimer.AutoReset = false;
-
-        _gameTimer.Elapsed += GameTimerOnElapsed;
+    public void Dispose()
+    {
+        GameService.OnStateChanged -= StateHasChanged;
     }
 
     private IEnumerable<Card> CreateCards(int amount)
@@ -66,129 +50,21 @@
             yield return new Card(cardId++, image);
         }
     }
-
-    private void InitialisePlayField()
-    {
-        var cardAmount = _selectedDifficulty switch
-        {
-            Difficulty.Easy => 8,
-            Difficulty.Medium => 12,
-            Difficulty.Hard => 16,
-            _ => throw new ArgumentOutOfRangeException()
-        };
-
-        _playingCards.Clear();
-
-        var cards = CreateCards(cardAmount).Shuffle();
-        _playingCards.AddRange(cards);
-    }
-
-    private void ResetTime()
-    {
-        _elapsedGameTime = TimeSpan.Zero;
-    }
-
-    private void InitGame()
-    {
-        ResetTime();
-        InitialisePlayField();
-    }
-
-    private void GameTimerOnElapsed(object? sender, ElapsedEventArgs e)
-    {
-        _elapsedGameTime += TimeSpan.FromMilliseconds(_gameTimer.Interval);
-        InvokeAsync(StateHasChanged);
-    }
-
-    private void ResetActiveCards()
-    {
-        foreach (var card in _selectedCards)
-        {
-            card.IsVisible = false;
-        }
-
-        _selectedCards.Clear();
-        StateHasChanged();
-    }
-
-    private async Task HandleCardClick(Card card)
-    {
-        if (card.IsMatched || card.IsVisible || !_gameRunning)
-            return;
-
-        card.IsVisible = true;
-
-        switch (_selectedCards.Count)
-        {
-            case 0:
-                _selectedCards.Add(card);
-                break;
-            case 1 when _selectedCards[0].Image.Equals(card.Image) && _selectedCards[0].Id != card.Id:
-            {
-                _selectedCards[0].IsMatched = true;
-                card.IsMatched = true;
-                _selectedCards.Clear();
-
-                if (_playingCards.All(c => c.IsMatched))
-                {
-                    await GameOver();
-                }
-
-                break;
-            }
-            case 1:
-                _selectedCards.Add(card);
-                _cardTimer.Start();
-                break;
-            case 2 when _selectedCards.Any(c => c.Id == card.Id):
-                break;
-            case 2:
-                _cardTimer.Stop();
-                ResetActiveCards();
-                _selectedCards.Add(card);
-                break;
-        }
-    }
-
-    private async Task GameOver()
-    {
-        StopGame();
-        var storedData = await ProtectedLocalStore.GetAsync<List<Score>>("scores");
-        var gameScores = storedData.Value ?? [];
-        gameScores.Add(new Score
-        {
-            Date = DateTime.Now,
-            Difficulty = _selectedDifficulty,
-            GameDuration = _elapsedGameTime
-        });
-
-        await ProtectedLocalStore.SetAsync("scores", gameScores);
-    }
-
-    private void CardTimerOnElapsed(object? sender, ElapsedEventArgs e)
-    {
-        // Use InvokeAsync to switch execution back to the dispatcher thread
-        InvokeAsync(() =>
-        {
-            ResetActiveCards();
-            StateHasChanged();
-        });
-    }
-
-    private void StartGame()
-    {
-        if (_gameRunning)
-            return;
-
-        InitGame();
-
-        _gameTimer.Start();
-        _gameRunning = true;
-    }
-
-    private void StopGame()
-    {
-        _gameTimer.Stop();
-        _gameRunning = false;
-    }
+    //
+    //
+    //
+    // private async Task GameOver()
+    // {
+    //     StopGame();
+    //     var storedData = await ProtectedLocalStore.GetAsync<List<Score>>("scores");
+    //     var gameScores = storedData.Value ?? [];
+    //     gameScores.Add(new Score
+    //     {
+    //         Date = DateTime.Now,
+    //         Difficulty = _selectedDifficulty,
+    //         GameDuration = _elapsedGameTime
+    //     });
+    //
+    //     await ProtectedLocalStore.SetAsync("scores", gameScores);
+    // }
 }
