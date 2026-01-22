@@ -1,0 +1,8 @@
+.game-stats {
+    background: rgba(45, 55, 72, 0.6);
+    border-radius: 2rem;
+    padding: 1rem 2rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: inline-block;
+}

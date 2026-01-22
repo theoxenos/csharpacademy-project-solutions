@@ -1,0 +1,25 @@
+<div class="game-stats">
+    <button class="btn btn-space btn-space-start me-2" @onclick="StartGame">Launch</button>
+    <button class="btn btn-space btn-space-stop me-3" @onclick="StopGame">Abort</button>
+    <span class="display-6 display-space align-middle">
+        Time: @ElapsedGameTime.ToString(@"mm\:ss")
+    </span>
+</div>
+
+@code
+{
+    [Parameter] public TimeSpan ElapsedGameTime { get; set; }
+
+    [Parameter] public EventCallback OnGameStarted { get; set; }
+    [Parameter] public EventCallback OnGameStopped { get; set; }
+
+    private async Task StartGame()
+    {
+        await OnGameStarted.InvokeAsync();
+    }
+
+    private async Task StopGame()
+    {
+        await OnGameStopped.InvokeAsync();
+    }
+}
