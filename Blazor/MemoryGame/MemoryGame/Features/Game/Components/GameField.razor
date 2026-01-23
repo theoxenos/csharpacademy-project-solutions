@@ -1,7 +1,7 @@
 @using MemoryGame.Models
 <div class="d-flex justify-content-center">
     <div class="d-grid playfield-grid">
-        @foreach (var card in PlayingCards)
+        @foreach (Card card in PlayingCards)
         {
             <div class="memory-card @(card.IsMatched ? "matched" : "")" @onclick="() => HandleCardClick(card)">
                 <img class="planet-img" src="@(card.Image)" alt="Planet Card"/>

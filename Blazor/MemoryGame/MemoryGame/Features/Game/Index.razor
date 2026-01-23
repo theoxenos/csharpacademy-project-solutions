@@ -1,15 +1,11 @@
 ﻿@page "/"
 
 @rendermode @(new InteractiveServerRenderMode(false))
-
 @using MemoryGame.Features.Game.Components
-@using MemoryGame.Models
 @using MemoryGame.Services
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @implements IDisposable
 
 @inject GameService GameService
-@inject ProtectedLocalStorage ProtectedLocalStore
 
 <PageTitle>Home</PageTitle>
 
@@ -29,42 +25,16 @@
 {
     protected override void OnInitialized()
     {
-        GameService.OnStateChanged += () => InvokeAsync(StateHasChanged);
+        GameService.OnStateChanged += HandleStateChanged;
     }
 
     public void Dispose()
     {
-        GameService.OnStateChanged -= StateHasChanged;
+        GameService.OnStateChanged -= HandleStateChanged;
     }
 
-    private IEnumerable<Card> CreateCards(int amount)
+    private void HandleStateChanged()
     {
-        const int availableImages = 10;
-        var cardId = 0;
-        var pairsToCreate = amount / 2;
-
-        for (var i = 0; i < pairsToCreate; i++)
-        {
-            var image = $"planet0{i % availableImages}.png";
-            yield return new Card(cardId++, image);
-            yield return new Card(cardId++, image);
-        }
+        InvokeAsync(StateHasChanged);
     }
-    //
-    //
-    //
-    // private async Task GameOver()
-    // {
-    //     StopGame();
-    //     var storedData = await ProtectedLocalStore.GetAsync<List<Score>>("scores");
-    //     var gameScores = storedData.Value ?? [];
-    //     gameScores.Add(new Score
-    //     {
-    //         Date = DateTime.Now,
-    //         Difficulty = _selectedDifficulty,
-    //         GameDuration = _elapsedGameTime
-    //     });
-    //
-    //     await ProtectedLocalStore.SetAsync("scores", gameScores);
-    // }
 }

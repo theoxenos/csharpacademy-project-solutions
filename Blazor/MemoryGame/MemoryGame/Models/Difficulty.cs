@@ -18,6 +18,7 @@ public static class DifficultyExtensions
 
     public static string GetDifficultyName(this Difficulty difficulty)
     {
-        return DifficultyNames.GetValueOrDefault(difficulty, "Unknown");
+        DifficultyNames.TryGetValue(difficulty, out string? name);
+        return name ?? throw new ArgumentException("Difficulty not found", nameof(difficulty));
     }
 }

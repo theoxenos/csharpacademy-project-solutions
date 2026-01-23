@@ -3,22 +3,20 @@ using Timer = System.Timers.Timer;
 
 namespace MemoryGame.Services;
 
-public class GameService
+public class GameService : IDisposable
 {
-    private const int CardTimerDuration = 2_000; // Milliseconds
-    private const int GameTimerTickInterval = 1_000; // Milliseconds
+    private const int CardTimerDurationMilliseconds = 2_000;
+    private const int GameTimerTickIntervalMilliseconds = 1_000;
 
     private readonly CardFactory _cardFactory;
 
-    private readonly Timer _cardTimer = new(CardTimerDuration);
-    private readonly Timer _gameTimer = new(GameTimerTickInterval);
+    private readonly Timer _cardTimer = new(CardTimerDurationMilliseconds);
+    private readonly Timer _gameTimer = new(GameTimerTickIntervalMilliseconds);
 
     private readonly List<Card> _selectedCards = [];
 
     private bool _isGameOver;
     private bool _isGameStarted;
-
-    public Action? OnStateChanged;
 
     public GameService(CardFactory cardFactory)
     {
@@ -27,7 +25,7 @@ public class GameService
         _cardTimer.Elapsed += (_, _) => ResetSelectedCards();
         _gameTimer.Elapsed += (_, _) =>
         {
-            ElapsedTime += TimeSpan.FromMilliseconds(GameTimerTickInterval);
+            ElapsedTime += TimeSpan.FromMilliseconds(GameTimerTickIntervalMilliseconds);
             OnStateChanged?.Invoke();
         };
 
@@ -38,9 +36,20 @@ public class GameService
     public List<Card> PlayingCards { get; } = [];
     public Difficulty SelectedDifficulty { get; private set; } = Difficulty.Medium;
 
+    public void Dispose()
+    {
+        _cardTimer.Dispose();
+        _gameTimer.Dispose();
+    }
+
+    public event Action? OnStateChanged;
+
     public void SetDifficulty(Difficulty difficulty)
     {
-        if (_isGameStarted || difficulty == SelectedDifficulty) return;
+        if (_isGameStarted || difficulty == SelectedDifficulty)
+        {
+            return;
+        }
 
         ElapsedTime = TimeSpan.Zero;
         SelectedDifficulty = difficulty;
@@ -48,18 +57,9 @@ public class GameService
         InitialisePlayField();
     }
 
-    public void HandleCardClick(Card card)
-    {
-        if (ShouldIgnoreClick(card))
-            return;
-
-        card.IsVisible = true;
-        ProcessCardSelection(card);
-    }
-
     private void ProcessCardSelection(Card card)
     {
-        var selectionCount = _selectedCards.Count;
+        int selectionCount = _selectedCards.Count;
 
         switch (selectionCount)
         {
@@ -82,7 +82,10 @@ public class GameService
         _cardTimer.Start();
         _selectedCards.Add(card);
 
-        if (!IsSecondSelectionMatch(card)) return;
+        if (!IsSecondSelectionMatch(card))
+        {
+            return;
+        }
 
         CompleteMatch(card);
 
@@ -95,8 +98,8 @@ public class GameService
     private void HandleThirdCardSelection(Card card)
     {
         if (IsDuplicateSelection(card))
-        {
             // No action - the player clicked the same card twice
+        {
             return;
         }
 
@@ -118,8 +121,8 @@ public class GameService
 
     private bool IsSecondSelectionMatch(Card card)
     {
-        var firstCard = _selectedCards[0];
-        return firstCard.Id != card.Id && firstCard.Image.Equals(card.Image);
+        Card firstCard = _selectedCards[0];
+        return firstCard.Id != card.Id && firstCard.Image.Equals(card.Image, StringComparison.Ordinal);
     }
 
     private void ResetAfterMismatch(Card card)
@@ -129,6 +132,30 @@ public class GameService
         ResetSelectedCards();
 
         _selectedCards.Add(card);
+    }
+
+    private void InitialisePlayField()
+    {
+        int cardAmount = GetCardAmountForDifficulty();
+        IEnumerable<Card> cards = _cardFactory.Create(cardAmount).Shuffle();
+
+        PlayingCards.Clear();
+        PlayingCards.AddRange(cards);
+    }
+
+    private int GetCardAmountForDifficulty() => SelectedDifficulty switch
+    {
+        Difficulty.Easy => 8,
+        Difficulty.Medium => 12,
+        Difficulty.Hard => 16,
+        _ => throw new ArgumentOutOfRangeException(nameof(SelectedDifficulty), SelectedDifficulty, null)
+    };
+
+    private void ResetSelectedCards()
+    {
+        _selectedCards.ForEach(card => card.IsVisible = false);
+        _selectedCards.Clear();
+        OnStateChanged?.Invoke();
     }
 
     public void StartGame()
@@ -154,27 +181,14 @@ public class GameService
         OnStateChanged?.Invoke();
     }
 
-    private void InitialisePlayField()
+    public void HandleCardClick(Card card)
     {
-        var cardAmount = GetCardAmountForDifficulty();
-        var cards = _cardFactory.Create(cardAmount).Shuffle();
+        if (ShouldIgnoreClick(card))
+        {
+            return;
+        }
 
-        PlayingCards.Clear();
-        PlayingCards.AddRange(cards);
-    }
-
-    private int GetCardAmountForDifficulty() => SelectedDifficulty switch
-    {
-        Difficulty.Easy => 8,
-        Difficulty.Medium => 12,
-        Difficulty.Hard => 16,
-        _ => throw new ArgumentOutOfRangeException(nameof(SelectedDifficulty), SelectedDifficulty, null)
-    };
-
-    private void ResetSelectedCards()
-    {
-        _selectedCards.ForEach(card => card.IsVisible = false);
-        _selectedCards.Clear();
-        OnStateChanged?.Invoke();
+        card.IsVisible = true;
+        ProcessCardSelection(card);
     }
 }

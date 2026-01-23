@@ -1,7 +1,7 @@
 using MemoryGame.Features;
 using MemoryGame.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<CardFactory>();
 builder.Services.AddScoped<GameService>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
