@@ -1,4 +1,3 @@
-using System.Timers;
 using MemoryGame.Models;
 using Timer = System.Timers.Timer;
 
@@ -26,19 +25,26 @@ public class GameService
         _cardFactory = cardFactory;
         _cardTimer.AutoReset = false;
         _cardTimer.Elapsed += (_, _) => ResetSelectedCards();
-        _gameTimer.Elapsed += GameTimerOnElapsed;
+        _gameTimer.Elapsed += (_, _) =>
+        {
+            ElapsedTime += TimeSpan.FromMilliseconds(GameTimerTickInterval);
+            OnStateChanged?.Invoke();
+        };
 
         InitialisePlayField();
     }
 
-    public TimeSpan ElapsedTime { get; private set; }
+    public TimeSpan ElapsedTime { get; private set; } = TimeSpan.Zero;
     public List<Card> PlayingCards { get; } = [];
     public Difficulty SelectedDifficulty { get; private set; } = Difficulty.Medium;
 
     public void SetDifficulty(Difficulty difficulty)
     {
-        if (_isGameStarted || _isGameOver) return;
+        if (_isGameStarted || difficulty == SelectedDifficulty) return;
+
+        ElapsedTime = TimeSpan.Zero;
         SelectedDifficulty = difficulty;
+
         InitialisePlayField();
     }
 
@@ -76,9 +82,13 @@ public class GameService
         _cardTimer.Start();
         _selectedCards.Add(card);
 
-        if (IsSecondSelectionMatch(card))
+        if (!IsSecondSelectionMatch(card)) return;
+
+        CompleteMatch(card);
+
+        if (PlayingCards.All(c => c.IsMatched))
         {
-            CompleteMatch(card);
+            StopGame();
         }
     }
 
@@ -104,14 +114,13 @@ public class GameService
 
     private bool ShouldIgnoreClick(Card card) => card.IsMatched || card.IsVisible || _isGameOver;
 
+    private bool IsDuplicateSelection(Card card) => _selectedCards.Any(c => c.Id == card.Id);
+
     private bool IsSecondSelectionMatch(Card card)
     {
         var firstCard = _selectedCards[0];
         return firstCard.Id != card.Id && firstCard.Image.Equals(card.Image);
     }
-
-    private bool IsDuplicateSelection(Card card) =>
-        _selectedCards.Any(c => c.Id == card.Id);
 
     private void ResetAfterMismatch(Card card)
     {
@@ -145,12 +154,6 @@ public class GameService
         OnStateChanged?.Invoke();
     }
 
-    private void GameTimerOnElapsed(object? sender, ElapsedEventArgs e)
-    {
-        ElapsedTime += TimeSpan.FromMilliseconds(GameTimerTickInterval);
-        OnStateChanged?.Invoke();
-    }
-
     private void InitialisePlayField()
     {
         var cardAmount = GetCardAmountForDifficulty();
@@ -160,14 +163,13 @@ public class GameService
         PlayingCards.AddRange(cards);
     }
 
-    private int GetCardAmountForDifficulty() =>
-        SelectedDifficulty switch
-        {
-            Difficulty.Easy => 8,
-            Difficulty.Medium => 12,
-            Difficulty.Hard => 16,
-            _ => throw new ArgumentOutOfRangeException(nameof(SelectedDifficulty), SelectedDifficulty, null)
-        };
+    private int GetCardAmountForDifficulty() => SelectedDifficulty switch
+    {
+        Difficulty.Easy => 8,
+        Difficulty.Medium => 12,
+        Difficulty.Hard => 16,
+        _ => throw new ArgumentOutOfRangeException(nameof(SelectedDifficulty), SelectedDifficulty, null)
+    };
 
     private void ResetSelectedCards()
     {
