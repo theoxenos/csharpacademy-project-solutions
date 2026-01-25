@@ -2,6 +2,6 @@ namespace SportsResultsNotifier.Models;
 
 public class GameMatch
 {
-    public Team TeamA { get; set; } = null!;
-    public Team TeamB { get; set; } = null!;
+    public required Team TeamA { get; set; }
+    public required Team TeamB { get; set; }
 }
