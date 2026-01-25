@@ -1,6 +1,6 @@
-using System.Net;
-using System.Net.Mail;
+using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
+using MimeKit;
 using SportsResultsNotifier.Utils;
 
 namespace SportsResultsNotifier.Services;
@@ -11,22 +11,11 @@ public class MailService(IOptions<MailServerSettings> options)
 
     public void SendMail(string body)
     {
-        ServicePointManager.ServerCertificateValidationCallback +=
-            (sender, certificate, chain, sslPolicyErrors) => true;
+        using MimeMessage mail = CreateMimeMessage(body);
 
-        var mail = new MailMessage(_options.From, _options.To)
-        {
-            IsBodyHtml = true,
-            Body = body,
-            Subject = _options.Subject
-        };
-
-        SmtpClient smtpClient = new(_options.Host)
-        {
-            Credentials = new NetworkCredential(_options.UserName, _options.Password),
-            Port = _options.Port,
-            EnableSsl = _options.Ssl
-        };
+        using SmtpClient smtpClient = new();
+        smtpClient.Connect(_options.Host, _options.Port, _options.Ssl);
+        smtpClient.Authenticate(_options.UserName, _options.Password);
 
         try
         {
@@ -35,7 +24,25 @@ public class MailService(IOptions<MailServerSettings> options)
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Failed to send mail: " + ex.Message);
+            Console.WriteLine($"Failed to send mail: {ex.Message}");
         }
+        finally
+        {
+            smtpClient.Disconnect(true);
+        }
+    }
+
+    private MimeMessage CreateMimeMessage(string body)
+    {
+        var mimeMessage = new MimeMessage
+        {
+            Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body },
+            Subject = _options.Subject
+        };
+
+        mimeMessage.From.Add(MailboxAddress.Parse(_options.From));
+        mimeMessage.To.Add(MailboxAddress.Parse(_options.To));
+
+        return mimeMessage;
     }
 }
