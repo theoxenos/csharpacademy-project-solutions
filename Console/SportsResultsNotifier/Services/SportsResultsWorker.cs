@@ -15,11 +15,11 @@ public class SportsResultsWorker(
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            logger.LogInformation("Worker running at: {Time}", DateTimeOffset.Now);
 
             try
             {
-                using var scope = serviceProvider.CreateScope();
+                using IServiceScope scope = serviceProvider.CreateScope();
                 var controller = scope.ServiceProvider.GetRequiredService<MainController>();
                 controller.Start();
                 logger.LogInformation("Sports results processed successfully.");

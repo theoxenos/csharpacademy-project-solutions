@@ -7,25 +7,25 @@ namespace SportsResultsNotifier.Services;
 
 public class MailService(IOptions<MailServerSettings> options)
 {
-    private readonly MailServerSettings options = options.Value;
+    private readonly MailServerSettings _options = options.Value;
 
     public void SendMail(string body)
     {
         ServicePointManager.ServerCertificateValidationCallback +=
             (sender, certificate, chain, sslPolicyErrors) => true;
 
-        var mail = new MailMessage(options.From, options.To)
+        var mail = new MailMessage(_options.From, _options.To)
         {
             IsBodyHtml = true,
             Body = body,
-            Subject = options.Subject
+            Subject = _options.Subject
         };
 
-        SmtpClient smtpClient = new(options.Host)
+        SmtpClient smtpClient = new(_options.Host)
         {
-            Credentials = new NetworkCredential(options.UserName, options.Password),
-            Port = options.Port,
-            EnableSsl = options.SSL
+            Credentials = new NetworkCredential(_options.UserName, _options.Password),
+            Port = _options.Port,
+            EnableSsl = _options.Ssl
         };
 
         try
