@@ -1,0 +1,29 @@
+@using MemoryGame.Models
+<h3 class="display-space h5 text-center">@PeriodTitle</h3>
+<div class="table-responsive">
+    <table class="table space-table text-center align-middle">
+        <thead>
+        <tr>
+            <th class="display-space">Period</th>
+            <th class="display-space">Games</th>
+            <th class="display-space">Avg Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (PeriodStat stat in Stats)
+        {
+            <tr>
+                <td>@stat.Label</td>
+                <td>@stat.Games</td>
+                <td class="fw-bold text-info">@stat.AverageDuration</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@code
+{
+    [Parameter] public IReadOnlyList<PeriodStat> Stats { get; set; } = [];
+    [Parameter] public required string PeriodTitle { get; set; }
+}

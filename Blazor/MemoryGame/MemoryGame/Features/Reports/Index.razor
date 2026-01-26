@@ -1,0 +1,116 @@
+@page "/reports"
+@using System.Globalization
+@using MemoryGame.Features.Reports.Components
+@using MemoryGame.Models
+@using MemoryGame.Services
+
+@rendermode @(new InteractiveServerRenderMode(false))
+
+@inject ScoreService ScoreService
+
+<div class="mb-4">
+    <h1 class="display-4 text-center display-space">Mission Reports</h1>
+    <p class="text-center text-info">Track your galactic performance trends</p>
+</div>
+
+@if (_scores.Count == 0)
+{
+    <div class="alert alert-info bg-dark border-info text-info text-center">
+        <p class="mb-0">No mission data to analyze yet. Run a few missions first!</p>
+    </div>
+}
+else
+{
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card bg-dark border-info text-center">
+                <div class="card-body">
+                    <div class="space-label">Total Missions</div>
+                    <div class="display-6 display-space">@_scores.Count</div>
+                    <div class="space-label mt-3">Average Score</div>
+                    <div class="fw-bold text-info">@FormatDuration(_averageDuration)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-4">
+            <ScoreTable PeriodTitle="Weekly" Stats="_weeklyStats"/>
+        </div>
+        <div class="col-12 col-lg-4">
+            <ScoreTable PeriodTitle="Monthly" Stats="_monthlyStats"/>
+        </div>
+        <div class="col-12 col-lg-4">
+            <ScoreTable PeriodTitle="Yearly" Stats="_yearlyStats"/>
+        </div>
+    </div>
+}
+
+@code
+{
+    private readonly List<Score> _scores = [];
+    private IReadOnlyList<PeriodStat> _weeklyStats = [];
+    private IReadOnlyList<PeriodStat> _monthlyStats = [];
+    private IReadOnlyList<PeriodStat> _yearlyStats = [];
+    private TimeSpan _averageDuration = TimeSpan.Zero;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _scores.AddRange((await ScoreService.GetScores()).OrderByDescending(score => score.Date));
+
+        if (_scores.Count == 0)
+        {
+            return;
+        }
+
+        CultureInfo culture = CultureInfo.CurrentCulture;
+        DayOfWeek firstDayOfWeek = culture.DateTimeFormat.FirstDayOfWeek;
+
+        _weeklyStats = BuildStats(
+            _scores,
+            score => GetWeekStart(score.Date, firstDayOfWeek),
+            date => $"Week of {date:dd MMM yyyy}");
+
+        _monthlyStats = BuildStats(
+            _scores,
+            score => new DateTime(score.Date.Year, score.Date.Month, 1),
+            date => $"Month of {date:MMM yyyy}");
+
+        _yearlyStats = BuildStats(
+            _scores,
+            score => new DateTime(score.Date.Year, 1, 1),
+            date => $"Year {date:yyyy}");
+
+        _averageDuration = TimeSpan.FromSeconds(_scores.Average(score => score.GameDuration.TotalSeconds));
+    }
+
+    private IReadOnlyList<PeriodStat> BuildStats(
+        IEnumerable<Score> scores,
+        Func<Score, DateTime> periodStartSelector,
+        Func<DateTime, string> labelSelector)
+    {
+        return scores
+            .GroupBy(periodStartSelector)
+            .Select(group =>
+            {
+                DateTime periodStart = group.Key;
+                double averageSeconds = group.Average(score => score.GameDuration.TotalSeconds);
+                return new PeriodStat(
+                    periodStart,
+                    labelSelector(periodStart),
+                    group.Count(),
+                    FormatDuration(TimeSpan.FromSeconds(averageSeconds)));
+            })
+            .OrderByDescending(stat => stat.PeriodStart)
+            .ToList();
+    }
+
+    private string FormatDuration(TimeSpan duration) => duration.ToString(@"hh\:mm\:ss");
+
+    private DateTime GetWeekStart(DateTime date, DayOfWeek firstDayOfWeek)
+    {
+        int diff = (7 + (date.DayOfWeek - firstDayOfWeek)) % 7;
+        return date.Date.AddDays(-diff);
+    }
+}
