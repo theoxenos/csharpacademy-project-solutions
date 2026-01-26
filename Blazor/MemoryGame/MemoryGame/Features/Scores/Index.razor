@@ -1,9 +1,9 @@
-@page "/records"
+@page "/scores"
 @using MemoryGame.Models
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using MemoryGame.Services
 @rendermode @(new InteractiveServerRenderMode(false))
 
-@inject ProtectedLocalStorage ProtectedLocalStore
+@inject ScoreService ScoreService
 
 <div class="mb-4">
     <h1 class="display-4 text-center display-space">Mission Logs</h1>
@@ -51,8 +51,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _gameScores = (await ProtectedLocalStore.GetAsync<List<Score>>("scores")).Value ?? [];
-        _gameScores.Sort((score, score1) => score.GameDuration.CompareTo(score1.GameDuration));
+        _gameScores = await ScoreService.GetScores();
     }
 
 

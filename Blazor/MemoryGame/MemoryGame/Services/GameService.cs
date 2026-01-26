@@ -9,6 +9,7 @@ public class GameService : IDisposable
     private const int GameTimerTickIntervalMilliseconds = 1_000;
 
     private readonly CardFactory _cardFactory;
+    private readonly ScoreService _scoreService;
 
     private readonly Timer _cardTimer = new(CardTimerDurationMilliseconds);
     private readonly Timer _gameTimer = new(GameTimerTickIntervalMilliseconds);
@@ -18,9 +19,11 @@ public class GameService : IDisposable
     private bool _isGameOver;
     private bool _isGameStarted;
 
-    public GameService(CardFactory cardFactory)
+    public GameService(CardFactory cardFactory, ScoreService scoreService)
     {
         _cardFactory = cardFactory;
+        _scoreService = scoreService;
+
         _cardTimer.AutoReset = false;
         _cardTimer.Elapsed += (_, _) => ResetSelectedCards();
         _gameTimer.Elapsed += (_, _) =>
@@ -36,12 +39,6 @@ public class GameService : IDisposable
     public List<Card> PlayingCards { get; } = [];
     public Difficulty SelectedDifficulty { get; private set; } = Difficulty.Medium;
 
-    public void Dispose()
-    {
-        _cardTimer.Dispose();
-        _gameTimer.Dispose();
-    }
-
     public event Action? OnStateChanged;
 
     public void SetDifficulty(Difficulty difficulty)
@@ -55,6 +52,46 @@ public class GameService : IDisposable
         SelectedDifficulty = difficulty;
 
         InitialisePlayField();
+    }
+
+    public void StartGame()
+    {
+        _isGameOver = false;
+        _isGameStarted = true;
+
+        _gameTimer.Start();
+
+        OnStateChanged?.Invoke();
+    }
+
+    public void StopGame()
+    {
+        _isGameOver = true;
+        _isGameStarted = false;
+
+        _cardTimer.Stop();
+        _gameTimer.Stop();
+
+        _selectedCards.Clear();
+
+        OnStateChanged?.Invoke();
+    }
+
+    public void HandleCardClick(Card card)
+    {
+        if (ShouldIgnoreClick(card))
+        {
+            return;
+        }
+
+        card.IsVisible = true;
+        ProcessCardSelection(card);
+    }
+
+    public void Dispose()
+    {
+        _cardTimer.Dispose();
+        _gameTimer.Dispose();
     }
 
     private void ProcessCardSelection(Card card)
@@ -89,10 +126,14 @@ public class GameService : IDisposable
 
         CompleteMatch(card);
 
-        if (PlayingCards.All(c => c.IsMatched))
+        if (!PlayingCards.All(c => c.IsMatched))
         {
-            StopGame();
+            return;
         }
+
+        _ = _scoreService.SaveScore(new Score
+            { GameDuration = ElapsedTime, Difficulty = SelectedDifficulty, Date = DateTime.Now });
+        StopGame();
     }
 
     private void HandleThirdCardSelection(Card card)
@@ -156,39 +197,5 @@ public class GameService : IDisposable
         _selectedCards.ForEach(card => card.IsVisible = false);
         _selectedCards.Clear();
         OnStateChanged?.Invoke();
-    }
-
-    public void StartGame()
-    {
-        _isGameOver = false;
-        _isGameStarted = true;
-
-        _gameTimer.Start();
-
-        OnStateChanged?.Invoke();
-    }
-
-    public void StopGame()
-    {
-        _isGameOver = true;
-        _isGameStarted = false;
-
-        _cardTimer.Stop();
-        _gameTimer.Stop();
-
-        _selectedCards.Clear();
-
-        OnStateChanged?.Invoke();
-    }
-
-    public void HandleCardClick(Card card)
-    {
-        if (ShouldIgnoreClick(card))
-        {
-            return;
-        }
-
-        card.IsVisible = true;
-        ProcessCardSelection(card);
     }
 }

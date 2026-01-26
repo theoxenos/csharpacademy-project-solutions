@@ -9,6 +9,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<CardFactory>();
 builder.Services.AddScoped<GameService>();
+builder.Services.AddScoped<ScoreService>();
 
 WebApplication app = builder.Build();
 
