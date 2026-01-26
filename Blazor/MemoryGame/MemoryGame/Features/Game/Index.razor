@@ -2,10 +2,12 @@
 
 @rendermode @(new InteractiveServerRenderMode(false))
 @using MemoryGame.Features.Game.Components
+@using MemoryGame.Models
 @using MemoryGame.Services
 @implements IDisposable
 
 @inject GameService GameService
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Home</PageTitle>
 
@@ -13,16 +15,18 @@
 <div class="text-center mb-5">
     <DifficultySelector SelectedDifficulty="GameService.SelectedDifficulty"
                         SelectedDifficultyChanged="GameService.SetDifficulty"/>
-    <GameStats ElapsedGameTime="GameService.ElapsedTime" OnGameStarted="GameService.StartGame"
+    <GameStats ElapsedGameTime="GameService.ElapsedTime" OnGameStarted="HandleGameStarted"
                OnGameStopped="GameService.StopGame"/>
 </div>
 
-<div class="container-lg card-container">
+<div class="container-lg card-container" @ref="_playfieldContainer">
     <GameField PlayingCards="GameService.PlayingCards" OnCardClicked="GameService.HandleCardClick"/>
 </div>
 
 @code
 {
+    private ElementReference _playfieldContainer;
+
     protected override void OnInitialized()
     {
         GameService.OnStateChanged += HandleStateChanged;
@@ -36,5 +40,15 @@
     private void HandleStateChanged()
     {
         InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleGameStarted()
+    {
+        GameService.StartGame();
+
+        if (GameService.SelectedDifficulty == Difficulty.Hard)
+        {
+            await JsRuntime.InvokeVoidAsync("memoryGame.scrollIntoViewIfNeeded", _playfieldContainer);
+        }
     }
 }
