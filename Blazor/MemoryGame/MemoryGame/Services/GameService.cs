@@ -56,8 +56,17 @@ public class GameService : IDisposable
 
     public void StartGame()
     {
+        if (_isGameStarted)
+        {
+            return;
+        }
+
+        ElapsedTime = TimeSpan.Zero;
+
         _isGameOver = false;
         _isGameStarted = true;
+
+        InitialisePlayField();
 
         _gameTimer.Start();
 
@@ -79,6 +88,11 @@ public class GameService : IDisposable
 
     public void HandleCardClick(Card card)
     {
+        if (!_isGameStarted)
+        {
+            return;
+        }
+
         if (ShouldIgnoreClick(card))
         {
             return;
@@ -131,15 +145,14 @@ public class GameService : IDisposable
             return;
         }
 
-        _ = _scoreService.SaveScore(new Score
-            { GameDuration = ElapsedTime, Difficulty = SelectedDifficulty, Date = DateTime.Now });
+        _ = _scoreService.SaveScore(new Score(GameDuration: ElapsedTime, Difficulty: SelectedDifficulty,
+            Date: DateTime.Now));
         StopGame();
     }
 
     private void HandleThirdCardSelection(Card card)
     {
         if (IsDuplicateSelection(card))
-            // No action - the player clicked the same card twice
         {
             return;
         }
