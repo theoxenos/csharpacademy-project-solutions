@@ -1,0 +1,36 @@
+@using MemoryGame.Models
+<div class="card bg-dark border-info text-center">
+    <div class="card-body">
+        <div class="py-1">
+            <span class="space-label display-space"> Filter on Mission Difficulty</span>
+            <div class="difficulty-selector">
+                <button class="btn btn-difficulty @(SelectedDifficulty == null ? "active" : "")"
+                        @onclick="@(() => SetDifficulty(null))">
+                    All
+                </button>
+                @foreach (Difficulty difficulty in Enum.GetValues(typeof(Difficulty)))
+                {
+                    <button class="btn btn-difficulty @(SelectedDifficulty == difficulty ? "active" : "")"
+                            @onclick="@(() => SetDifficulty(difficulty))">
+                        @(difficulty.GetDifficultyName())
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter] public Difficulty? SelectedDifficulty { get; set; }
+
+    [Parameter] public required EventCallback<Difficulty?> SelectedDifficultyChanged { get; set; }
+
+    private async Task SetDifficulty(Difficulty? difficulty)
+    {
+        if (SelectedDifficulty != difficulty)
+        {
+            await SelectedDifficultyChanged.InvokeAsync(difficulty);
+        }
+    }
+}

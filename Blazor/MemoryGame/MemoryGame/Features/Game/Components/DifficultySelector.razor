@@ -2,18 +2,13 @@
 <div class="mb-3">
     <span class="space-label display-space">Mission Difficulty</span>
     <div class="difficulty-selector">
-        <button class="btn btn-difficulty @(SelectedDifficulty == Difficulty.Easy ? "active" : "")"
-                @onclick="() => SetDifficulty(Difficulty.Easy)">
-            @(Difficulty.Easy.GetDifficultyName())
-        </button>
-        <button class="btn btn-difficulty @(SelectedDifficulty == Difficulty.Medium ? "active" : "")"
-                @onclick="() => SetDifficulty(Difficulty.Medium)">
-            @(Difficulty.Medium.GetDifficultyName())
-        </button>
-        <button class="btn btn-difficulty @(SelectedDifficulty == Difficulty.Hard ? "active" : "")"
-                @onclick="() => SetDifficulty(Difficulty.Hard)">
-            @(Difficulty.Hard.GetDifficultyName())
-        </button>
+        @foreach (Difficulty difficulty in Enum.GetValues(typeof(Difficulty)))
+        {
+            <button class="btn btn-difficulty @(SelectedDifficulty == difficulty ? "active" : "")"
+                    @onclick="@(() => SetDifficulty(difficulty))">
+                @(difficulty.GetDifficultyName())
+            </button>
+        }
     </div>
 </div>
 
