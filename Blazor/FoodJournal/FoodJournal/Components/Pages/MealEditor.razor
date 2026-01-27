@@ -14,31 +14,41 @@
                     <p class="text-muted">Fill in the details and select your foods.</p>
                 </div>
                 <div class="card-body px-4">
-                    <EditForm Model="meal" OnValidSubmit="HandleSubmit">
+                    <EditForm Model="_meal" OnValidSubmit="HandleSubmit">
                         <DataAnnotationsValidator/>
-                        
+
                         <div class="row mb-4">
                             <div class="col-md-7 mb-3">
                                 <label for="name" class="form-label fw-bold">Meal Name</label>
-                                <InputText @bind-Value="meal.Name" id="name" class="form-control form-control-lg border-0 shadow-sm" style="background-color: #f8f9fa;" placeholder="e.g. Healthy Breakfast Bowl"/>
-                                <ValidationMessage For="() => meal.Name" class="text-danger small"/>
+                                <InputText @bind-Value="_meal.Name" id="name"
+                                           class="form-control form-control-lg border-0 shadow-sm"
+                                           style="background-color: #f8f9fa;"
+                                           placeholder="e.g. Healthy Breakfast Bowl"/>
+                                <ValidationMessage For="() => _meal.Name" class="text-danger small"/>
                             </div>
                             <div class="col-md-5 mb-3">
                                 <label for="date" class="form-label fw-bold">Date</label>
-                                <InputDate @bind-Value="meal.Date" id="date" class="form-control form-control-lg border-0 shadow-sm" style="background-color: #f8f9fa;"/>
+                                <InputDate @bind-Value="_meal.Date" id="date"
+                                           class="form-control form-control-lg border-0 shadow-sm"
+                                           style="background-color: #f8f9fa;"/>
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold d-block mb-3">Meal Type</label>
-                            <InputRadioGroup Name="meal-type" @bind-Value="meal.MealType">
+                            <InputRadioGroup Name="meal-type" @bind-Value="_meal.MealType">
                                 <div class="d-flex flex-wrap gap-3">
                                     @foreach (var type in Enum.GetValues<MealType>())
                                     {
                                         <div class="meal-type-option">
                                             <InputRadio Value="type" id="@type.ToString().ToLower()" class="btn-check"/>
-                                            <label class="btn btn-outline-light shadow-sm p-3 d-flex flex-column align-items-center" for="@type.ToString().ToLower()" style="width: 100px; border-radius: 15px; transition: all 0.2s;">
-                                                <img alt="@type" src="images/icons/icons8-@type.ToString().ToLower()-96.png" style="width: 48px;"/>
+                                            <label
+                                                class="btn btn-outline-light shadow-sm p-3 d-flex flex-column align-items-center"
+                                                for="@type.ToString().ToLower()"
+                                                style="width: 100px; border-radius: 15px; transition: all 0.2s;">
+                                                <img alt="@type"
+                                                     src="images/icons/icons8-@type.ToString().ToLower()-96.png"
+                                                     style="width: 48px;"/>
                                                 <span class="mt-2 small fw-bold text-dark">@type</span>
                                             </label>
                                         </div>
@@ -53,15 +63,19 @@
                             <div class="col-md-6">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h5 class="fw-bold mb-0">Select Food</h5>
-                                    <span class="badge bg-light text-dark">@foods.Count items</span>
+                                    <span class="badge bg-light text-dark">@_foods.Count items</span>
                                 </div>
-                                <div class="food-grid p-3 rounded" style="background-color: #f8f9fa; height: 400px; overflow-y: auto;">
+                                <div class="food-grid p-3 rounded"
+                                     style="background-color: #f8f9fa; height: 400px; overflow-y: auto;">
                                     <div class="row row-cols-3 g-2">
-                                        @foreach (var food in foods)
+                                        @foreach (var food in _foods)
                                         {
                                             <div class="col">
-                                                <button class="btn btn-white shadow-sm w-100 h-100 p-2 d-flex flex-column align-items-center justify-content-center food-btn" type="button" @onclick="() => AddFoodToMeal(food)">
-                                                    <img alt="@food.Name" src="images/icons/@food.Icon" style="width: 32px;"/>
+                                                <button
+                                                    class="btn btn-white shadow-sm w-100 h-100 p-2 d-flex flex-column align-items-center justify-content-center food-btn"
+                                                    type="button" @onclick="() => AddFoodToMeal(food)">
+                                                    <img alt="@food.Name" src="images/icons/@food.Icon"
+                                                         style="width: 32px;"/>
                                                     <span class="mt-1 small text-truncate w-100">@food.Name</span>
                                                 </button>
                                             </div>
@@ -72,12 +86,15 @@
                             <div class="col-md-6">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h5 class="fw-bold mb-0">Your Selection</h5>
-                                    <span class="badge" style="background-color: var(--secondary-color);">@meal.Foods.Count selected</span>
+                                    <span class="badge"
+                                          style="background-color: var(--secondary-color);">@_meal.Foods.Count selected</span>
                                 </div>
-                                <div class="selection-list p-3 rounded border-dashed" style="height: 400px; overflow-y: auto; border: 2px dashed #dee2e6;">
-                                    @if (meal.Foods.Count == 0)
+                                <div class="selection-list p-3 rounded border-dashed"
+                                     style="height: 400px; overflow-y: auto; border: 2px dashed #dee2e6;">
+                                    @if (_meal.Foods.Count == 0)
                                     {
-                                        <div class="h-100 d-flex flex-column align-items-center justify-content-center text-muted">
+                                        <div
+                                            class="h-100 d-flex flex-column align-items-center justify-content-center text-muted">
                                             <i class="bi bi-plus-circle mb-2" style="font-size: 2rem;"></i>
                                             <p class="small">Click on foods to add them</p>
                                         </div>
@@ -85,15 +102,22 @@
                                     else
                                     {
                                         <div class="row row-cols-3 g-2">
-                                            @foreach (var food in meal.Foods)
+                                            @foreach (var food in _meal.Foods)
                                             {
                                                 <div class="col">
                                                     <div class="position-relative">
-                                                        <button class="btn btn-white shadow-sm w-100 h-100 p-2 d-flex flex-column align-items-center justify-content-center border-0" type="button" style="background-color: white;">
-                                                            <img alt="@food.Name" src="images/icons/@food.Icon" style="width: 32px;"/>
-                                                            <span class="mt-1 small text-truncate w-100">@food.Name</span>
+                                                        <button
+                                                            class="btn btn-white shadow-sm w-100 h-100 p-2 d-flex flex-column align-items-center justify-content-center border-0"
+                                                            type="button" style="background-color: white;">
+                                                            <img alt="@food.Name" src="images/icons/@food.Icon"
+                                                                 style="width: 32px;"/>
+                                                            <span
+                                                                class="mt-1 small text-truncate w-100">@food.Name</span>
                                                         </button>
-                                                        <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 start-100 translate-middle p-0" style="width: 20px; height: 20px;" @onclick="() => RemoveFoodFromMeal(food)">
+                                                        <button type="button"
+                                                                class="btn btn-danger btn-sm rounded-circle position-absolute top-0 start-100 translate-middle p-0"
+                                                                style="width: 20px; height: 20px;"
+                                                                @onclick="() => RemoveFoodFromMeal(food)">
                                                             <i class="bi bi-x" style="font-size: 14px;"></i>
                                                         </button>
                                                     </div>
@@ -106,22 +130,26 @@
                         </div>
 
                         <div class="mt-4 text-end">
-                            <button class="btn btn-lg px-5 shadow" type="submit" style="background-color: var(--primary-color); color: white; border-radius: 10px; font-weight: bold;">Save Meal</button>
+                            <button class="btn btn-lg px-5 shadow" type="submit"
+                                    style="background-color: var(--primary-color); color: white; border-radius: 10px; font-weight: bold;">
+                                Save Meal
+                            </button>
                         </div>
                     </EditForm>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-4">
             <div class="card shadow border-0 mb-4" style="border-radius: 15px; background-color: var(--accent-color);">
                 <div class="card-body p-4 text-center">
                     <img src="images/icons/icons8-kawaii-ice-cream-96.png" style="width: 64px;" alt="Quick Log"/>
                     <h5 class="fw-bold mt-3">Quick Record</h5>
                     <p class="small text-muted mb-4">Common combinations you've had recently.</p>
-                    
+
                     <div class="d-grid gap-2">
-                        <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0" style="border-radius: 12px;">
+                        <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0"
+                                style="border-radius: 12px;">
                             <img src="images/icons/icons8-kawaii-coffee-48.png" style="width: 24px;" alt="Quick"/>
                             <div class="flex-grow-1">
                                 <div class="fw-bold small">Morning Coffee & Bread</div>
@@ -129,7 +157,8 @@
                             </div>
                             <i class="bi bi-plus-circle-fill text-primary"></i>
                         </button>
-                        <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0" style="border-radius: 12px;">
+                        <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0"
+                                style="border-radius: 12px;">
                             <img src="images/icons/icons8-kawaii-broccoli-48.png" style="width: 24px;" alt="Quick"/>
                             <div class="flex-grow-1">
                                 <div class="fw-bold small">Healthy Veggie Lunch</div>
@@ -137,7 +166,8 @@
                             </div>
                             <i class="bi bi-plus-circle-fill text-primary"></i>
                         </button>
-                        <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0" style="border-radius: 12px;">
+                        <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0"
+                                style="border-radius: 12px;">
                             <img src="images/icons/icons8-kawaii-cupcake-48.png" style="width: 24px;" alt="Quick"/>
                             <div class="flex-grow-1">
                                 <div class="fw-bold small">Sweet Snack</div>
@@ -148,7 +178,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="card shadow border-0" style="border-radius: 15px;">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">Meal Tips</h5>
@@ -178,44 +208,51 @@
         border-color: var(--secondary-color) !important;
         transform: scale(1.05);
     }
+
     .meal-type-option input:checked + label span {
         color: white !important;
     }
+
     .food-btn:hover {
         background-color: white;
         border: 1px solid var(--secondary-color) !important;
         transform: translateY(-2px);
     }
+
     .food-btn {
         border: 1px solid transparent !important;
         transition: all 0.2s;
     }
+
     .border-dashed {
         background-color: #fcfcfc;
     }
 </style>
 
 @code {
-    List<Food> foods = [];
-    Meal meal = new();
+    List<Food> _foods = [];
+    Meal _meal = new();
 
     protected override async Task OnInitializedAsync()
     {
-        foods = await FoodService.GetAllFoodsAsync();
+        var a = new int[2];
+        var i = a.Length;
+        _foods = await FoodService.GetAllFoodsAsync();
     }
 
     private void AddFoodToMeal(Food food)
     {
-        meal.Foods.Add(food);
+        _meal.Foods.Add(food);
     }
 
     private void RemoveFoodFromMeal(Food food)
     {
-        meal.Foods.Remove(food);
+        _meal.Foods.Remove(food);
     }
 
     private async Task HandleSubmit()
     {
-        await MealService.AddMeal(new Meal { Name = meal.Name, Date = meal.Date, Foods = meal.Foods, MealType = meal.MealType});
+        await MealService.AddMeal(new Meal { Name = _meal.Name, Date = _meal.Date, Foods = _meal.Foods, MealType = _meal.MealType });
     }
+
 }

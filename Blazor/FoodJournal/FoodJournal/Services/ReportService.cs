@@ -11,7 +11,7 @@ public class ReportService(FoodJournalContext context)
         return context.Foods.Select(f =>
             new FoodCountReportViewModel
             {
-                Count = f.Meals.Count(m => m.Date >= fromDate && m.Date <= toDate), 
+                Count = f.Meals.Count(m => m.Date >= fromDate && m.Date <= toDate),
                 Food = f
             }
         ).ToListAsync();

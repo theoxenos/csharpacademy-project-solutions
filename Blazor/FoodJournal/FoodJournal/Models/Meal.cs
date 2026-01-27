@@ -4,18 +4,19 @@ namespace FoodJournal.Models;
 
 public class Meal
 {
-    public int Id { get; set; }
-    [StringLength(255), Required]
-    public string Name { get; set; } = default!;
+    public int Id { get; init; }
+
+    [StringLength(255)] [Required] public string Name { get; set; } = string.Empty;
+
     public MealType MealType { get; set; }
-    public List<Food> Foods { get; set; } = [];
+    public List<Food> Foods { get; init; } = [];
     public DateTime Date { get; set; } = DateTime.Today;
 }
 
 public enum MealType
 {
-    Breakfast, 
-    Lunch, 
-    Dinner, 
+    Breakfast,
+    Lunch,
+    Dinner,
     Snack
 }

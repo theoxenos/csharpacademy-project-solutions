@@ -23,24 +23,20 @@ public class MealService(FoodJournalContext context)
 
         if (!string.IsNullOrEmpty(searchVm.SearchTerm))
         {
-            var searchTerm = searchVm.SearchTerm.Trim().ToLower();
-            query = context.Meals.Where(m => m.Name.ToLower().Contains(searchTerm) || m.Foods.Any(f => f.Name.ToLower().Contains(searchTerm)));
+            var searchTerm = searchVm.SearchTerm.Trim();
+            query = context.Meals.Where(m =>
+                EF.Functions.Like(m.Name, $"%{searchTerm}%")
+                || m.Foods.Any(f => EF.Functions.Like(f.Name, $"%{searchTerm}%")));
         }
 
-        if (searchVm.MealType != null)
-        {
-            query = query.Where(m => m.MealType == searchVm.MealType);
-        }
+        if (searchVm.MealType != null) query = query.Where(m => m.MealType == searchVm.MealType);
 
-        if (searchVm.Date != null)
-        {
-            query = query.Where(m => m.Date == searchVm.Date);
-        }
+        if (searchVm.Date != null) query = query.Where(m => m.Date == searchVm.Date);
 
         return query.OrderByDescending(m => m.Date).Include(m => m.Foods).ToListAsync();
         //
         // return context.Meals.Include(m => m.Foods)
-        //     .Where(m => 
+        //     .Where(m =>
         //         (searchVm.Date == null || m.Date == searchVm.Date)
         //         && (searchVm.MealType == null || m.MealType == searchVm.MealType )
         //         && (string.IsNullOrEmpty(searchVm.SearchTerm) || m.Name.Contains(searchVm.SearchTerm))
