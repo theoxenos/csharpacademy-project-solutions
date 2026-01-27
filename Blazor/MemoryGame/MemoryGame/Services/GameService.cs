@@ -8,7 +8,7 @@ public class GameService : IDisposable
     private const int CardTimerDurationMilliseconds = 2_000;
     private const int GameTimerTickIntervalMilliseconds = 1_000;
 
-    private readonly CardFactory _cardFactory;
+    private readonly CardService _cardService;
     private readonly ScoreService _scoreService;
 
     private readonly Timer _cardTimer = new(CardTimerDurationMilliseconds);
@@ -19,9 +19,9 @@ public class GameService : IDisposable
     private bool _isGameOver;
     private bool _isGameStarted;
 
-    public GameService(CardFactory cardFactory, ScoreService scoreService)
+    public GameService(CardService cardService, ScoreService scoreService)
     {
-        _cardFactory = cardFactory;
+        _cardService = cardService;
         _scoreService = scoreService;
 
         _cardTimer.AutoReset = false;
@@ -191,7 +191,7 @@ public class GameService : IDisposable
     private void InitialisePlayField()
     {
         int cardAmount = GetCardAmountForDifficulty();
-        IEnumerable<Card> cards = _cardFactory.Create(cardAmount).Shuffle();
+        IEnumerable<Card> cards = _cardService.Create(cardAmount).Shuffle();
 
         PlayingCards.Clear();
         PlayingCards.AddRange(cards);

@@ -7,7 +7,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<CardFactory>();
+builder.Services.AddScoped<CardService>();
 builder.Services.AddScoped<GameService>();
 builder.Services.AddScoped<ScoreService>();
 
