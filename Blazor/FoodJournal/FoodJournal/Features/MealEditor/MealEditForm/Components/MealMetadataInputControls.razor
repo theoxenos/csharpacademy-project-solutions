@@ -1,0 +1,21 @@
+<div class="row mb-4">
+    <div class="col-md-7 mb-3">
+        <label for="name" class="form-label fw-bold">Meal Name</label>
+        <InputText @bind-Value="Meal.Name" id="name"
+                   class="form-control form-control-lg border-0 shadow-sm"
+                   style="background-color: #f8f9fa;"
+                   placeholder="e.g. Healthy Breakfast Bowl"/>
+        <ValidationMessage For="() => Meal.Name" class="text-danger small"/>
+    </div>
+    <div class="col-md-5 mb-3">
+        <label for="date" class="form-label fw-bold">Date</label>
+        <InputDate @bind-Value="Meal.Date" id="date"
+                   class="form-control form-control-lg border-0 shadow-sm"
+                   style="background-color: #f8f9fa;"/>
+    </div>
+</div>
+
+@code
+{
+    [CascadingParameter] public required Meal Meal { get; set; }
+}

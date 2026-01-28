@@ -1,0 +1,34 @@
+<div class="col-md-6">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Select Food</h5>
+        <span class="badge bg-light text-dark">@Foods.Count items</span>
+    </div>
+    <div class="food-grid p-3 rounded"
+         style="background-color: #f8f9fa; height: 400px; overflow-y: auto;">
+        <div class="row row-cols-3 g-2">
+            @foreach (var food in Foods)
+            {
+                <div class="col">
+                    <button
+                        class="btn btn-white shadow-sm w-100 h-100 p-2 d-flex flex-column align-items-center justify-content-center food-btn"
+                        type="button" @onclick="() => AddFoodToMeal(food)">
+                        <img alt="@food.Name" src="images/icons/@food.Icon"
+                             style="width: 32px;"/>
+                        <span class="mt-1 small text-truncate w-100">@food.Name</span>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter] public List<Food> Foods { get; set; } = [];
+    [Parameter] public EventCallback<Food> OnFoodSelected { get; set; }
+
+    private async Task AddFoodToMeal(Food food)
+    {
+        await OnFoodSelected.InvokeAsync(food);
+    }
+}

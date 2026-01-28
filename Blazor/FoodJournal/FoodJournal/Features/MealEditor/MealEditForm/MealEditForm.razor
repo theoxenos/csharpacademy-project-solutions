@@ -1,0 +1,47 @@
+@using FoodJournal.Features.MealEditor.MealEditForm.Components
+<div class="card-body px-4">
+    <EditForm Model="Meal" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator/>
+
+        <CascadingValue Value="Meal">
+            <MealMetadataInputControls/>
+            <MealTypePicker/>
+            <hr class="my-4 opacity-10">
+            <div class="row g-4">
+                <FoodPicker Foods="Foods" OnFoodSelected="AddFoodToMeal"/>
+                <SelectedFoods OnRemoveFoodFromMeal="RemoveFoodFromMeal"/>
+            </div>
+        </CascadingValue>
+
+        <div class="mt-4 text-end">
+            <button class="btn btn-lg px-5 shadow" type="submit"
+                    style="background-color: var(--primary-color); color: white; border-radius: 10px; font-weight: bold;">
+                Save Meal
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code
+{
+    [Parameter] public List<Food> Foods { get; set; } = [];
+    [Parameter] public Meal Meal { get; set; } = new();
+
+    [Parameter] public EventCallback OnMealSubmit { get; set; }
+
+    private void AddFoodToMeal(Food food)
+    {
+        Meal.Foods.Add(food);
+    }
+
+    private void RemoveFoodFromMeal(Food food)
+    {
+        Meal.Foods.Remove(food);
+    }
+
+    private async Task HandleSubmit()
+    {
+        await OnMealSubmit.InvokeAsync();
+        Meal = new Meal();
+    }
+}

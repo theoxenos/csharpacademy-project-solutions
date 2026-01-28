@@ -1,0 +1,27 @@
+<div class="mb-4">
+    <label class="form-label fw-bold d-block mb-3">Meal Type</label>
+    <InputRadioGroup Name="meal-type" @bind-Value="Meal.MealType">
+        <div class="d-flex flex-wrap gap-3">
+            @foreach (var type in Enum.GetValues<MealType>())
+            {
+                <div class="meal-type-option">
+                    <InputRadio Value="type" id="@type.ToString().ToLower()" class="btn-check"/>
+                    <label
+                        class="btn btn-outline-light shadow-sm p-3 d-flex flex-column align-items-center"
+                        for="@type.ToString().ToLower()"
+                        style="width: 100px; border-radius: 15px; transition: all 0.2s;">
+                        <img alt="@type"
+                             src="images/icons/icons8-@type.ToString().ToLower()-96.png"
+                             style="width: 48px;"/>
+                        <span class="mt-2 small fw-bold text-dark">@type</span>
+                    </label>
+                </div>
+            }
+        </div>
+    </InputRadioGroup>
+</div>
+
+@code
+{
+    [CascadingParameter] public required Meal Meal { get; set; }
+}

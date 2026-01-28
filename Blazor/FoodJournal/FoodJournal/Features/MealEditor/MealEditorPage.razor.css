@@ -1,0 +1,24 @@
+.meal-type-option input:checked + label {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+    transform: scale(1.05);
+}
+
+.meal-type-option input:checked + label span {
+    color: white !important;
+}
+
+.food-btn:hover {
+    background-color: white;
+    border: 1px solid var(--secondary-color) !important;
+    transform: translateY(-2px);
+}
+
+.food-btn {
+    border: 1px solid transparent !important;
+    transition: all 0.2s;
+}
+
+.border-dashed {
+    background-color: #fcfcfc;
+}

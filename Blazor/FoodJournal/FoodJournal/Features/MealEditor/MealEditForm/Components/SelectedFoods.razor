@@ -1,0 +1,56 @@
+<div class="col-md-6">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Your Selection</h5>
+        <span class="badge"
+              style="background-color: var(--secondary-color);">@Meal.Foods.Count selected</span>
+    </div>
+    <div class="selection-list p-3 rounded border-dashed"
+         style="height: 400px; overflow-y: auto; border: 2px dashed #dee2e6;">
+        @if (Meal.Foods.Count == 0)
+        {
+            <div
+                class="h-100 d-flex flex-column align-items-center justify-content-center text-muted">
+                <i class="bi bi-plus-circle mb-2" style="font-size: 2rem;"></i>
+                <p class="small">Click on Foods to add them</p>
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-3 g-2">
+                @foreach (var food in Meal.Foods)
+                {
+                    <div class="col">
+                        <div class="position-relative">
+                            <button
+                                class="btn btn-white shadow-sm w-100 h-100 p-2 d-flex flex-column align-items-center justify-content-center border-0"
+                                type="button" style="background-color: white;">
+                                <img alt="@food.Name" src="images/icons/@food.Icon"
+                                     style="width: 32px;"/>
+                                <span
+                                    class="mt-1 small text-truncate w-100">@food.Name</span>
+                            </button>
+                            <button type="button"
+                                    class="btn btn-danger btn-sm rounded-circle position-absolute top-0 start-100 translate-middle p-0"
+                                    style="width: 20px; height: 20px;"
+                                    @onclick="() => RemoveFoodFromMeal(food)">
+                                <i class="bi bi-x" style="font-size: 14px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code
+{
+    [CascadingParameter] public required Meal Meal { get; set; }
+
+    [Parameter] public EventCallback<Food> OnRemoveFoodFromMeal { get; set; }
+
+    private async Task RemoveFoodFromMeal(Food food)
+    {
+        await OnRemoveFoodFromMeal.InvokeAsync(food);
+    }
+}
