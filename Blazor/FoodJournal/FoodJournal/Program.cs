@@ -1,5 +1,5 @@
-using FoodJournal.Components;
 using FoodJournal.Data;
+using FoodJournal.Features;
 using FoodJournal.Services;
 using Microsoft.EntityFrameworkCore;
 
