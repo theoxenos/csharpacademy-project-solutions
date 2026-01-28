@@ -34,14 +34,5 @@ public class MealService(FoodJournalContext context)
         if (searchVm.Date != null) query = query.Where(m => m.Date == searchVm.Date);
 
         return query.OrderByDescending(m => m.Date).Include(m => m.Foods).ToListAsync();
-        //
-        // return context.Meals.Include(m => m.Foods)
-        //     .Where(m =>
-        //         (searchVm.Date == null || m.Date == searchVm.Date)
-        //         && (searchVm.MealType == null || m.MealType == searchVm.MealType )
-        //         && (string.IsNullOrEmpty(searchVm.SearchTerm) || m.Name.Contains(searchVm.SearchTerm))
-        //         && (string.IsNullOrEmpty(searchVm.SearchTerm) || m.Foods.Any(f => f.Name.Contains(searchVm.SearchTerm)))
-        //     )
-        //     .ToListAsync();
     }
 }

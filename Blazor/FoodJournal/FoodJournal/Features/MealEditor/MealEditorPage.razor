@@ -235,8 +235,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var a = new int[2];
-        var i = a.Length;
         _foods = await FoodService.GetAllFoodsAsync();
     }
 
