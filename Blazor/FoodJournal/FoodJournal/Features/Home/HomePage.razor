@@ -1,0 +1,35 @@
+﻿@page "/"
+@using FoodJournal.Features.Home.Components
+
+@inject MealService MealService
+
+<PageTitle>Home</PageTitle>
+
+<div class="container-lg">
+    <FilterForm OnFilterStateChanged="FilterStateChanged"/>
+    <div class="row">
+        <div class="col-md-5">
+            <MealHistory Meals="_meals" @bind-SelectedMeal="_selectedMeal"/>
+        </div>
+        <div class="col-md-7">
+            <MealDetail SelectedMeal="_selectedMeal"/>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    List<Meal> _meals = [];
+    Meal? _selectedMeal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _meals = await MealService.GetAllAsync();
+    }
+
+    private async Task FilterStateChanged(MealSearchViewModel mealSearchViewModel)
+    {
+        _meals = await MealService.GetMealsBasedOnSearchAsync(mealSearchViewModel);
+        _selectedMeal = _meals.Count > 0 ? _meals[0] : null;
+    }
+}

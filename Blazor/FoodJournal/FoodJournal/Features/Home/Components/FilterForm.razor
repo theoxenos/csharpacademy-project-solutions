@@ -1,0 +1,48 @@
+<div class="card shadow-sm mt-4 mb-4 border-0" style="background-color: var(--accent-color);">
+    <div class="card-body">
+        <EditForm Model="_mealSearchViewModel" OnValidSubmit="ValidSubmit" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Meal Type</label>
+                <InputSelect @bind-Value="_mealSearchViewModel.MealType" class="form-select border-0 shadow-sm">
+                    <option value="">All Types</option>
+                    @foreach (var mealType in Enum.GetValues<MealType>())
+                    {
+                        <option value="@mealType">@mealType</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Date</label>
+                <InputDate @bind-Value="_mealSearchViewModel.Date" class="form-control border-0 shadow-sm"/>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Search</label>
+                <InputText @bind-Value="_mealSearchViewModel.SearchTerm" class="form-control border-0 shadow-sm"
+                           placeholder="Food or meal name..."/>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button class="btn btn-light shadow-sm flex-grow-1" type="submit"
+                        style="color: var(--primary-color); font-weight: bold;">Search
+                </button>
+                <button class="btn btn-outline-dark border-0" type="button" @onclick="ClearSearch">✕</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code
+{
+    [Parameter] public EventCallback<MealSearchViewModel> OnFilterStateChanged { get; set; }
+    private MealSearchViewModel _mealSearchViewModel = new();
+
+    private async Task ValidSubmit()
+    {
+        await OnFilterStateChanged.InvokeAsync(_mealSearchViewModel);
+    }
+
+    private async Task ClearSearch()
+    {
+        _mealSearchViewModel = new MealSearchViewModel();
+        await OnFilterStateChanged.InvokeAsync(_mealSearchViewModel);
+    }
+}

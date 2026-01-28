@@ -1,0 +1,52 @@
+<h4 class="mb-3 fw-bold" style="color: var(--primary-color);">History</h4>
+<div class="list-group shadow-sm border-0 overflow-auto" style="max-height: 70vh;">
+    @if (Meals.Count == 0)
+    {
+        <div class="list-group-item text-center py-5 text-muted">
+            No meals found. Try searching for something else!
+        </div>
+    }
+    @foreach (var meal in Meals)
+    {
+        <button type="button"
+                class="list-group-item list-group-item-action d-flex align-items-center gap-3 border-0 mb-1 rounded @GetItemClass(meal.Id)"
+                @onclick="() => SelectMealAsync(meal)">
+            <div class="rounded-circle p-2"
+                 style="background-color: white; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                <img src="images/icons/icons8-@meal.MealType.ToString().ToLower()-48.png"
+                     alt="@meal.MealType" style="width: 32px;"/>
+            </div>
+            <div class="flex-grow-1 text-start">
+                <div class="fw-bold">@meal.Name</div>
+                <small class="text-muted">@meal.Date.ToShortDateString() • @meal.MealType</small>
+            </div>
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    }
+</div>
+
+@code
+{
+    [Parameter] public List<Meal> Meals { get; set; } = [];
+    [Parameter] public Meal? SelectedMeal { get; set; }
+
+    [Parameter] public EventCallback<Meal?> SelectedMealChanged { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (SelectedMeal is null && Meals.Count > 0)
+        {
+            await SelectedMealChanged.InvokeAsync(Meals[0]);
+        }
+    }
+
+    private string GetItemClass(int mealId)
+    {
+        return SelectedMeal?.Id == mealId ? "active" : "";
+    }
+
+    private Task SelectMealAsync(Meal meal)
+    {
+        return SelectedMeal?.Id == meal.Id ? Task.CompletedTask : SelectedMealChanged.InvokeAsync(meal);
+    }
+}
