@@ -1,6 +1,6 @@
 @using FoodJournal.Features.MealEditor.MealEditForm.Components
 <div class="card-body px-4">
-    <EditForm Model="Meal" OnValidSubmit="HandleSubmit">
+    <EditForm EditContext="_editContext" OnValidSubmit="HandleSubmit">
         <DataAnnotationsValidator/>
 
         <CascadingValue Value="Meal">
@@ -10,6 +10,9 @@
             <div class="row g-4">
                 <FoodPicker Foods="Foods" OnFoodSelected="AddFoodToMeal"/>
                 <SelectedFoods OnRemoveFoodFromMeal="RemoveFoodFromMeal"/>
+            </div>
+            <div class="row text-center">
+                <ValidationMessage For="() => Meal.Foods" class="text-danger small"/>
             </div>
         </CascadingValue>
 
@@ -29,19 +32,33 @@
 
     [Parameter] public EventCallback OnMealSubmit { get; set; }
 
+    private EditContext? _editContext;
+
+    protected override void OnParametersSet()
+    {
+        // Recreate context if parent supplies a different Meal instance (e.g., after save/reset).
+        if (_editContext?.Model != Meal)
+        {
+            _editContext = new EditContext(Meal);
+        }
+    }
+
     private void AddFoodToMeal(Food food)
     {
         Meal.Foods.Add(food);
+
+        _editContext?.NotifyFieldChanged(new FieldIdentifier(Meal, nameof(Meal.Foods)));
     }
 
     private void RemoveFoodFromMeal(Food food)
     {
         Meal.Foods.Remove(food);
+
+        _editContext?.NotifyFieldChanged(new FieldIdentifier(Meal, nameof(Meal.Foods)));
     }
 
     private async Task HandleSubmit()
     {
         await OnMealSubmit.InvokeAsync();
-        Meal = new Meal();
     }
 }

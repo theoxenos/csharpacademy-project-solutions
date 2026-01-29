@@ -39,5 +39,6 @@
     private async Task HandleSubmit()
     {
         await MealService.AddMeal(_meal);
+        _meal = new Meal();
     }
 }
