@@ -1,170 +1,120 @@
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 using FoodJournal.Models;
 
 namespace FoodJournal.Tests.Unit;
 
 public class MealTests
 {
-    private readonly string _foodsErrorMessage;
-    private readonly int _maxFoodsLength;
-    private readonly int _maxNameLength;
-    private readonly string _nameErrorMessage;
+    private const int MaxNameLength = 255;
+    private const int MinFoods = 1;
+    private const int MaxFoods = 100;
 
-    public MealTests()
+    private Meal CreateValidMeal(List<Food>? foods = null)
     {
-        var mealNameProp = typeof(Meal).GetProperty(nameof(Meal.Name));
-        var stringLengthAttribute = mealNameProp?.GetCustomAttributes<StringLengthAttribute>().Single();
-        _maxNameLength = stringLengthAttribute?.MaximumLength ?? 255;
-        _nameErrorMessage = stringLengthAttribute?.ErrorMessage ?? "Name must be between 1 and 255 characters.";
-
-        var mealFoodsProp = typeof(Meal).GetProperty(nameof(Meal.Foods));
-        var lengthAttribute = mealFoodsProp?.GetCustomAttributes<LengthAttribute>().Single();
-        _maxFoodsLength = lengthAttribute?.MaximumLength ?? 100;
-        _foodsErrorMessage = lengthAttribute?.ErrorMessage ?? "Foods must have between 1 and 100 entries.";
-    }
-
-    [Fact]
-    public void Meal_Validates_WithCorrectModel()
-    {
-        // Arrange
-        var food = new Food
-        {
-            Id = 1,
-            Name = "Test Food",
-            Icon = "icons8-kawaii-bread-96.png"
-        };
-        var meal = new Meal
+        return new Meal
         {
             Id = 1,
             Date = DateTime.Today,
-            Foods = [food],
-            MealType = MealType.Breakfast,
-            Name = "Test Meal"
-        };
-
-        // Act
-        var validationContext = new ValidationContext(meal);
-        var errors = new List<ValidationResult>();
-        Validator.TryValidateObject(meal, validationContext, errors, true);
-
-        // Assert
-        Assert.Empty(errors);
-    }
-
-    [Fact]
-    public void Meal_Validates_WithFoodsUptoLimit()
-    {
-        // Arrange
-        var meal = new Meal
-        {
-            Id = 1,
-            Date = DateTime.Today,
-            Foods = Enumerable.Range(1, _maxFoodsLength).Select(i => new Food { Id = i }).ToList(),
-            MealType = MealType.Breakfast,
-            Name = "Test Meal"
-        };
-
-        // Act
-        var validationContext = new ValidationContext(meal);
-        var errors = new List<ValidationResult>();
-        Validator.TryValidateObject(meal, validationContext, errors, true);
-
-        // Assert
-        Assert.Empty(errors);
-    }
-
-    [Fact]
-    public void Meal_DoesntValidate_WhenNoFoodsAdded()
-    {
-        // Arrange
-        var meal = new Meal
-        {
-            Date = DateTime.Today,
-            Id = 1,
-            MealType = MealType.Breakfast,
-            Name = "Test Meal"
-        };
-
-        // Act
-        var validationContext = new ValidationContext(meal);
-        var errors = new List<ValidationResult>();
-        Validator.TryValidateObject(meal, validationContext, errors, true);
-
-        // Assert
-        Assert.Single(errors);
-        Assert.Contains(_foodsErrorMessage, errors[0].ErrorMessage);
-        Assert.Contains(nameof(Meal.Foods), errors[0].MemberNames);
-    }
-
-    [Fact]
-    public void Meal_DoesntValidate_WhenTooManyFoodsAdded()
-    {
-        // Arrange
-        var meal = new Meal
-        {
-            Date = DateTime.Today,
-            Id = 1,
             MealType = MealType.Breakfast,
             Name = "Test Meal",
-            Foods = Enumerable.Range(1, _maxFoodsLength + 1).Select(i => new Food { Id = i }).ToList()
+            Foods = foods ?? [new Food { Id = 1 }]
         };
+    }
 
-        // Act
-        var validationContext = new ValidationContext(meal);
-        var errors = new List<ValidationResult>();
-        Validator.TryValidateObject(meal, validationContext, errors, true);
+    private List<ValidationResult> Validate(object instance)
+    {
+        var context = new ValidationContext(instance);
+        var results = new List<ValidationResult>();
+        Validator.TryValidateObject(instance, context, results, true);
+        return results;
+    }
 
-        // Assert
-        Assert.Single(errors);
-        Assert.Contains(_foodsErrorMessage, errors[0].ErrorMessage);
-        Assert.Contains(nameof(Meal.Foods), errors[0].MemberNames);
+    private ValidationResult? ErrorFor(IEnumerable<ValidationResult> errors, string memberName)
+    {
+        return errors.SingleOrDefault(e => e.MemberNames.Contains(memberName));
     }
 
     [Fact]
-    public void Meal_DoesntValidate_WhenNoNameIsGiven()
+    public void Meal_Validates_WhenModelIsValid()
     {
         // Arrange
-        var meal = new Meal
-        {
-            Date = DateTime.Today,
-            Id = 1,
-            MealType = MealType.Breakfast,
-            Foods = [new Food { Id = 1 }]
-        };
+        var meal = CreateValidMeal();
 
         // Act
-        var validationContext = new ValidationContext(meal);
-        var errors = new List<ValidationResult>();
-        Validator.TryValidateObject(meal, validationContext, errors, true);
+        var errors = Validate(meal);
 
         // Assert
-        Assert.Single(errors);
-        Assert.Contains(_nameErrorMessage, errors[0].ErrorMessage);
-        Assert.Contains(nameof(Meal.Name), errors[0].MemberNames);
+        Assert.Empty(errors);
     }
 
-    [Fact]
-    public void Meal_DoesntValidate_WhenNameIsOverLimit()
+    [Theory]
+    [InlineData(MinFoods, true)]
+    [InlineData(MaxFoods, true)]
+    [InlineData(0, false)]
+    [InlineData(MaxFoods + 1, false)]
+    public void Meal_Validates_FoodsCount_Boundaries(int foodsCount, bool shouldBeValid)
     {
         // Arrange
-        var meal = new Meal
-        {
-            Date = DateTime.Today,
-            Id = 1,
-            MealType = MealType.Breakfast,
-            Foods = [new Food { Id = 1 }],
-            Name = new string('a', _maxNameLength + 1)
-        };
+        var meal = CreateValidMeal(Enumerable.Range(1, foodsCount).Select(i => new Food { Id = i }).ToList());
 
         // Act
-        var validationContext = new ValidationContext(meal);
-        var errors = new List<ValidationResult>();
-        Validator.TryValidateObject(meal, validationContext, errors, true);
+        var errors = Validate(meal);
+        var foodsError = ErrorFor(errors, nameof(Meal.Foods));
 
         // Assert
-        Assert.Single(errors);
-        Assert.Contains(_nameErrorMessage, errors[0].ErrorMessage);
-        Assert.Contains(nameof(Meal.Name), errors[0].MemberNames);
+        if (shouldBeValid)
+        {
+            Assert.Null(foodsError);
+        }
+        else
+        {
+            Assert.NotNull(foodsError);
+            Assert.Contains(nameof(Meal.Foods), foodsError!.MemberNames);
+            Assert.Contains("Foods must have between 1 and 100 entries.", foodsError.ErrorMessage);
+        }
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Meal_DoesNotValidate_WhenNameIsMissing(string? name)
+    {
+        // Arrange
+        var meal = CreateValidMeal();
+        meal.Name = name!;
+
+        // Act
+        var errors = Validate(meal);
+        var nameError = ErrorFor(errors, nameof(Meal.Name));
+
+        // Assert
+        Assert.NotNull(nameError);
+        Assert.Contains(nameof(Meal.Name), nameError.MemberNames);
+    }
+
+    [Theory]
+    [InlineData(MaxNameLength, true)]
+    [InlineData(MaxNameLength + 1, false)]
+    public void Meal_Validates_NameLength_Boundaries(int length, bool shouldBeValid)
+    {
+        // Arrange
+        var meal = CreateValidMeal();
+        meal.Name = new string('a', length);
+
+        // Act
+        var errors = Validate(meal);
+        var nameError = ErrorFor(errors, nameof(Meal.Name));
+
+        // Assert
+        if (shouldBeValid)
+        {
+            Assert.Null(nameError);
+        }
+        else
+        {
+            Assert.NotNull(nameError);
+            Assert.Contains(nameof(Meal.Name), nameError.MemberNames);
+        }
     }
 }
