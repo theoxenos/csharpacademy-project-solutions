@@ -22,18 +22,17 @@
                     <div class="col">
                         <div class="position-relative">
                             <button
-                                class="btn btn-white shadow-sm w-100 h-100 p-2 d-flex flex-column align-items-center justify-content-center border-0"
+                                class="@FoodButtonClasses"
                                 type="button" style="background-color: white;">
-                                <img alt="@food.Name" src="images/icons/@food.Icon"
-                                     style="width: 32px;"/>
-                                <span
-                                    class="mt-1 small text-truncate w-100">@food.Name</span>
+                                <img alt="@food.Name" src="images/icons/@food.Icon" style="width: 32px;"/>
+                                <span class="mt-1 small text-truncate w-100">@food.Name</span>
                             </button>
+
                             <button type="button"
-                                    class="btn btn-danger btn-sm rounded-circle position-absolute top-0 start-100 translate-middle p-0"
+                                    class="@RemoveButtonClasses"
                                     style="width: 20px; height: 20px;"
                                     @onclick="() => RemoveFoodFromMeal(food)">
-                                <i class="bi bi-x" style="font-size: 14px;"></i>
+                                <i class="bi bi-x"></i>
                             </button>
                         </div>
                     </div>
@@ -45,6 +44,16 @@
 
 @code
 {
+    private const string FoodButtonClasses = """
+                                             btn btn-white shadow-sm w-100 h-100 p-2 border-0 
+                                             d-flex flex-column align-items-center justify-content-center
+                                             """;
+
+    private const string RemoveButtonClasses = """
+                                             btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-1 p-0 
+                                             d-flex align-items-center justify-content-center
+                                             """;
+
     [CascadingParameter] public required Meal Meal { get; set; }
 
     [Parameter] public EventCallback<Food> OnRemoveFoodFromMeal { get; set; }
