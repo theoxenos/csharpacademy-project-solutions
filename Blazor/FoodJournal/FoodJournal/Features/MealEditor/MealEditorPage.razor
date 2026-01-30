@@ -3,7 +3,7 @@
 @* ReSharper disable once RedundantUsingDirective *@
 @using FoodJournal.Features.MealEditor.MealEditForm
 
-@inject FoodService Foodservice
+@inject FoodService FoodService
 @inject MealService MealService
 
 <PageTitle>Meal Editor</PageTitle>
@@ -24,7 +24,7 @@
         </div>
 
         <div class="col-lg-4">
-            <QuickRecordMeal/>
+            <QuickRecordMeal Foods="_meal.Foods" OnQuickAddMeal="HandleQuickAddMeal"/>
             <MealNotes/>
             <MealNutrients Foods="_meal.Foods"/>
         </div>
@@ -37,7 +37,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _foods = await Foodservice.GetAllFoodsAsync();
+        _foods = await FoodService.GetAllFoodsAsync();
     }
 
     private async Task HandleFoodsChanged()
@@ -50,4 +50,16 @@
         await MealService.AddMeal(_meal);
         _meal = new Meal();
     }
+
+    private void HandleQuickAddMeal(Meal meal)
+    {
+        _meal = new Meal
+        {
+            Date = DateTime.Today,
+            Foods = [..meal.Foods],
+            MealType = meal.MealType,
+            Name = meal.Name
+        };
+    }
+
 }

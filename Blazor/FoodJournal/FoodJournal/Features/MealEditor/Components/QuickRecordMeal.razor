@@ -1,3 +1,5 @@
+@inject MealService MealService
+
 <div class="card shadow border-0 mb-4" style="border-radius: 15px; background-color: var(--accent-color);">
     <div class="card-body p-4 text-center">
         <img src="images/icons/icons8-kawaii-ice-cream-96.png" style="width: 64px;" alt="Quick Log"/>
@@ -5,33 +7,44 @@
         <p class="small text-muted mb-4">Common combinations you've had recently.</p>
 
         <div class="d-grid gap-2">
-            <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0"
-                    style="border-radius: 12px;">
-                <img src="images/icons/icons8-kawaii-coffee-48.png" style="width: 24px;" alt="Quick"/>
-                <div class="flex-grow-1">
-                    <div class="fw-bold small">Morning Coffee & Bread</div>
-                    <div class="text-muted" style="font-size: 10px;">2 items</div>
-                </div>
-                <i class="bi bi-plus-circle-fill text-primary"></i>
-            </button>
-            <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0"
-                    style="border-radius: 12px;">
-                <img src="images/icons/icons8-kawaii-broccoli-48.png" style="width: 24px;" alt="Quick"/>
-                <div class="flex-grow-1">
-                    <div class="fw-bold small">Healthy Veggie Lunch</div>
-                    <div class="text-muted" style="font-size: 10px;">4 items</div>
-                </div>
-                <i class="bi bi-plus-circle-fill text-primary"></i>
-            </button>
-            <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0"
-                    style="border-radius: 12px;">
-                <img src="images/icons/icons8-kawaii-cupcake-48.png" style="width: 24px;" alt="Quick"/>
-                <div class="flex-grow-1">
-                    <div class="fw-bold small">Sweet Snack</div>
-                    <div class="text-muted" style="font-size: 10px;">1 item</div>
-                </div>
-                <i class="bi bi-plus-circle-fill text-primary"></i>
-            </button>
+            @foreach (var meal in _meals)
+            {
+                <button class="btn btn-light shadow-sm text-start p-3 d-flex align-items-center gap-3 border-0"
+                        style="border-radius: 12px;">
+                    <img src="images/icons/@meal.Foods.FirstOrDefault()?.Icon" style="width: 48px;"
+                         alt="@meal.Foods.FirstOrDefault()?.Name"/>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold small">@meal.Name</div>
+                        <div class="text-muted" style="font-size: 10px;">@meal.Foods.Count() items</div>
+                    </div>
+                    <button class="btn" @onclick="() => OnQuickAddMeal.InvokeAsync(meal)">
+                        <i class="bi bi-plus-circle-fill text-primary"></i>
+                    </button>
+                </button>
+            }
         </div>
     </div>
 </div>
+
+@code
+{
+    private const int MealLimit = 3;
+
+    [Parameter] public List<Food> Foods { get; set; } = [];
+
+    [Parameter] public EventCallback<Meal> OnQuickAddMeal { get; set; }
+
+    private List<Meal> _meals = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Foods.Count == 0)
+        {
+            _meals = await MealService.GetMealsByAmount(MealLimit);
+            return;
+        }
+
+        var mealsWithSelectedFoods = await MealService.GetMealsByFoodIds(Foods.Select(f => f.Id).ToList());
+        _meals = mealsWithSelectedFoods.Count > 0 ? mealsWithSelectedFoods : await MealService.GetMealsByAmount(MealLimit);
+    }
+}

@@ -35,4 +35,16 @@ public class MealService(FoodJournalContext context)
 
         return query.OrderByDescending(m => m.Date).Include(m => m.Foods).ToListAsync();
     }
+
+    public async Task<List<Meal>> GetMealsByAmount(int amount)
+    {
+        return await context.Meals.OrderByDescending(m => m.Date).Take(amount)
+            .Include(m => m.Foods).ToListAsync();
+    }
+
+    public async Task<List<Meal>> GetMealsByFoodIds(List<int> foodIds)
+    {
+        return await context.Meals.Where(m => m.Foods.Any(f => foodIds.Contains(f.Id)))
+            .OrderByDescending(m => m.Date).Take(3).Include(m => m.Foods).ToListAsync();
+    }
 }
