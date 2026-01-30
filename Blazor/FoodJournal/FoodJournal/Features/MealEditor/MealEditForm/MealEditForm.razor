@@ -30,6 +30,7 @@
     [Parameter] public List<Food> Foods { get; set; } = [];
     [Parameter] public Meal Meal { get; set; } = new();
 
+    [Parameter] public EventCallback OnFoodsChanged { get; set; }
     [Parameter] public EventCallback OnMealSubmit { get; set; }
 
     private EditContext? _editContext;
@@ -47,12 +48,16 @@
     {
         Meal.Foods.Add(food);
 
+        OnFoodsChanged.InvokeAsync();
+
         _editContext?.NotifyFieldChanged(new FieldIdentifier(Meal, nameof(Meal.Foods)));
     }
 
     private void RemoveFoodFromMeal(Food food)
     {
         Meal.Foods.Remove(food);
+
+        OnFoodsChanged.InvokeAsync();
 
         _editContext?.NotifyFieldChanged(new FieldIdentifier(Meal, nameof(Meal.Foods)));
     }

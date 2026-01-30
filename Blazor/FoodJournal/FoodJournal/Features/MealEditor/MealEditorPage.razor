@@ -16,13 +16,17 @@
                     <h2 class="fw-bold" style="color: var(--primary-color);">Record a Meal</h2>
                     <p class="text-muted">Fill in the details and select your foods.</p>
                 </div>
-                <MealEditForm Foods="_foods" Meal="_meal" OnMealSubmit="HandleSubmit"/>
+                <MealEditForm Foods="_foods"
+                              Meal="_meal"
+                              OnMealSubmit="HandleSubmit"
+                              OnFoodsChanged="HandleFoodsChanged"/>
             </div>
         </div>
 
         <div class="col-lg-4">
             <QuickRecordMeal/>
             <MealNotes/>
+            <MealNutrients Foods="_meal.Foods"/>
         </div>
     </div>
 </div>
@@ -34,6 +38,11 @@
     protected override async Task OnInitializedAsync()
     {
         _foods = await Foodservice.GetAllFoodsAsync();
+    }
+
+    private async Task HandleFoodsChanged()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task HandleSubmit()

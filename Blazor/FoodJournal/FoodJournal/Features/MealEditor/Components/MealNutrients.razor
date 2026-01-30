@@ -1,0 +1,90 @@
+<div class="card shadow border-0 @(CalculateClass())" style="border-radius: 1rem;">
+    <div class="card-body p-4">
+        <span class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold m-0">Nutrients</h5>
+            <button class="btn" @onclick="@(() => _showSettings = !_showSettings)">
+                <i class="bi bi-gear"></i>
+            </button>
+        </span>
+        @if (_showSettings)
+        {
+            <div class="mb-3">
+                <label class="form-label">Warn at calories:</label>
+                <InputNumber class="form-control bg-warning opacity-50" @bind-Value="_caloriesWarning"/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Danger at calories:</label>
+                <InputNumber class="form-control bg-danger opacity-50" @bind-Value="_caloriesDanger"/>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive px-4">
+                <table class="table table-sm table-borderless m-0">
+                    <thead>
+                    <tr>
+                        <th>Nutrients</th>
+                        <th style="text-align: right">Value p. 100g</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Calories</td>
+                        <td>@Calories</td>
+                    </tr>
+                    <tr>
+                        <td>Carbohydrates</td>
+                        <td>@CarboHydrates</td>
+                    </tr>
+                    <tr>
+                        <td>Fats</td>
+                        <td>@Fats</td>
+                    </tr>
+                    <tr>
+                        <td>Proteins</td>
+                        <td>@Proteins</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    td:nth-child(2) {
+        text-align: right;
+    }
+</style>
+
+@code
+{
+    [Parameter] public List<Food> Foods { get; set; } = [];
+
+    private int _caloriesWarning = 800;
+    private int _caloriesDanger = 1100;
+    private bool _showSettings;
+
+    private decimal Calories => Foods.Sum(f => f.Calories);
+    private decimal CarboHydrates => Foods.Sum(f => f.Carbohydrates);
+    private decimal Fats => Foods.Sum(f => f.Fat);
+    private decimal Proteins => Foods.Sum(f => f.Protein);
+
+    private string CalculateClass()
+    {
+        if (_showSettings) return "alert-primary";
+
+        if (Calories >= _caloriesDanger)
+        {
+            return "alert-danger";
+        }
+
+        if (Calories >= _caloriesWarning)
+        {
+            return "alert-warning";
+        }
+
+        return "alert-success";
+    }
+
+}
