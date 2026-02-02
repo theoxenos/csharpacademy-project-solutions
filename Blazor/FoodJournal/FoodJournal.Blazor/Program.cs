@@ -1,5 +1,6 @@
 using MudBlazor.Services;
 using FoodJournal.Blazor.Features;
+using FoodJournal.Blazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,10 @@ builder.Services.AddMudServices();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<RecipeService>();
 
 var app = builder.Build();
 
