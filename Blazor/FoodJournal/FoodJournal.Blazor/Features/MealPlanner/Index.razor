@@ -1,6 +1,8 @@
 @page "/"
+@using FoodJournal.Blazor.Features.MealPlanner.Components
 @using FoodJournal.Blazor.Services
 
+@inject IDialogService DialogService
 @inject RecipeService RecipeService
 
 <MudGrid>
@@ -25,10 +27,10 @@
         <MudList T="Recipe" Style="max-height: 600px; overflow-y: auto;">
             @foreach (var recipe in _recipes)
             {
-                <MudListItem>
+                <MudListItem OnClick="@(() => RecipeSelected(recipe))">
                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
                         <MudAvatar Size="Size.Medium">
-                            <MudImage Src="@recipe.ThumbnailUrl" Alt="@recipe.Name" />
+                            <MudImage Src="@recipe.ThumbnailUrl" Alt="@recipe.Name"/>
                         </MudAvatar>
 
                         <MudStack Spacing="0">
@@ -66,13 +68,13 @@
         Recipes
     }
 
-    private List<Meal> _meals =
+    private readonly List<Meal> _meals =
     [
         new()
         {
             Date = DateTime.Now.AddDays(-5), Ingredients =
             [
-                new() { Name = "Ingredient 1" }
+                new Ingredient { Name = "Ingredient 1" }
             ],
             Name = "Meal 1", Type = MealType.Breakfast
         },
@@ -80,7 +82,7 @@
         {
             Date = DateTime.Now.AddDays(-3), Ingredients =
             [
-                new() { Name = "Ingredient 2" }
+                new Ingredient { Name = "Ingredient 2" }
             ],
             Name = "Meal 2", Type = MealType.Lunch
         },
@@ -88,7 +90,7 @@
         {
             Date = DateTime.Now.AddDays(-2), Ingredients =
             [
-                new() { Name = "Ingredient 3" }
+                new Ingredient { Name = "Ingredient 3" }
             ],
             Name = "Meal 3", Type = MealType.Dinner
         },
@@ -96,10 +98,10 @@
         {
             Date = DateTime.Now.AddDays(-1), Ingredients =
             [
-                new() { Name = "Ingredient 4" }
+                new Ingredient { Name = "Ingredient 4" }
             ],
             Name = "Meal 4", Type = MealType.Breakfast
-        },
+        }
     ];
 
     private List<Recipe> _recipes = [];
@@ -109,7 +111,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("Hello initialized");
         try
         {
             _recipes = await RecipeService.SearchRecipeByNameAsync(_searchTerm);
@@ -123,5 +124,22 @@
     private async Task HandleSearch()
     {
         _recipes = await RecipeService.SearchRecipeByNameAsync(_searchTerm);
+    }
+
+    private Task RecipeSelected(Recipe? obj)
+    {
+        var parameters = new DialogParameters<RecipeModal>
+        {
+            { x => x.Recipe, obj }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        return DialogService.ShowAsync<RecipeModal>(obj?.Name, parameters, options);
     }
 }

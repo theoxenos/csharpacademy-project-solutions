@@ -1,6 +1,7 @@
-using MudBlazor.Services;
 using FoodJournal.Blazor.Features;
+using FoodJournal.Blazor.Repositories;
 using FoodJournal.Blazor.Services;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,11 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient();
 
+builder.Services.AddScoped<DatabaseService>();
+
+builder.Services.AddScoped<IngredientsRepository>();
+
+builder.Services.AddScoped<IngredientService>();
 builder.Services.AddScoped<RecipeService>();
 
 var app = builder.Build();
@@ -20,7 +26,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseExceptionHandler("/Error", true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -33,5 +39,12 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+using (var resource = app.Services.CreateScope())
+{
+    var databaseService = resource.ServiceProvider.GetService<DatabaseService>();
+    if (databaseService == null) return;
+    await databaseService.CreateDatabase();
+}
 
 app.Run();

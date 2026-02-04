@@ -8,9 +8,14 @@ public class Meal
     public MealType Type { get; set; } = MealType.Breakfast;
     public DateTime Date { get; set; } = DateTime.Now;
     public List<Ingredient> Ingredients { get; set; } = [];
+
+    public float TotalCalories => Ingredients.Sum(i => i.Calories);
 }
 
 public enum MealType
 {
-    Breakfast, Lunch, Dinner, Snack
+    Breakfast,
+    Lunch,
+    Dinner,
+    Snack
 }

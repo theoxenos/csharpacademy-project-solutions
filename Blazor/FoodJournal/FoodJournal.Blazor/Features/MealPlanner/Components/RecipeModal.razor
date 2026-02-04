@@ -1,0 +1,82 @@
+@using static FoodJournal.Blazor.Utils.IngredientNameNormalizer;
+
+<MudDialog>
+    <DialogContent>
+        <div style="overflow: hidden;" class="mb-20">
+            <MudImage Src="@Recipe.ThumbnailUrl"
+                      Alt="@Recipe.Name"
+                      Style="width: 120px; height: auto; float: left; margin: 0 16px 8px 0; border-radius: 8px;"/>
+
+            <MudText Style="white-space: pre-line;">
+                @Recipe.Description
+            </MudText>
+        </div>
+
+        <MudGrid>
+            <MudItem md="6">
+                <MudText Typo="Typo.h5" Class="mb-4">Ingredients</MudText>
+                <MudTable Items="@Recipe.Ingredients" Class="mb-4" Dense="false">
+                    <HeaderContent>
+                        <MudTh>Ingredient</MudTh>
+                        <MudTh>Measurement</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@(NormaliseDisplay(@context.Ingredient.Name))</MudTd>
+                        <MudTd>@context.Measurement</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudItem>
+            <MudItem md="6">
+                <MudText Typo="Typo.h5" Class="mb-4">Nutrients</MudText>
+                <MudSimpleTable Dense="false">
+                    <thead>
+                    <tr>
+                        <th>Nutrient</th>
+                        <th>Amount per 100g</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Calories</td>
+                        <td>@Recipe.TotalCalories</td>
+                    </tr>
+                    <tr>
+                        <td>Carbohydrates</td>
+                        <td>@Recipe.TotalCarbs</td>
+                    </tr>
+                    <tr>
+                        <td>Fats</td>
+                        <td>@Recipe.TotalFat</td>
+                    </tr>
+                    <tr>
+                        <td>Proteins</td>
+                        <td>@Recipe.TotalProtein</td>
+                    </tr>
+                    </tbody>
+                </MudSimpleTable>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Secondary" OnClick="Close">Close</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Submit</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter] public required Recipe Recipe { get; set; }
+
+    private void Close()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}
