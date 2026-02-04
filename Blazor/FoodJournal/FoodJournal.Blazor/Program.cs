@@ -16,7 +16,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<DatabaseService>();
 
-builder.Services.AddScoped<IngredientsRepository>();
+builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
 
 builder.Services.AddScoped<IngredientService>();
 builder.Services.AddScoped<RecipeService>();
