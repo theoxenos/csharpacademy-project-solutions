@@ -5,10 +5,11 @@ using FoodJournal.Blazor.Repositories;
 
 namespace FoodJournal.Blazor.Services;
 
-public class RecipeService(HttpClient httpClient, IngredientsRepository ingredientsRepository)
+public class RecipeService(IHttpClientFactory httpClientFactory, IIngredientsRepository ingredientsRepository)
 {
     public async Task<List<Recipe>> SearchRecipeByNameAsync(string name)
     {
+        using var httpClient = httpClientFactory.CreateClient();
         var recipesResponse =
             await httpClient.GetFromJsonAsync<RecipeResponse>(
                 $"https://www.themealdb.com/api/json/v1/1/search.php?s={name}");

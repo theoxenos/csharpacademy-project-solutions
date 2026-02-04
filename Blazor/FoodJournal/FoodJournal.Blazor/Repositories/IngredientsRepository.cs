@@ -4,8 +4,19 @@ using FoodJournal.Blazor.Services;
 using static FoodJournal.Blazor.Utils.IngredientNameNormalizer;
 
 namespace FoodJournal.Blazor.Repositories;
+    
+public interface IIngredientsRepository
+{
+    Task<Ingredient> AddAsync(Ingredient entity);
+    Task<IEnumerable<Ingredient>> AddManyAsync(IEnumerable<Ingredient> entities);
+    Task<Ingredient> GetByIdAsync(int id);
+    Task<Ingredient> GetByNameAsync(string name);
+    Task<List<Ingredient>> GetAllAsync();
+    Task<Ingredient> UpdateAsync(Ingredient entity);
+    Task<bool> DeleteAsync(int id);
+}
 
-public class IngredientsRepository(DatabaseService databaseService)
+public class IngredientsRepository(DatabaseService databaseService) : IIngredientsRepository
 {
     public async Task<Ingredient> AddAsync(Ingredient entity)
     {
