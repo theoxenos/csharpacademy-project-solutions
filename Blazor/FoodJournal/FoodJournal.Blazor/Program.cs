@@ -1,5 +1,4 @@
 using FoodJournal.Blazor.Features;
-using FoodJournal.Blazor.Repositories;
 using FoodJournal.Blazor.Services;
 using MudBlazor.Services;
 
@@ -13,13 +12,14 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 
-builder.Services.AddScoped<DatabaseService>();
+// builder.Services.AddScoped<DatabaseService>();
 
-builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
+// builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
 
-builder.Services.AddScoped<IngredientService>();
-builder.Services.AddScoped<RecipeService>();
+builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 var app = builder.Build();
 
@@ -40,11 +40,11 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-using (var resource = app.Services.CreateScope())
-{
-    var databaseService = resource.ServiceProvider.GetService<DatabaseService>();
-    if (databaseService == null) return;
-    await databaseService.CreateDatabase();
-}
+// using (var resource = app.Services.CreateScope())
+// {
+//     var databaseService = resource.ServiceProvider.GetService<DatabaseService>();
+//     if (databaseService == null) return;
+//     await databaseService.CreateDatabase();
+// }
 
 app.Run();
