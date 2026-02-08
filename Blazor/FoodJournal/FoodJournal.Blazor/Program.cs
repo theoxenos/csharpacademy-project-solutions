@@ -1,4 +1,5 @@
 using FoodJournal.Blazor.Features;
+using FoodJournal.Blazor.Repositories;
 using FoodJournal.Blazor.Services;
 using MudBlazor.Services;
 
@@ -14,11 +15,13 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 
-// builder.Services.AddScoped<DatabaseService>();
+builder.Services.AddScoped<IDatabaseService, DatabaseService>();
 
-// builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
+builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
+builder.Services.AddScoped<IMealRepository, MealRepository>();
 
 builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<IIngredientReportsService, IngredientsReportsService>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 var app = builder.Build();
@@ -40,11 +43,11 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// using (var resource = app.Services.CreateScope())
-// {
-//     var databaseService = resource.ServiceProvider.GetService<DatabaseService>();
-//     if (databaseService == null) return;
-//     await databaseService.CreateDatabase();
-// }
+using (var resource = app.Services.CreateScope())
+{
+    var databaseService = resource.ServiceProvider.GetService<IDatabaseService>();
+    if (databaseService == null) throw new InvalidOperationException("Database service not found");
+    await databaseService.CreateDatabase();
+}
 
 app.Run();

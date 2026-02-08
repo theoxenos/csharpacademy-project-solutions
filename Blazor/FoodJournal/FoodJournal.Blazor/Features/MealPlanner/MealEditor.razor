@@ -1,0 +1,196 @@
+@page "/meals/create/{RecipeId:int}"
+@page "/meals/edit/{MealId:int}"
+
+@inject IIngredientService IngredientService
+@inject IIngredientReportsService IngredientsReportsService
+@inject IRecipeService RecipeService
+
+@inject IMealRepository MealRepository
+
+<MudText Typo="Typo.h2">Register your meal</MudText>
+<MudGrid>
+    <MudItem md="12">
+        <MudTextField @bind-Value="_meal.Name" Label="Meal name"/>
+    </MudItem>
+    <MudItem md="12">
+        <MudTextField @bind-Value="_meal.Description" Label="Meal description" Lines="20"/>
+    </MudItem>
+    <MudItem md="12">
+        <MudRadioGroup Row="true" @bind-Value="_meal.Type">
+            @foreach (MealType mealType in Enum.GetValues(typeof(MealType)))
+            {
+                <MudRadio Value="@mealType">
+                    <div class="d-flex align-center">
+                        <MudImage Alt="@mealType.ToString()" Src="@mealType.MealTypeToIconUrl()"/>
+                        <MudText Typo="Typo.caption">@mealType.ToString()</MudText>
+                    </div>
+                </MudRadio>
+            }
+        </MudRadioGroup>
+    </MudItem>
+    <MudItem md="12">
+        <MudDatePicker Label="Date" @bind-Value="_meal.Date"/>
+    </MudItem>
+
+    @* Ingredient picker (icon-first) *@
+    <MudItem md="5">
+        <MudPaper Class="pa-4" Elevation="1" Outlined="true">
+            <MudText Typo="Typo.h6" Class="mb-2">Ingredients</MudText>
+
+            <MudTextField T="string"
+                          Value="_ingredientFilter"
+                          ValueChanged="OnIngredientFilterChanged"
+                          Label="Search ingredients"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Clearable="true"
+                          Immediate="true"/>
+
+            <MudDivider Class="my-3"/>
+
+            <MudGrid Spacing="1">
+                @foreach (var ingredient in _filteredIngredients)
+                {
+                    <MudItem xs="4" sm="3" md="3">
+                        <MudPaper Outlined="true" Class="pa-2 d-flex flex-column align-center" Style="cursor:pointer;"
+                                  @onclick="@(() => AddIngredient(ingredient))">
+                            <MudAvatar Size="Size.Large"
+                                       Square="true"
+                                       Class="mb-1"
+                                       Style="width:72px;height:72px;">
+                                <MudImage Src="@ingredient.ThumbnailUrl" Alt="@ingredient.Name"/>
+                            </MudAvatar>
+                            <MudText Typo="Typo.caption" Align="Align.Center" Style="line-height:1.1;">
+                                @ingredient.Name
+                            </MudText>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudPaper>
+    </MudItem>
+
+    @* Editable overview *@
+    <MudItem md="7">
+        <MudPaper Class="pa-4" Elevation="1" Outlined="true">
+            <div class="d-flex align-center justify-space-between mb-2">
+                <MudText Typo="Typo.h6">Your meal ingredients</MudText>
+                <MudText Typo="Typo.caption">Total calories: @_meal.TotalCalories</MudText>
+            </div>
+
+            <MudTable Items="@_meal.Ingredients" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh Style="width: 88px;">Icon</MudTh>
+                    <MudTh>Ingredient</MudTh>
+                    <MudTh>Amount</MudTh>
+                    <MudTh Style="width: 56px;"></MudTh>
+                </HeaderContent>
+
+                <RowTemplate>
+                    <MudTd DataLabel="Icon">
+                        <MudAvatar Size="Size.Large"
+                                   Square="true"
+                                   Style="width:64px;height:64px;">
+                            <MudImage Src="@context.Ingredient.ThumbnailUrl" Alt="@context.Ingredient.Name"/>
+                        </MudAvatar>
+                    </MudTd>
+
+                    <MudTd DataLabel="Ingredient">
+                        <MudText Typo="Typo.subtitle2">@context.Ingredient.Name</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                            @context.Ingredient.Type
+                        </MudText>
+                    </MudTd>
+
+                    <MudTd DataLabel="Amount">
+                        <MudTextField @bind-Value="context.Measurement"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
+                                      Placeholder="e.g. 200 g / 1 cup / 2 tbsp"
+                                      Immediate="true"/>
+                    </MudTd>
+
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Color="Color.Error"
+                                       Size="Size.Small"
+                                       OnClick="@(() => RemoveIngredient(context))"/>
+                    </MudTd>
+                </RowTemplate>
+
+                <NoRecordsContent>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">
+                        Pick ingredients on the left (click the icon) to add them here.
+                    </MudText>
+                </NoRecordsContent>
+            </MudTable>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter] public int? RecipeId { get; set; }
+    [Parameter] public int? MealId { get; set; }
+
+    private IReadOnlyList<Ingredient> _filteredIngredients = [];
+    private Meal _meal = new();
+
+    private string _ingredientFilter = string.Empty;
+
+    private async Task OnIngredientFilterChanged(string value)
+    {
+        _ingredientFilter = value;
+
+        if (string.IsNullOrWhiteSpace(_ingredientFilter))
+        {
+            const int limitIngredients = 20;
+            _filteredIngredients = await IngredientsReportsService.GetMostUsedIngredientsAsync(limitIngredients);
+        }
+        else
+        {
+            _filteredIngredients = await IngredientService.FilterIngredientsByNameAsync(_ingredientFilter);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _filteredIngredients = (await IngredientsReportsService.GetMostUsedIngredientsAsync(20)).ToList();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (RecipeId.HasValue)
+        {
+            _meal = Meal.FromRecipe(await RecipeService.GetRecipeByIdAsync(RecipeId.Value));
+        }
+        else if (MealId.HasValue)
+        {
+            _meal = await MealRepository.GetMealByIdAsync(MealId.Value)
+                    ?? throw new InvalidOperationException("Meal not found");
+        }
+        else
+        {
+            throw new InvalidOperationException("No recipe or meal ID provided");
+        }
+    }
+
+    private void AddIngredient(Ingredient ingredient)
+    {
+        // If it's already in the meal, don't duplicate it—just focus on editing the amount.
+        var existing = _meal.Ingredients.FirstOrDefault(x => x.Ingredient.Id == ingredient.Id);
+        if (existing is not null)
+            return;
+
+        _meal.Ingredients.Add(new RecipeIngredient
+        {
+            Ingredient = ingredient,
+            Measurement = string.Empty
+        });
+    }
+
+    private void RemoveIngredient(RecipeIngredient recipeIngredient)
+    {
+        _meal.Ingredients.Remove(recipeIngredient);
+    }
+
+}

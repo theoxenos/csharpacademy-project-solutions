@@ -9,6 +9,7 @@ public interface IIngredientService
 {
     Task<List<Ingredient>> GetAllIngredientsAsync();
     Task<Ingredient> GetByNameAsync(string name);
+    Task<List<Ingredient>> FilterIngredientsByNameAsync(string name);
 }
 
 public class IngredientService(IHttpClientFactory httpClientFactory, IMemoryCache memoryCache) : IIngredientService
@@ -55,16 +56,21 @@ public class IngredientService(IHttpClientFactory httpClientFactory, IMemoryCach
 
     public async Task<Ingredient> GetByNameAsync(string name)
     {
-        var normalisedName = NormaliseKey(name);
-        return (await memoryCache.GetOrCreateAsync
-        (
-            $"{GetType().Name}.IngredientByName.{normalisedName}", _ => GetByName(normalisedName)
-        ))!;
+        var cacheKey = $"{GetType().Name}.IngredientsByNameMap";
 
-        async Task<Ingredient> GetByName(string name)
+        var ingredientsMap = (await memoryCache.GetOrCreateAsync(cacheKey, _ => GetData()))!;
+        return ingredientsMap[NormaliseKey(name)];
+
+        async Task<Dictionary<string, Ingredient>> GetData()
         {
-            var ingredients = await GetAllIngredientsAsync();
-            return ingredients.Single(i => i.Name == name);
+            var allIngredients = await GetAllIngredientsAsync();
+            return allIngredients.ToDictionary(i => NormaliseKey(i.Name));
         }
+    }
+
+    public async Task<List<Ingredient>> FilterIngredientsByNameAsync(string name)
+    {
+        var ingredients = await GetAllIngredientsAsync();
+        return ingredients.Where(i => i.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 }

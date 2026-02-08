@@ -1,8 +1,10 @@
 @page "/"
 @using FoodJournal.Blazor.Features.MealPlanner.Components
-@using FoodJournal.Blazor.Services
+
+@inject NavigationManager NavigationManager
 
 @inject IDialogService DialogService
+@inject IMealRepository MealRepository
 @inject IRecipeService RecipeService
 
 <MudGrid>
@@ -68,41 +70,7 @@
         Recipes
     }
 
-    private readonly List<Meal> _meals =
-    [
-        new()
-        {
-            Date = DateTime.Now.AddDays(-5), Ingredients =
-            [
-                new Ingredient { Name = "Ingredient 1" }
-            ],
-            Name = "Meal 1", Type = MealType.Breakfast
-        },
-        new()
-        {
-            Date = DateTime.Now.AddDays(-3), Ingredients =
-            [
-                new Ingredient { Name = "Ingredient 2" }
-            ],
-            Name = "Meal 2", Type = MealType.Lunch
-        },
-        new()
-        {
-            Date = DateTime.Now.AddDays(-2), Ingredients =
-            [
-                new Ingredient { Name = "Ingredient 3" }
-            ],
-            Name = "Meal 3", Type = MealType.Dinner
-        },
-        new()
-        {
-            Date = DateTime.Now.AddDays(-1), Ingredients =
-            [
-                new Ingredient { Name = "Ingredient 4" }
-            ],
-            Name = "Meal 4", Type = MealType.Breakfast
-        }
-    ];
+    private List<Meal> _meals = [];
 
     private List<Recipe> _recipes = [];
 
@@ -113,6 +81,7 @@
     {
         try
         {
+            _meals = await MealRepository.GetAllMealsAsync();
             _recipes = await RecipeService.SearchRecipeByNameAsync(_searchTerm);
         }
         catch (Exception e)
@@ -126,11 +95,11 @@
         _recipes = await RecipeService.SearchRecipeByNameAsync(_searchTerm);
     }
 
-    private Task RecipeSelected(Recipe? obj)
+    private async Task RecipeSelected(Recipe selectedRecipe)
     {
         var parameters = new DialogParameters<RecipeModal>
         {
-            { x => x.Recipe, obj }
+            { x => x.Recipe, selectedRecipe }
         };
 
         var options = new DialogOptions
@@ -140,6 +109,11 @@
             FullWidth = true
         };
 
-        return DialogService.ShowAsync<RecipeModal>(obj?.Name, parameters, options);
+        var dialogReference = await DialogService.ShowAsync<RecipeModal>(selectedRecipe.Name, parameters, options);
+        var dialogResult = await dialogReference.Result;
+        if (dialogResult?.Canceled is false)
+        {
+            NavigationManager.NavigateTo($"/meals/create/{selectedRecipe.Id}");
+        }
     }
 }
