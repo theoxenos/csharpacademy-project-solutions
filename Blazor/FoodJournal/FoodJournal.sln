@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodJournal.Blazor", "FoodJ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodJournal.Tests", "FoodJournal.Tests\FoodJournal.Tests.csproj", "{7E5098F2-192C-4192-B850-918D71EBBEA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodJournal.WebApi", "FoodJournal.WebApi\FoodJournal.WebApi.csproj", "{1AC91D45-EB80-4192-B48C-8EBA342B5541}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,5 @@ Global
 		{7E5098F2-192C-4192-B850-918D71EBBEA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E5098F2-192C-4192-B850-918D71EBBEA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E5098F2-192C-4192-B850-918D71EBBEA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1AC91D45-EB80-4192-B48C-8EBA342B5541}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AC91D45-EB80-4192-B48C-8EBA342B5541}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1AC91D45-EB80-4192-B48C-8EBA342B5541}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1AC91D45-EB80-4192-B48C-8EBA342B5541}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
