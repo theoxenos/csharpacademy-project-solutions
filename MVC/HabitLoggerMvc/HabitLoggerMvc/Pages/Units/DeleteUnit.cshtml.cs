@@ -1,7 +1,9 @@
+using HabitLoggerMvc.Helpers;
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.Sqlite;
 
 namespace HabitLoggerMvc.Pages.Units;
 
@@ -24,13 +26,15 @@ public class DeleteUnit(IHabitUnitRepository repository) : PageModel
             HabitUnit = await repository.GetByIdAsync(id.Value);
             return Page();
         }
-        catch (KeyNotFoundException)
+        catch (KeyNotFoundException exception)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = exception.Message;
+            return Page();
         }
-        catch (Exception ex)
+        catch (SqliteException exception)
         {
-            return RedirectToPage("/Error", new { message = ex.Message });
+            TempData["ErrorMessage"] = exception.BuildUserErrorMessage();
+            return Page();
         }
     }
 
@@ -46,9 +50,10 @@ public class DeleteUnit(IHabitUnitRepository repository) : PageModel
             await repository.DeleteAsync(HabitUnit.Id);
             return RedirectToPage("./Units");
         }
-        catch (Exception ex)
+        catch (SqliteException exception)
         {
-            return RedirectToPage("/Error", new { message = ex.Message });
+            TempData["ErrorMessage"] = exception.BuildUserErrorMessage();
+            return Page();
         }
     }
 }

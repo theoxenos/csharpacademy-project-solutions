@@ -1,28 +1,25 @@
+using HabitLoggerMvc.Helpers;
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.Sqlite;
 
 namespace HabitLoggerMvc.Pages.Units;
 
 public class Units(IHabitUnitRepository repository) : PageModel
 {
-    public List<HabitUnit> HabitUnits { get; set; } = default!;
+    public List<HabitUnit> HabitUnits { get; set; } = [];
 
-    public async Task<IActionResult> OnGetAsync()
+    public async Task OnGetAsync()
     {
         try
         {
-            if (HabitUnits == null)
-            {
-                HabitUnits = (await repository.GetAll()).ToList();
-            }
-
-            return Page();
+            HabitUnits = (await repository.GetAll()).ToList();
         }
-        catch (Exception ex)
+        catch (SqliteException exception)
         {
-            return RedirectToPage("/Error", new { message = ex.Message });
+            TempData["ErrorMessage"] = exception.BuildUserErrorMessage();
         }
     }
 }

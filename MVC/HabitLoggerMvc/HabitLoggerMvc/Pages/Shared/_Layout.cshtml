@@ -34,6 +34,10 @@
     </nav>
 </header>
 <div class="container">
+    @if (!string.IsNullOrEmpty(TempData["ErrorMessage"]?.ToString()))
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
     <main role="main" class="pb-3">
         @RenderBody()
     </main>

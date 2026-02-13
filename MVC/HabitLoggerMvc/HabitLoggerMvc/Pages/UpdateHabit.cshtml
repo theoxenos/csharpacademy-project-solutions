@@ -17,7 +17,7 @@
                 <label asp-for="HabitModel.HabitUnitId" class="form-label">Unit</label>
                 <select asp-for="HabitModel.HabitUnitId" asp-items="@(new SelectList(Model.HabitUnits, "Id", "Name"))"
                         class="form-control">
-                    <option disabled>Please select an unit</option>
+                    <option disabled selected="selected">Please select a unit</option>
                 </select>
                 <span asp-validation-for="HabitModel.HabitUnitId" class="invalid-feedback d-block"></span>
             </div>

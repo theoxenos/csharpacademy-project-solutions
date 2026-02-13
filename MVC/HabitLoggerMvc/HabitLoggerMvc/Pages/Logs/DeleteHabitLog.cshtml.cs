@@ -1,7 +1,9 @@
+using HabitLoggerMvc.Helpers;
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.Sqlite;
 
 namespace HabitLoggerMvc.Pages.Logs;
 
@@ -24,11 +26,12 @@ public class DeleteHabitLog(IHabitLogRepository repository) : PageModel
         }
         catch (KeyNotFoundException)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = $"Logs for habit with Id {id} not found";
+            return Page();
         }
-        catch (Exception ex)
+        catch (SqliteException ex)
         {
-            ViewData["ErrorMessage"] = ex.Message;
+            TempData["ErrorMessage"] = ex.BuildUserErrorMessage();
             return Page();
         }
     }
@@ -41,9 +44,9 @@ public class DeleteHabitLog(IHabitLogRepository repository) : PageModel
             await repository.DeleteAsync(HabitLog.Id);
             return RedirectToPage("../DetailHabit", new { id = habitId });
         }
-        catch (Exception ex)
+        catch (SqliteException ex)
         {
-            ViewData["ErrorMessage"] = ex.Message;
+            TempData["ErrorMessage"] = ex.BuildUserErrorMessage();
             return Page();
         }
     }

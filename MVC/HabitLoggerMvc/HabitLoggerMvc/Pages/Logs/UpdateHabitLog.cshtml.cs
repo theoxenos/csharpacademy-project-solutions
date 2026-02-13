@@ -1,7 +1,9 @@
+using HabitLoggerMvc.Helpers;
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages.Logs;
@@ -25,11 +27,13 @@ public class UpdateHabitLog(IHabitLogRepository habitLogRepository) : PageModel
         }
         catch (KeyNotFoundException)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = $"Logs for habit with Id {id} not found";
+            return Page();
         }
-        catch (Exception ex)
+        catch (SqliteException ex)
         {
-            return RedirectToPage("/Error", new { message = ex.Message });
+            TempData["ErrorMessage"] = ex.BuildUserErrorMessage();
+            return Page();
         }
     }
 
@@ -44,10 +48,14 @@ public class UpdateHabitLog(IHabitLogRepository habitLogRepository) : PageModel
         {
             await habitLogRepository.UpdateAsync(HabitLog);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException exception) when (exception.InnerException is SqliteException
+                                                  {
+                                                      SqliteExtendedErrorCode: SqliteExceptionHelper
+                                                          .SQLITE_CONSTRAINT_UNIQUE
+                                                  } sqliteException)
         {
             ModelState.AddModelError($"{nameof(HabitLog)}.{nameof(HabitLog.Date)}",
-                "An error occurred while saving. Ensure the date is unique if required.");
+                sqliteException.BuildUserErrorMessage());
             return Page();
         }
 

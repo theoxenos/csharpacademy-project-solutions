@@ -1,7 +1,9 @@
+using HabitLoggerMvc.Helpers;
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages.Units;
@@ -24,11 +26,13 @@ public class UpdateUnit(IHabitUnitRepository repository) : PageModel
         }
         catch (KeyNotFoundException)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = $"Habit unit with Id {id} not found";
+            return Page();
         }
-        catch (Exception ex)
+        catch (SqliteException ex)
         {
-            return RedirectToPage("/Error", new { message = ex.Message });
+            TempData["ErrorMessage"] = ex.BuildUserErrorMessage();
+            return Page();
         }
     }
 
@@ -43,10 +47,19 @@ public class UpdateUnit(IHabitUnitRepository repository) : PageModel
         {
             await repository.UpdateAsync(HabitUnit);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException exception) when (exception.InnerException is SqliteException
+                                                  {
+                                                      SqliteExtendedErrorCode: SqliteExceptionHelper
+                                                          .SQLITE_CONSTRAINT_UNIQUE
+                                                  } sqliteException)
         {
-            ModelState.AddModelError("HabitUnit.Name",
-                "An error occurred while saving. Ensure the name is unique if required.");
+            ModelState.AddModelError("HabitUnit.Name", sqliteException.BuildUserErrorMessage());
+
+            return Page();
+        }
+        catch (SqliteException exception)
+        {
+            TempData["ErrorMessage"] = exception.BuildUserErrorMessage();
 
             return Page();
         }

@@ -1,9 +1,9 @@
+using HabitLoggerMvc.Helpers;
 using HabitLoggerMvc.Models;
 using HabitLoggerMvc.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 
 namespace HabitLoggerMvc.Pages;
 
@@ -18,36 +18,36 @@ public class NewHabit(IHabitUnitRepository habitUnitRepository, IRepository<Habi
         {
             HabitUnits = (await habitUnitRepository.GetAll()).ToList();
         }
-        catch (Exception ex)
+        catch (SqliteException ex)
         {
-            ViewData["ErrorMessage"] = $"Something went wrong: {ex.Message}";
+            TempData["ErrorMessage"] = ex.BuildUserErrorMessage();
         }
     }
 
     public async Task<IActionResult> OnPost()
     {
-        if (!ModelState.IsValid)
+        try
         {
+            if (!ModelState.IsValid)
+            {
+                HabitUnits = (await habitUnitRepository.GetAll()).ToList();
+
+                return Page();
+            }
+
+            await habitRepository.AddAsync(HabitModel);
+        }
+        catch (SqliteException exception) when (exception.SqliteExtendedErrorCode ==
+                                                SqliteExceptionHelper.SQLITE_CONSTRAINT_UNIQUE)
+        {
+            ModelState.AddModelError("HabitModel.Name", exception.BuildUserErrorMessage());
             HabitUnits = (await habitUnitRepository.GetAll()).ToList();
 
             return Page();
         }
-
-        try
+        catch (SqliteException exception)
         {
-            await habitRepository.AddAsync(HabitModel);
-        }
-        catch (DbUpdateException exception)
-        {
-            if (exception.InnerException is not SqliteException { SqliteErrorCode: 19 })
-            {
-                ViewData["ErrorMessage"] = exception.Message;
-                return Page();
-            }
-
-            ModelState.AddModelError("HabitModel.Name", $"{HabitModel.Name} already exists.");
-            HabitUnits = (await habitUnitRepository.GetAll()).ToList();
-
+            TempData["ErrorMessage"] = exception.BuildUserErrorMessage();
             return Page();
         }
 
