@@ -12,10 +12,7 @@ public class AddHabitLog(IHabitLogRepository repository) : PageModel
 {
     [BindProperty] public HabitLog HabitLog { get; set; } = new();
 
-    public void OnGet(int id)
-    {
-        HabitLog.HabitId = id;
-    }
+    public void OnGet(int id) => HabitLog.HabitId = id;
 
     public async Task<IActionResult> OnPostAsync()
     {

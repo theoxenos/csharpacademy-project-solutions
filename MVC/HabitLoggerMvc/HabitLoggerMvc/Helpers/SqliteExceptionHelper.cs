@@ -1,11 +1,11 @@
 using Microsoft.Data.Sqlite;
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable InconsistentNaming
 
 namespace HabitLoggerMvc.Helpers;
 
 public static class SqliteExceptionHelper
 {
+    #region Normal Codes
+
     public const int SQLITE_ERROR = 1;
     public const int SQLITE_BUSY = 5;
     public const int SQLITE_LOCKED = 6;
@@ -19,16 +19,18 @@ public static class SqliteExceptionHelper
     public const int SQLITE_NOTADB = 26;
     public const int SQLITE_CONSTRAINT = 19;
 
-    // SQLite extended result codes (common constraint types)
-    public const int SQLITE_CONSTRAINT_UNIQUE = 2067; // 19 | (8<<8)
-    public const int SQLITE_CONSTRAINT_PRIMARYKEY = 1555; // 19 | (6<<8)
-    public const int SQLITE_CONSTRAINT_FOREIGNKEY = 787; // 19 | (3<<8)
-    public const int SQLITE_CONSTRAINT_NOTNULL = 1299; // 19 | (5<<8)
+    #endregion
+    #region Extended Codes
+    public const int SQLITE_CONSTRAINT_UNIQUE = 2067;
+    public const int SQLITE_CONSTRAINT_PRIMARYKEY = 1555;
+    public const int SQLITE_CONSTRAINT_FOREIGNKEY = 787;
+    public const int SQLITE_CONSTRAINT_NOTNULL = 1299;
+    #endregion
 
     public static string BuildUserErrorMessage(this SqliteException exception)
     {
-        var code = exception.SqliteErrorCode; // int
-        var extended = exception.SqliteExtendedErrorCode; // int
+        int code = exception.SqliteErrorCode;
+        int extended = exception.SqliteExtendedErrorCode;
 
         return code switch
         {

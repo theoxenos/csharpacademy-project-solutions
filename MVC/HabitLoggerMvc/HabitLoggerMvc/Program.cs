@@ -9,7 +9,6 @@ builder.Configuration.AddUserSecrets<Program>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-// builder.Services.AddExceptionHandler<ExceptionHandler>();
 
 string sqliteConnectionString =
     builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=habitlogger.db";
@@ -38,8 +37,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
-// app.UseAuthorization();
 
 app.MapRazorPages();
 
