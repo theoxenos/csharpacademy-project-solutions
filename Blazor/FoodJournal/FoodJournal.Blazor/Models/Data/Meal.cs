@@ -23,7 +23,11 @@ public class Meal
         {
             Name = recipe.Name,
             Description = recipe.Description,
-            Ingredients = recipe.Ingredients
+            Ingredients = recipe.Ingredients.Select(i => new RecipeIngredient
+            {
+                Ingredient = i.Ingredient,
+                Measurement = i.Measurement
+            }).ToList()
         };
     }
 }

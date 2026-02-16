@@ -1,35 +1,43 @@
-@page "/meals/create/{RecipeId:int}"
-@page "/meals/edit/{MealId:int}"
+@page "/meals/create/{RecipeId:int?}"
+@page "/meals/edit/{MealId:int?}"
 
 @inject IIngredientService IngredientService
 @inject IIngredientReportsService IngredientsReportsService
+@inject IMealService MealService
 @inject IRecipeService RecipeService
 
 @inject IMealRepository MealRepository
 
-<MudText Typo="Typo.h2">Register your meal</MudText>
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h2" Class="mb-3">Register your meal</MudText>
 <MudGrid>
-    <MudItem md="12">
+    <MudItem md="6">
         <MudTextField @bind-Value="_meal.Name" Label="Meal name"/>
+    </MudItem>
+    <MudItem md="6">
+        <MudDatePicker Label="Date" @bind-Value="_meal.Date"/>
     </MudItem>
     <MudItem md="12">
         <MudTextField @bind-Value="_meal.Description" Label="Meal description" Lines="20"/>
     </MudItem>
     <MudItem md="12">
-        <MudRadioGroup Row="true" @bind-Value="_meal.Type">
+        <MudText Typo="Typo.h6" Class="mb-2">Meal type</MudText>
+        <MudButtonGroup OverrideStyles="false">
             @foreach (MealType mealType in Enum.GetValues(typeof(MealType)))
             {
-                <MudRadio Value="@mealType">
+                <MudButton Variant="@(_meal.Type == mealType ? Variant.Filled : Variant.Outlined)"
+                           Color="@(_meal.Type == mealType ? Color.Primary : Color.Default)"
+                           OnClick="@(() => _meal.Type = mealType)">
                     <div class="d-flex align-center">
                         <MudImage Alt="@mealType.ToString()" Src="@mealType.MealTypeToIconUrl()"/>
                         <MudText Typo="Typo.caption">@mealType.ToString()</MudText>
                     </div>
-                </MudRadio>
+                </MudButton>
             }
-        </MudRadioGroup>
-    </MudItem>
-    <MudItem md="12">
-        <MudDatePicker Label="Date" @bind-Value="_meal.Date"/>
+        </MudButtonGroup>
     </MudItem>
 
     @* Ingredient picker (icon-first) *@
@@ -48,7 +56,7 @@
 
             <MudDivider Class="my-3"/>
 
-            <MudGrid Spacing="1">
+            <MudGrid Spacing="1" Style="max-height: 600px; overflow-y: auto;">
                 @foreach (var ingredient in _filteredIngredients)
                 {
                     <MudItem xs="4" sm="3" md="3">
@@ -126,6 +134,12 @@
             </MudTable>
         </MudPaper>
     </MudItem>
+    <MudItem md="12" Class="mb-6 d-flex justify-end">
+        <MudButton Color="Color.Success" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Save"
+                   OnClick="@SaveMeal">
+            Save meal
+        </MudButton>
+    </MudItem>
 </MudGrid>
 
 @code {
@@ -165,22 +179,25 @@
         }
         else if (MealId.HasValue)
         {
-            _meal = await MealRepository.GetMealByIdAsync(MealId.Value)
-                    ?? throw new InvalidOperationException("Meal not found");
+            var mealFromDatabase = await MealRepository.GetMealByIdAsync(MealId.Value);
+
+            if (mealFromDatabase is null)
+            {
+                await ResetState();
+                Snackbar.Add($"Meal with Id {MealId.Value} not found");
+                return;
+            }
+
+            _meal = mealFromDatabase;
         }
         else
         {
-            throw new InvalidOperationException("No recipe or meal ID provided");
+            await ResetState();
         }
     }
 
     private void AddIngredient(Ingredient ingredient)
     {
-        // If it's already in the meal, don't duplicate it—just focus on editing the amount.
-        var existing = _meal.Ingredients.FirstOrDefault(x => x.Ingredient.Id == ingredient.Id);
-        if (existing is not null)
-            return;
-
         _meal.Ingredients.Add(new RecipeIngredient
         {
             Ingredient = ingredient,
@@ -191,6 +208,29 @@
     private void RemoveIngredient(RecipeIngredient recipeIngredient)
     {
         _meal.Ingredients.Remove(recipeIngredient);
+    }
+
+    private async Task ResetState()
+    {
+        _meal = new Meal();
+        _ingredientFilter = string.Empty;
+        _filteredIngredients = await IngredientsReportsService.GetMostUsedIngredientsAsync(20);
+    }
+
+    private async Task SaveMeal()
+    {
+        await MealService.AddMealAsync(_meal);
+        Snackbar.Add("Meal saved successfully", Severity.Success);
+
+        if (RecipeId.HasValue || MealId.HasValue)
+        {
+            NavigationManager.NavigateTo("/meals/create");
+        }
+        else
+        {
+            await ResetState();
+            await JsRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+        }
     }
 
 }

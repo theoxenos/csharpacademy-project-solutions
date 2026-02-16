@@ -22,6 +22,7 @@ builder.Services.AddScoped<IMealRepository, MealRepository>();
 
 builder.Services.AddScoped<IIngredientService, IngredientService>();
 builder.Services.AddScoped<IIngredientReportsService, IngredientsReportsService>();
+builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 var app = builder.Build();
