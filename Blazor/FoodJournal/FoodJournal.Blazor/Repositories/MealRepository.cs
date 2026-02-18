@@ -9,6 +9,7 @@ public interface IMealRepository
     Task<List<Meal>> GetAllMealsAsync();
     Task<Meal?> GetMealByIdAsync(int mealId);
     Task<int> AddMealAsync(Meal meal);
+    Task UpdateMealAsync(Meal meal);
 }
 
 public class MealRepository(IDatabaseService databaseService) : IMealRepository
@@ -51,5 +52,30 @@ public class MealRepository(IDatabaseService databaseService) : IMealRepository
         }));
 
         return mealId;
+    }
+
+    public async Task UpdateMealAsync(Meal meal)
+    {
+        using var connection = databaseService.GetConnection();
+        const string sql = """
+                           UPDATE Meals SET Name = @Name, Description = @Description, ThumbnailUrl = @ThumbnailUrl, Type = @Type, Date = @Date WHERE Id = @Id;
+                           """;
+
+        await connection.ExecuteAsync(sql, meal);
+
+        const string deleteIngredientsSql = "DELETE FROM MealIngredients WHERE MealId = @MealId";
+        await connection.ExecuteAsync(deleteIngredientsSql, new { MealId = meal.Id });
+
+        const string insertIngredientsSql = """
+                                            INSERT INTO MealIngredients (MealId, IngredientName, Measurement)
+                                            VALUES (@MealId, @IngredientName, @Measurement);
+                                            """;
+
+        await connection.ExecuteAsync(insertIngredientsSql, meal.Ingredients.Select(i => new
+        {
+            MealId = meal.Id,
+            IngredientName = i.Ingredient.Name,
+            i.Measurement
+        }));
     }
 }

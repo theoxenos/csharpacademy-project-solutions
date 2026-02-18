@@ -1,10 +1,10 @@
 @page "/"
 @using FoodJournal.Blazor.Features.MealPlanner.Components
 
+@inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 
-@inject IDialogService DialogService
-@inject IMealRepository MealRepository
+@inject IMealService MealService
 @inject IRecipeService RecipeService
 
 <MudGrid>
@@ -17,7 +17,7 @@
     @*     </MudSelect> *@
     @* </MudItem> *@
     <MudItem md="10">
-        <MudTextField @bind-Value="_searchTerm" Placeholder="Search Term"/>
+        <MudTextField @bind-Value="_searchTerm" Placeholder="Search Term" Clearable="true"/>
     </MudItem>
     <MudItem md="2">
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="HandleSearch">Search</MudButton>
@@ -49,12 +49,20 @@
     </MudItem>
     <MudItem md="6">
         <MudText Typo="Typo.h4">Meals</MudText>
-        <MudList T="Meal">
+        <MudList T="Meal" Style="max-height: 600px; overflow-y: auto;">
             @foreach (var meal in _meals)
             {
-                <MudListItem>
-                    <MudText Typo="Typo.subtitle1">@meal.Name</MudText>
-                    <MudText Typo="Typo.caption">@meal.Date.ToShortDateString()</MudText>
+                <MudListItem OnClick="@(() => RecipeSelected(meal))">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudAvatar Size="Size.Medium">
+                            <MudImage Src="@meal.Type.MealTypeToIconUrl()" Alt="@meal.Type.ToString()"/>
+                        </MudAvatar>
+
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.subtitle1">@meal.Name</MudText>
+                            <MudText Typo="Typo.caption">@meal.Date?.ToShortDateString()</MudText>
+                        </MudStack>
+                    </MudStack>
                 </MudListItem>
             }
         </MudList>
@@ -81,7 +89,7 @@
     {
         try
         {
-            _meals = await MealRepository.GetAllMealsAsync();
+            _meals = await MealService.GetAllMealsAsync();
             _recipes = await RecipeService.SearchRecipeByNameAsync(_searchTerm);
         }
         catch (Exception e)
@@ -95,7 +103,7 @@
         _recipes = await RecipeService.SearchRecipeByNameAsync(_searchTerm);
     }
 
-    private async Task RecipeSelected(Recipe selectedRecipe)
+    private async Task RecipeSelected(IRecipe selectedRecipe)
     {
         var parameters = new DialogParameters<RecipeModal>
         {
@@ -111,9 +119,15 @@
 
         var dialogReference = await DialogService.ShowAsync<RecipeModal>(selectedRecipe.Name, parameters, options);
         var dialogResult = await dialogReference.Result;
-        if (dialogResult?.Canceled is false)
+
+        if (dialogResult?.Canceled is true)
         {
-            NavigationManager.NavigateTo($"/meals/create/{selectedRecipe.Id}");
+            return;
         }
+
+        var navigateTo = selectedRecipe is Recipe
+            ? $"/meals/create/{selectedRecipe.Id}"
+            : $"/meals/edit/{selectedRecipe.Id}";
+        NavigationManager.NavigateTo(navigateTo);
     }
 }

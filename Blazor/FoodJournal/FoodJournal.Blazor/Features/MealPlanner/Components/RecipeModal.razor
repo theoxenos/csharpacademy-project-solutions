@@ -1,4 +1,4 @@
-@using static FoodJournal.Blazor.Utils.IngredientNameNormalizer;
+@using static Utils.IngredientNameNormalizer;
 
 <MudDialog>
     <DialogContent>
@@ -68,7 +68,7 @@
 {
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
-    [Parameter] public required Recipe Recipe { get; set; }
+    [Parameter] public required IRecipe Recipe { get; set; }
 
     private void Close()
     {

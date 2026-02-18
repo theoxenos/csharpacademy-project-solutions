@@ -6,8 +6,6 @@
 @inject IMealService MealService
 @inject IRecipeService RecipeService
 
-@inject IMealRepository MealRepository
-
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
@@ -18,7 +16,7 @@
         <MudTextField @bind-Value="_meal.Name" Label="Meal name"/>
     </MudItem>
     <MudItem md="6">
-        <MudDatePicker Label="Date" @bind-Value="_meal.Date"/>
+        <MudDatePicker Label="Date" @bind-Date="_meal.Date"/>
     </MudItem>
     <MudItem md="12">
         <MudTextField @bind-Value="_meal.Description" Label="Meal description" Lines="20"/>
@@ -134,10 +132,17 @@
             </MudTable>
         </MudPaper>
     </MudItem>
-    <MudItem md="12" Class="mb-6 d-flex justify-end">
-        <MudButton Color="Color.Success" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Save"
+    <MudItem md="12" Class="mb-6 d-flex justify-end gap-3">
+        @if (MealId.HasValue)
+        {
+            <MudButton Color="Color.Secondary" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Save"
+                       OnClick="@UpdateMeal">
+                Update meal
+            </MudButton>
+        }
+        <MudButton Color="Color.Success" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Create"
                    OnClick="@SaveMeal">
-            Save meal
+            Create meal
         </MudButton>
     </MudItem>
 </MudGrid>
@@ -179,12 +184,12 @@
         }
         else if (MealId.HasValue)
         {
-            var mealFromDatabase = await MealRepository.GetMealByIdAsync(MealId.Value);
+            var mealFromDatabase = await MealService.GetMealByIdAsync(MealId.Value);
 
             if (mealFromDatabase is null)
             {
                 await ResetState();
-                Snackbar.Add($"Meal with Id {MealId.Value} not found");
+                Snackbar.Add($"Meal with Id {MealId.Value} not found", Severity.Error);
                 return;
             }
 
@@ -231,6 +236,14 @@
             await ResetState();
             await JsRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
         }
+    }
+
+    private async Task UpdateMeal()
+    {
+        await MealService.UpdateMealAsync(_meal);
+        Snackbar.Add("Meal updated successfully", Severity.Success);
+        await ResetState();
+        await JsRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
     }
 
 }

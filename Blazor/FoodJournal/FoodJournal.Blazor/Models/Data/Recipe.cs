@@ -1,6 +1,6 @@
 namespace FoodJournal.Blazor.Models.Data;
 
-public record Recipe
+public record Recipe : IRecipe
 {
     public int Id { get; set; }
     public required string Name { get; set; }

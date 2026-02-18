@@ -6,6 +6,9 @@ namespace FoodJournal.Blazor.Services;
 public interface IMealService
 {
     Task<Meal> AddMealAsync(Meal meal);
+    Task<List<Meal>> GetAllMealsAsync();
+    Task<Meal?> GetMealByIdAsync(int mealId);
+    Task<Meal> UpdateMealAsync(Meal meal);
 }
 
 public class MealService(
@@ -16,6 +19,56 @@ public class MealService(
     public async Task<Meal> AddMealAsync(Meal meal)
     {
         var mealId = await mealRepository.AddMealAsync(meal);
+        var mealIngredients = await GetAllRecipeIngredientsByMealIdAsync(mealId);
+
+        return new Meal
+        {
+            Id = mealId,
+            Name = meal.Name,
+            Date = meal.Date,
+            Description = meal.Description,
+            Ingredients = mealIngredients,
+            ThumbnailUrl = meal.ThumbnailUrl,
+            Type = meal.Type
+        };
+    }
+
+    public async Task<List<Meal>> GetAllMealsAsync()
+    {
+        var databaseMeals = await mealRepository.GetAllMealsAsync();
+
+        if (databaseMeals is not { Count: > 0 }) return [];
+
+        var mealTasks = databaseMeals.Select(async meal =>
+        {
+            var mealIngredients = await GetAllRecipeIngredientsByMealIdAsync(meal.Id);
+
+            meal.Ingredients = mealIngredients;
+
+            return meal;
+        });
+
+        return (await Task.WhenAll(mealTasks)).ToList();
+    }
+
+    public async Task<Meal?> GetMealByIdAsync(int mealId)
+    {
+        var meal = await mealRepository.GetMealByIdAsync(mealId);
+        if (meal == null) return null;
+        var mealIngredients = await GetAllRecipeIngredientsByMealIdAsync(meal.Id);
+        meal.Ingredients = mealIngredients;
+        return meal;
+    }
+
+    public async Task<Meal> UpdateMealAsync(Meal meal)
+    {
+        await mealRepository.UpdateMealAsync(meal);
+        meal.Ingredients = await GetAllRecipeIngredientsByMealIdAsync(meal.Id);
+        return meal;
+    }
+
+    private async Task<List<RecipeIngredient>> GetAllRecipeIngredientsByMealIdAsync(int mealId)
+    {
         var ingredients = await ingredientsRepository.GetAllIngredientsByMealIdAsync(mealId);
         var mealIngredientsTasks = ingredients.Select(async i =>
         {
@@ -28,13 +81,6 @@ public class MealService(
         });
 
         var mealIngredients = await Task.WhenAll(mealIngredientsTasks);
-
-        return new Meal
-        {
-            Id = mealId,
-            Name = meal.Name,
-            Description = meal.Description,
-            Ingredients = mealIngredients.ToList()
-        };
+        return mealIngredients.ToList();
     }
 }

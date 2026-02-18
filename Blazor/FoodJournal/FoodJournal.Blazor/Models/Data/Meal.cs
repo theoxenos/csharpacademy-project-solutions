@@ -1,13 +1,13 @@
 namespace FoodJournal.Blazor.Models.Data;
 
-public class Meal
+public class Meal : IRecipe
 {
+    public MealType Type { get; set; } = MealType.Breakfast;
+    public DateTime? Date { get; set; } = DateTime.Now;
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string ThumbnailUrl { get; set; } = string.Empty;
-    public MealType Type { get; set; } = MealType.Breakfast;
-    public DateTime Date { get; set; } = DateTime.Now;
     public List<RecipeIngredient> Ingredients { get; set; } = [];
 
     public float TotalCalories => Ingredients.Sum(i => i.Ingredient.Calories);
